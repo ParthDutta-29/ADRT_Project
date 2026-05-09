@@ -79,10 +79,19 @@ bool supply=false, firmware=false, lateral=false, persistence=false;
 /* ── Defense active flags ── */
 bool firewall=true, ids=true, waf=true, edr=true, dlp=true;
 
-/* ── Asset compromise flags ── */
+/* ── Asset compromise flags (Truth - Hidden from Defender) ── */
 bool scadaCompromised  = false;
 bool plcCompromised    = false;
 bool sensorCompromised = false;
+
+/* ── POMDP-lite Belief States (Observed by Defender) ── */
+int[0,100] plcSuspicion            = 0;
+int[0,100] scadaSuspicion          = 0;
+int[0,100] sensorSuspicion         = 0;
+int[0,100] networkThreatConfidence = 0;
+int[0,100] telemetryTrust          = 100;
+int[0,100] alertConfidence         = 0;
+int[0,100] compromiseConfidence    = 0;
 
 /* ── System outcome ── */
 bool breach       = false;
