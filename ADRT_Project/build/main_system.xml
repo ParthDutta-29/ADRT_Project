@@ -57,6 +57,13 @@ int[0,100] breachLikelihood          = 0;
 int[0,100] operationalSafetyErosion  = 0;
 int        downtime                  = 0;
 
+/* ── Recovery and Resilience Orchestration (Phase 8) ── */
+int[0,100] recoveryCapacity          = 100;
+int[0,100] backupIntegrity           = 100;
+int[0,100] restorationConfidence     = 100;
+int[0,100] safeModeOperation         = 0;
+bool       failSafeEngaged           = false;
+
 /* ── Defense load / fatigue ── */
 int[0,100] fwQueueSize  = 0;
 int[0,100] idsQueueSize = 0;
@@ -64,12 +71,20 @@ int[0,100] wafQueueSize = 0;
 int[0,100] edrQueueSize = 0;
 int[0,100] dlpQueueSize = 0;
 
-/* ── Defense adaptive strength ── */
-int[0,10] fw_strength  = 5;
-int[0,10] ids_strength = 5;
-int[0,10] waf_strength = 5;
-int[0,10] edr_strength = 5;
-int[0,10] dlp_strength = 5;
+/* ── Queue Abstraction Thresholds (Phase 8) ── */
+int[0,100] mitigationCapacity = 80;
+int[0,100] congestionPressure = 0;
+int[0,100] telemetryLagBucket = 0;
+int[0,100] inspectionBacklog  = 0;
+int[0,100] servicePressure    = 0;
+
+/* ── Operational Abstraction (replaces naive strengths) ── */
+int[0,100] detectionReliability    = 50;
+int[0,100] telemetryCoverage       = 50;
+int[0,100] inspectionDepth         = 50;
+int[0,100] modelFidelity           = 50;
+int[0,100] mitigationEffectiveness = 50;
+int[0,100] signatureFreshness      = 50;
 
 /* ── Detection quality flags ── */
 bool truePositive  = false;
@@ -110,7 +125,7 @@ int[0,100] sensorSpoofingIntent    = 0;
 int[0,100] plcTraversalConfidence  = 0;
 int[0,100] telemetryManipulationIntent = 0;
 
-/* ── Bounded Operational Semantics (Phase 6 CPS) ── */
+/* ── Bounded Operational Semantics (Phase 6 and 8 CPS) ── */
 int[0,100] pipelinePressure        = 50;
 int[0,100] flowStability           = 100;
 int[0,100] controlLoopStability    = 100;
@@ -120,6 +135,12 @@ int[0,100] sensorConsistency       = 100;
 int[0,100] processDeviation        = 0;
 int[0,100] operationalStress       = 0;
 int[0,100] safetyMargin            = 100;
+
+int[0,100] controlLatency          = 0;
+int[0,100] actuatorInconsistency   = 0;
+int[0,100] delayedTelemetry        = 0;
+int[0,100] sensorDisagreement      = 0;
+int[0,100] processStabilizationLag = 0;
 
 /* ── System outcome ── */
 bool breach       = false;
@@ -234,14 +255,14 @@ carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
 			<target ref="id7" />
 			<label kind="synchronisation" x="70" y="205">success!</label>
 			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
-			<label kind="probability" x="70" y="235">7</label>
+			<label kind="probability" x="70" y="235">stealthPreference + processDeviation</label>
 		</transition>
 		<transition id="id17">
 			<source ref="id6" />
 			<target ref="id8" />
 			<label kind="synchronisation" x="70" y="275">fail!</label>
 			<label kind="assignment" x="70" y="290">downtime=downtime</label>
-			<label kind="probability" x="70" y="305">3</label>
+			<label kind="probability" x="70" y="305">mitigationConfidence + controlLoopStability</label>
 		</transition>
 		<transition id="id18">
 			<source ref="id7" />
@@ -690,12 +711,12 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*5),
 energyCost := min(MAX_COST,energyCost+GATE_EC*5),
 carbonCost := min(MAX_COST,carbonCost+GATE_CC*5)</label>
-			<label kind="probability" x="70" y="305">8</label>
+			<label kind="probability" x="70" y="305">stealthPreference + congestionPressure</label>
 		</transition>
 		<transition id="id107">
 			<source ref="id97" />
 			<target ref="id98" />
-			<label kind="probability" x="70" y="235">2</label>
+			<label kind="probability" x="70" y="235">mitigationConfidence + telemetryTrust</label>
 		</transition>
 		<transition id="id108">
 			<source ref="id99" />
@@ -780,13 +801,13 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
 energyCost := min(MAX_COST,energyCost+GATE_EC*4),
 carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
-			<label kind="probability" x="70" y="305">7</label>
+			<label kind="probability" x="70" y="305">stealthPreference + congestionPressure</label>
 		</transition>
 		<transition id="id125">
 			<source ref="id115" />
 			<target ref="id116" />
 			<label kind="synchronisation" x="70" y="205">detect!</label>
-			<label kind="probability" x="70" y="235">3</label>
+			<label kind="probability" x="70" y="235">mitigationConfidence + telemetryTrust</label>
 		</transition>
 		<transition id="id126">
 			<source ref="id117" />
@@ -3284,7 +3305,7 @@ carbonCost := min(MAX_COST,
 carbonCost+FWD_CC),
 fwQueueSize=min(100,
 fwQueueSize+5)</label>
-		<label kind="guard" x="70" y="50">fwQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="70" y="50">fwQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id447">
 			<source ref="id437" />
 			<target ref="id438" />
@@ -3320,15 +3341,14 @@ carbonCost+FWD_CC)</label>
 			<target ref="id441" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">firewall=true,
-fw_strength=min(10,
-fw_strength+1),
+detectionReliability=min(100, detectionReliability + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+FWD_MC),
 energyCost := min(MAX_COST,
 energyCost+FWD_EC),
 carbonCost := min(MAX_COST,
 carbonCost+FWD_CC)</label>
-		<label kind="guard" x="430" y="190">fwQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="430" y="190">fwQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">detectionReliability + telemetryTrust</label></transition>
 		<transition id="id451">
 			<source ref="id440" />
 			<target ref="id445" />
@@ -3340,7 +3360,7 @@ energyCost := min(MAX_COST,
 energyCost+FWD_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+FWD_CC*2)</label>
-		<label kind="guard" x="340" y="260">fwQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="340" y="260">fwQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
 		<transition id="id452">
 			<source ref="id441" />
 			<target ref="id442" />
@@ -3365,8 +3385,7 @@ carbonCost+FWD_CC)</label>
 			<source ref="id444" />
 			<target ref="id436" />
 			<label kind="assignment" x="-20" y="220">firewall=true,
-fw_strength=min(10,
-fw_strength+1),
+detectionReliability=min(100, detectionReliability + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+FWD_MC*2)</label>
 		</transition>
@@ -3377,10 +3396,10 @@ maintenanceCost+FWD_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
 maintenanceCost+FWD_MC*3)</label>
 		</transition>
-	<transition id="id457"><source ref="id436" /><target ref="id436" /><label kind="guard" x="70" y="10">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+	<transition id="id457"><source ref="id436" /><target ref="id436" /><label kind="guard" x="70" y="10">fwQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
-controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id458"><source ref="id440" /><target ref="id445" /><label kind="guard" x="340" y="310">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">firewall=false,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id458"><source ref="id440" /><target ref="id445" /><label kind="guard" x="340" y="310">fwQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">firewall=false,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+FWD_MC*2),
 energyCost := min(MAX_COST,
@@ -3442,7 +3461,7 @@ carbonCost := min(MAX_COST,
 carbonCost+IDS_CC),
 idsQueueSize=min(100,
 idsQueueSize+5)</label>
-		<label kind="guard" x="70" y="50">idsQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="70" y="50">idsQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id468">
 			<source ref="id458" />
 			<target ref="id459" />
@@ -3478,15 +3497,14 @@ carbonCost+IDS_CC)</label>
 			<target ref="id462" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">ids=true,
-ids_strength=min(10,
-ids_strength+1),
+telemetryCoverage=min(100, telemetryCoverage + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+IDS_MC),
 energyCost := min(MAX_COST,
 energyCost+IDS_EC),
 carbonCost := min(MAX_COST,
 carbonCost+IDS_CC)</label>
-		<label kind="guard" x="430" y="190">idsQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="430" y="190">idsQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">telemetryCoverage + telemetryTrust</label></transition>
 		<transition id="id472">
 			<source ref="id461" />
 			<target ref="id466" />
@@ -3498,7 +3516,7 @@ energyCost := min(MAX_COST,
 energyCost+IDS_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+IDS_CC*2)</label>
-		<label kind="guard" x="340" y="260">idsQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="340" y="260">idsQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
 		<transition id="id473">
 			<source ref="id462" />
 			<target ref="id463" />
@@ -3523,8 +3541,7 @@ carbonCost+IDS_CC)</label>
 			<source ref="id465" />
 			<target ref="id457" />
 			<label kind="assignment" x="-20" y="220">ids=true,
-ids_strength=min(10,
-ids_strength+1),
+telemetryCoverage=min(100, telemetryCoverage + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+IDS_MC*2)</label>
 		</transition>
@@ -3535,10 +3552,10 @@ maintenanceCost+IDS_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
 maintenanceCost+IDS_MC*3)</label>
 		</transition>
-	<transition id="id478"><source ref="id457" /><target ref="id457" /><label kind="guard" x="70" y="10">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+	<transition id="id478"><source ref="id457" /><target ref="id457" /><label kind="guard" x="70" y="10">idsQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
-controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id479"><source ref="id461" /><target ref="id466" /><label kind="guard" x="340" y="310">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">ids=false,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id479"><source ref="id461" /><target ref="id466" /><label kind="guard" x="340" y="310">idsQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">ids=false,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+IDS_MC*2),
 energyCost := min(MAX_COST,
@@ -3600,7 +3617,7 @@ carbonCost := min(MAX_COST,
 carbonCost+WAF_CC),
 wafQueueSize=min(100,
 wafQueueSize+5)</label>
-		<label kind="guard" x="70" y="50">wafQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="70" y="50">wafQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id489">
 			<source ref="id479" />
 			<target ref="id480" />
@@ -3636,15 +3653,14 @@ carbonCost+WAF_CC)</label>
 			<target ref="id483" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">waf=true,
-waf_strength=min(10,
-waf_strength+1),
+inspectionDepth=min(100, inspectionDepth + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+WAF_MC),
 energyCost := min(MAX_COST,
 energyCost+WAF_EC),
 carbonCost := min(MAX_COST,
 carbonCost+WAF_CC)</label>
-		<label kind="guard" x="430" y="190">wafQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="430" y="190">wafQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">inspectionDepth + telemetryTrust</label></transition>
 		<transition id="id493">
 			<source ref="id482" />
 			<target ref="id487" />
@@ -3656,7 +3672,7 @@ energyCost := min(MAX_COST,
 energyCost+WAF_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+WAF_CC*2)</label>
-		<label kind="guard" x="340" y="260">wafQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="340" y="260">wafQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
 		<transition id="id494">
 			<source ref="id483" />
 			<target ref="id484" />
@@ -3681,8 +3697,7 @@ carbonCost+WAF_CC)</label>
 			<source ref="id486" />
 			<target ref="id478" />
 			<label kind="assignment" x="-20" y="220">waf=true,
-waf_strength=min(10,
-waf_strength+1),
+inspectionDepth=min(100, inspectionDepth + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+WAF_MC*2)</label>
 		</transition>
@@ -3693,10 +3708,10 @@ maintenanceCost+WAF_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
 maintenanceCost+WAF_MC*3)</label>
 		</transition>
-	<transition id="id499"><source ref="id478" /><target ref="id478" /><label kind="guard" x="70" y="10">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+	<transition id="id499"><source ref="id478" /><target ref="id478" /><label kind="guard" x="70" y="10">wafQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
-controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id500"><source ref="id482" /><target ref="id487" /><label kind="guard" x="340" y="310">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">waf=false,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id500"><source ref="id482" /><target ref="id487" /><label kind="guard" x="340" y="310">wafQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">waf=false,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+WAF_MC*2),
 energyCost := min(MAX_COST,
@@ -3758,7 +3773,7 @@ carbonCost := min(MAX_COST,
 carbonCost+EDR_CC),
 edrQueueSize=min(100,
 edrQueueSize+5)</label>
-		<label kind="guard" x="70" y="50">edrQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="70" y="50">edrQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id510">
 			<source ref="id500" />
 			<target ref="id501" />
@@ -3794,15 +3809,14 @@ carbonCost+EDR_CC)</label>
 			<target ref="id504" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">edr=true,
-edr_strength=min(10,
-edr_strength+1),
+modelFidelity=min(100, modelFidelity + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+EDR_MC),
 energyCost := min(MAX_COST,
 energyCost+EDR_EC),
 carbonCost := min(MAX_COST,
 carbonCost+EDR_CC)</label>
-		<label kind="guard" x="430" y="190">edrQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="430" y="190">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">modelFidelity + telemetryTrust</label></transition>
 		<transition id="id514">
 			<source ref="id503" />
 			<target ref="id508" />
@@ -3814,7 +3828,7 @@ energyCost := min(MAX_COST,
 energyCost+EDR_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+EDR_CC*2)</label>
-		<label kind="guard" x="340" y="260">edrQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="340" y="260">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
 		<transition id="id515">
 			<source ref="id504" />
 			<target ref="id505" />
@@ -3839,8 +3853,7 @@ carbonCost+EDR_CC)</label>
 			<source ref="id507" />
 			<target ref="id499" />
 			<label kind="assignment" x="-20" y="220">edr=true,
-edr_strength=min(10,
-edr_strength+1),
+modelFidelity=min(100, modelFidelity + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+EDR_MC*2)</label>
 		</transition>
@@ -3851,10 +3864,10 @@ maintenanceCost+EDR_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
 maintenanceCost+EDR_MC*3)</label>
 		</transition>
-	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
-controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+EDR_MC*2),
 energyCost := min(MAX_COST,
@@ -3916,7 +3929,7 @@ carbonCost := min(MAX_COST,
 carbonCost+DLP_CC),
 dlpQueueSize=min(100,
 dlpQueueSize+5)</label>
-		<label kind="guard" x="70" y="50">dlpQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="70" y="50">dlpQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id531">
 			<source ref="id521" />
 			<target ref="id522" />
@@ -3952,15 +3965,14 @@ carbonCost+DLP_CC)</label>
 			<target ref="id525" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">dlp=true,
-dlp_strength=min(10,
-dlp_strength+1),
+mitigationEffectiveness=min(100, mitigationEffectiveness + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DLP_MC),
 energyCost := min(MAX_COST,
 energyCost+DLP_EC),
 carbonCost := min(MAX_COST,
 carbonCost+DLP_CC)</label>
-		<label kind="guard" x="430" y="190">dlpQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="430" y="190">dlpQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">mitigationEffectiveness + telemetryTrust</label></transition>
 		<transition id="id535">
 			<source ref="id524" />
 			<target ref="id529" />
@@ -3972,7 +3984,7 @@ energyCost := min(MAX_COST,
 energyCost+DLP_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+DLP_CC*2)</label>
-		<label kind="guard" x="340" y="260">dlpQueueSize &lt; 80</label></transition>
+		<label kind="guard" x="340" y="260">dlpQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
 		<transition id="id536">
 			<source ref="id525" />
 			<target ref="id526" />
@@ -3997,8 +4009,7 @@ carbonCost+DLP_CC)</label>
 			<source ref="id528" />
 			<target ref="id520" />
 			<label kind="assignment" x="-20" y="220">dlp=true,
-dlp_strength=min(10,
-dlp_strength+1),
+mitigationEffectiveness=min(100, mitigationEffectiveness + 5),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DLP_MC*2)</label>
 		</transition>
@@ -4009,10 +4020,10 @@ maintenanceCost+DLP_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
 maintenanceCost+DLP_MC*3)</label>
 		</transition>
-	<transition id="id541"><source ref="id520" /><target ref="id520" /><label kind="guard" x="70" y="10">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+	<transition id="id541"><source ref="id520" /><target ref="id520" /><label kind="guard" x="70" y="10">dlpQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
-controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id542"><source ref="id524" /><target ref="id529" /><label kind="guard" x="340" y="310">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">dlp=false,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id542"><source ref="id524" /><target ref="id529" /><label kind="guard" x="340" y="310">dlpQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">dlp=false,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DLP_MC*2),
 energyCost := min(MAX_COST,
@@ -4243,55 +4254,59 @@ carbonCost+DR_CC*3)</label>
 		<transition id="id571">
 			<source ref="id552" />
 			<target ref="id553" />
-			<label kind="assignment" x="250" y="360">maintenanceCost := min(MAX_COST,
+			<label kind="assignment" x="250" y="360">recoveryCapacity=(operationalStress&gt;50)?((recoveryCapacity&gt;10)?recoveryCapacity-10:0):recoveryCapacity,
+restorationConfidence=(recoveryCapacity&lt;50 || backupIntegrity&lt;50)?((restorationConfidence&gt;10)?restorationConfidence-10:0):restorationConfidence,
+failSafeEngaged=(operationalSafetyErosion&gt;70 &amp;&amp; processDeviation&gt;50)?true:failSafeEngaged,
+safeModeOperation=(failSafeEngaged)?100:((telemetryTrust&lt;50)?50:0),
+downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:downtime),
+maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*4),
 energyCost := min(MAX_COST,
 energyCost+DR_EC*5),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*4),
-downtime=downtime+1</label>
+carbonCost+DR_CC*4)</label>
 		</transition>
 		<transition id="id572">
 			<source ref="id553" />
 			<target ref="id554" />
-			<label kind="assignment" x="430" y="360">breach=false,
+			<label kind="assignment" x="430" y="360">breach=(stealthPreference&gt;70 &amp;&amp; mitigationConfidence&lt;50)?true:false,
+downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:((downtime&gt;0)?downtime-1:0)),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*5),
 energyCost := min(MAX_COST,
 energyCost+DR_EC*6),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5),
-downtime=(operationalStress&gt;50)?downtime+1:((downtime&gt;1)?downtime-1:0)</label>
+carbonCost+DR_CC*5)</label>
 		</transition>
 		<transition id="id573">
 			<source ref="id554" />
 			<target ref="id555" />
-			<label kind="assignment" x="610" y="360">scadaCompromised=false,
-plcCompromised=false,
-sensorCompromised=false,
+			<label kind="assignment" x="610" y="360">scadaCompromised=(breach)?true:false,
+plcCompromised=(safeModeOperation&gt;0)?plcCompromised:false,
+sensorCompromised=(telemetryTrust&lt;50)?sensorCompromised:false,
+resilienceDegradation=(safeModeOperation&gt;0)?resilienceDegradation:((resilienceDegradation&gt;10)?resilienceDegradation-10:0),
+mitigationConfidence=min(100, mitigationConfidence + (recoveryCapacity/10)),
+safetyMargin=(safeModeOperation&gt;0)?safetyMargin:min(100, safetyMargin+10),
+downtime=(downtime&gt;0)?downtime-1:0,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*6),
 energyCost := min(MAX_COST,
 energyCost+DR_EC*7),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*6),
-downtime=(downtime&gt;0)?downtime-1:0,
-resilienceDegradation=(resilienceDegradation&gt;10)?resilienceDegradation-10:0,
-mitigationConfidence=min(100,mitigationConfidence+10)</label>
+carbonCost+DR_CC*6)</label>
 		</transition>
 		<transition id="id574">
 			<source ref="id555" />
 			<target ref="id556" />
-			<label kind="assignment" x="700" y="430">fw_strength=min(10,
-fw_strength+1),
-ids_strength=min(10,
-ids_strength+1),
-waf_strength=min(10,
-waf_strength+1),
-edr_strength=min(10,
-edr_strength+1),
-dlp_strength=min(10,
-dlp_strength+1),
+			<label kind="assignment" x="700" y="430">detectionReliability=min(100, detectionReliability+5),
+telemetryCoverage=min(100, telemetryCoverage+5),
+inspectionDepth=min(100, inspectionDepth+5),
+modelFidelity=min(100, modelFidelity+5),
+mitigationEffectiveness=min(100, mitigationEffectiveness+5),
+telemetryIntegrity=(safeModeOperation&gt;0)?telemetryIntegrity:min(100,telemetryIntegrity+10),
+controlLoopStability=(failSafeEngaged)?controlLoopStability:min(100,controlLoopStability+10),
+actuatorTrust=min(100,actuatorTrust+10),
+backupIntegrity=(backupIntegrity&lt;100)?backupIntegrity+5:backupIntegrity,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*8),
 energyCost := min(MAX_COST,
@@ -4300,23 +4315,28 @@ carbonCost := min(MAX_COST,
 carbonCost+DR_CC*7)</label>
 		</transition>
 		<transition id="id575">
-			<source ref="id556" />
-			<target ref="id557" />
-			<label kind="assignment" x="610" y="500">alertConfidence=(alertConfidence&gt;10)?alertConfidence-10:0,
-plcSuspicion=(plcSuspicion&gt;10)?plcSuspicion-10:0,
-scadaSuspicion=(scadaSuspicion&gt;10)?scadaSuspicion-10:0,
-telemetryTrust=min(100,
-telemetryTrust+10),
-fwQueueSize=(fwQueueSize&gt;10)?fwQueueSize-10:0,
-idsQueueSize=(idsQueueSize&gt;10)?idsQueueSize-10:0,
-wafQueueSize=(wafQueueSize&gt;10)?wafQueueSize-10:0,
-edrQueueSize=(edrQueueSize&gt;10)?edrQueueSize-10:0,
-dlpQueueSize=(dlpQueueSize&gt;10)?dlpQueueSize-10:0</label>
-		</transition>
+	<source ref="id556" />
+	<target ref="id557" />
+
+	<label kind="assignment" x="610" y="500">
+alertConfidence=(breach)?alertConfidence:alertConfidence/4,
+plcSuspicion=(breach)?plcSuspicion:plcSuspicion/3,
+scadaSuspicion=(breach)?scadaSuspicion:scadaSuspicion/3,
+sensorSuspicion=(breach)?sensorSuspicion:sensorSuspicion/3,
+networkThreatConfidence=(breach)?networkThreatConfidence:networkThreatConfidence/4,
+breachLikelihood=(breach)?breachLikelihood:breachLikelihood/2,
+cpsInstabilityProbability=(safeModeOperation&gt;0)?cpsInstabilityProbability:cpsInstabilityProbability/2,
+telemetryTrust=(safeModeOperation&gt;0)?telemetryTrust:(telemetryTrust*3)/4,
+mitigationConfidence=(safeModeOperation&gt;0)?mitigationConfidence:mitigationConfidence/2,
+resilienceDegradation=(resilienceDegradation&gt;20)?resilienceDegradation:0
+	</label>
+</transition>
 		<transition id="id576">
 			<source ref="id557" />
 			<target ref="id558" />
-			<label kind="assignment" x="430" y="500">maintenanceCost := min(MAX_COST,
+			<label kind="assignment" x="430" y="500">failSafeEngaged=false,
+safeModeOperation=0,
+maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC),
 energyCost := min(MAX_COST,
 energyCost+DR_EC),
@@ -4813,6 +4833,58 @@ system E, G1, G2, G3, G4, G5, G6, G7,
     </query>
     <query>
         <formula>E&lt;&gt; (operationalSafetyErosion &gt; 50 &amp;&amp; downtime &gt; 5)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (failSafeEngaged == true))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=600] (&lt;&gt; (safeModeOperation &gt; 0 &amp;&amp; DR.DR_Recover))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (breach == true &amp;&amp; DR.DR_Reset)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=400] (&lt;&gt; (breach == true &amp;&amp; mitigationConfidence &lt; 50))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (recoveryCapacity &lt; 50 &amp;&amp; DR.DR_Harden)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; DR.DR_Recover))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=600] (&lt;&gt; (restorationConfidence &lt; 50 &amp;&amp; downtime &gt; 10))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (safeModeOperation &gt; 0 &amp;&amp; resilienceDegradation &gt; 50)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (processStabilizationLag &gt; 20))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=600] (&lt;&gt; (delayedTelemetry &gt; 20 &amp;&amp; sensorDisagreement &gt; 20))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (controlLatency &gt; 10 &amp;&amp; resilienceDegradation &gt; 50)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=400] (&lt;&gt; (detectionReliability &lt; 30 &amp;&amp; fwQueueSize &gt;= mitigationCapacity))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (operationalSafetyErosion &gt; 50 &amp;&amp; safeModeOperation &gt; 0))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
 </queries>

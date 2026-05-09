@@ -224,55 +224,59 @@ carbonCost+DR_CC*3)</label>
 		<transition id="id571">
 			<source ref="id552" />
 			<target ref="id553" />
-			<label kind="assignment" x="250" y="360">maintenanceCost := min(MAX_COST,
+			<label kind="assignment" x="250" y="360">recoveryCapacity=(operationalStress&gt;50)?((recoveryCapacity&gt;10)?recoveryCapacity-10:0):recoveryCapacity,
+restorationConfidence=(recoveryCapacity&lt;50 || backupIntegrity&lt;50)?((restorationConfidence&gt;10)?restorationConfidence-10:0):restorationConfidence,
+failSafeEngaged=(operationalSafetyErosion&gt;70 &amp;&amp; processDeviation&gt;50)?true:failSafeEngaged,
+safeModeOperation=(failSafeEngaged)?100:((telemetryTrust&lt;50)?50:0),
+downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:downtime),
+maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*4),
 energyCost := min(MAX_COST,
 energyCost+DR_EC*5),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*4),
-downtime=downtime+1</label>
+carbonCost+DR_CC*4)</label>
 		</transition>
 		<transition id="id572">
 			<source ref="id553" />
 			<target ref="id554" />
-			<label kind="assignment" x="430" y="360">breach=false,
+			<label kind="assignment" x="430" y="360">breach=(stealthPreference&gt;70 &amp;&amp; mitigationConfidence&lt;50)?true:false,
+downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:((downtime&gt;0)?downtime-1:0)),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*5),
 energyCost := min(MAX_COST,
 energyCost+DR_EC*6),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5),
-downtime=(operationalStress&gt;50)?downtime+1:((downtime&gt;1)?downtime-1:0)</label>
+carbonCost+DR_CC*5)</label>
 		</transition>
 		<transition id="id573">
 			<source ref="id554" />
 			<target ref="id555" />
-			<label kind="assignment" x="610" y="360">scadaCompromised=false,
-plcCompromised=false,
-sensorCompromised=false,
+			<label kind="assignment" x="610" y="360">scadaCompromised=(breach)?true:false,
+plcCompromised=(safeModeOperation&gt;0)?plcCompromised:false,
+sensorCompromised=(telemetryTrust&lt;50)?sensorCompromised:false,
+resilienceDegradation=(safeModeOperation&gt;0)?resilienceDegradation:((resilienceDegradation&gt;10)?resilienceDegradation-10:0),
+mitigationConfidence=min(100, mitigationConfidence + (recoveryCapacity/10)),
+safetyMargin=(safeModeOperation&gt;0)?safetyMargin:min(100, safetyMargin+10),
+downtime=(downtime&gt;0)?downtime-1:0,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*6),
 energyCost := min(MAX_COST,
 energyCost+DR_EC*7),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*6),
-downtime=(downtime&gt;0)?downtime-1:0,
-resilienceDegradation=(resilienceDegradation&gt;10)?resilienceDegradation-10:0,
-mitigationConfidence=min(100,mitigationConfidence+10)</label>
+carbonCost+DR_CC*6)</label>
 		</transition>
 		<transition id="id574">
 			<source ref="id555" />
 			<target ref="id556" />
-			<label kind="assignment" x="700" y="430">fw_strength=min(10,
-fw_strength+1),
-ids_strength=min(10,
-ids_strength+1),
-waf_strength=min(10,
-waf_strength+1),
-edr_strength=min(10,
-edr_strength+1),
-dlp_strength=min(10,
-dlp_strength+1),
+			<label kind="assignment" x="700" y="430">detectionReliability=min(100, detectionReliability+5),
+telemetryCoverage=min(100, telemetryCoverage+5),
+inspectionDepth=min(100, inspectionDepth+5),
+modelFidelity=min(100, modelFidelity+5),
+mitigationEffectiveness=min(100, mitigationEffectiveness+5),
+telemetryIntegrity=(safeModeOperation&gt;0)?telemetryIntegrity:min(100,telemetryIntegrity+10),
+controlLoopStability=(failSafeEngaged)?controlLoopStability:min(100,controlLoopStability+10),
+actuatorTrust=min(100,actuatorTrust+10),
+backupIntegrity=(backupIntegrity&lt;100)?backupIntegrity+5:backupIntegrity,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*8),
 energyCost := min(MAX_COST,
@@ -283,21 +287,21 @@ carbonCost+DR_CC*7)</label>
 		<transition id="id575">
 			<source ref="id556" />
 			<target ref="id557" />
-			<label kind="assignment" x="610" y="500">alertConfidence=(alertConfidence&gt;10)?alertConfidence-10:0,
-plcSuspicion=(plcSuspicion&gt;10)?plcSuspicion-10:0,
-scadaSuspicion=(scadaSuspicion&gt;10)?scadaSuspicion-10:0,
-telemetryTrust=min(100,
-telemetryTrust+10),
-fwQueueSize=(fwQueueSize&gt;10)?fwQueueSize-10:0,
-idsQueueSize=(idsQueueSize&gt;10)?idsQueueSize-10:0,
-wafQueueSize=(wafQueueSize&gt;10)?wafQueueSize-10:0,
-edrQueueSize=(edrQueueSize&gt;10)?edrQueueSize-10:0,
-dlpQueueSize=(dlpQueueSize&gt;10)?dlpQueueSize-10:0</label>
+			<label kind="assignment" x="610" y="500">alertConfidence=(breach)?alertConfidence:0,
+plcSuspicion=(breach)?plcSuspicion:0,
+scadaSuspicion=(breach)?scadaSuspicion:0,
+sensorSuspicion=(breach)?sensorSuspicion:0,
+networkThreatConfidence=(breach)?networkThreatConfidence:0,
+breachLikelihood=(breach)?breachLikelihood:0,
+cpsInstabilityProbability=(safeModeOperation&gt;0)?cpsInstabilityProbability:0,
+</label>
 		</transition>
 		<transition id="id576">
 			<source ref="id557" />
 			<target ref="id558" />
-			<label kind="assignment" x="430" y="500">maintenanceCost := min(MAX_COST,
+			<label kind="assignment" x="430" y="500">failSafeEngaged=false,
+safeModeOperation=0,
+maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC),
 energyCost := min(MAX_COST,
 energyCost+DR_EC),

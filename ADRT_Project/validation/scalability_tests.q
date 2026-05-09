@@ -68,3 +68,20 @@ Pr[<=400] (<> (mitigationConfidence < 40))
 E<> (mitigationConfidence < 50 && stealthPreference > 50)
 Pr[<=600] (<> (telemetryTrust < 50 && alertConfidence < 30))
 E<> (operationalSafetyErosion > 50 && downtime > 5)
+
+/* 13. Phase 8: Recovery Semantics & Resilience Orchestration */
+Pr[<=500] (<> (failSafeEngaged == true))
+Pr[<=600] (<> (safeModeOperation > 0 && DR.DR_Recover))
+E<> (breach == true && DR.DR_Reset)
+Pr[<=400] (<> (breach == true && mitigationConfidence < 50))
+E<> (recoveryCapacity < 50 && DR.DR_Harden)
+Pr[<=500] (<> (telemetryTrust < 50 && DR.DR_Recover))
+Pr[<=600] (<> (restorationConfidence < 50 && downtime > 10))
+E<> (safeModeOperation > 0 && resilienceDegradation > 50)
+
+/* 14. Phase 8: Research Grade Formalization */
+Pr[<=500] (<> (processStabilizationLag > 20))
+Pr[<=600] (<> (delayedTelemetry > 20 && sensorDisagreement > 20))
+E<> (controlLatency > 10 && resilienceDegradation > 50)
+Pr[<=400] (<> (detectionReliability < 30 && fwQueueSize >= mitigationCapacity))
+Pr[<=500] (<> (operationalSafetyErosion > 50 && safeModeOperation > 0))

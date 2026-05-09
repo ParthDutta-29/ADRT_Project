@@ -55,6 +55,13 @@ int[0,100] breachLikelihood          = 0;
 int[0,100] operationalSafetyErosion  = 0;
 int        downtime                  = 0;
 
+/* ── Recovery and Resilience Orchestration (Phase 8) ── */
+int[0,100] recoveryCapacity          = 100;
+int[0,100] backupIntegrity           = 100;
+int[0,100] restorationConfidence     = 100;
+int[0,100] safeModeOperation         = 0;
+bool       failSafeEngaged           = false;
+
 /* ── Defense load / fatigue ── */
 int[0,100] fwQueueSize  = 0;
 int[0,100] idsQueueSize = 0;
@@ -62,12 +69,20 @@ int[0,100] wafQueueSize = 0;
 int[0,100] edrQueueSize = 0;
 int[0,100] dlpQueueSize = 0;
 
-/* ── Defense adaptive strength ── */
-int[0,10] fw_strength  = 5;
-int[0,10] ids_strength = 5;
-int[0,10] waf_strength = 5;
-int[0,10] edr_strength = 5;
-int[0,10] dlp_strength = 5;
+/* ── Queue Abstraction Thresholds (Phase 8) ── */
+int[0,100] mitigationCapacity = 80;
+int[0,100] congestionPressure = 0;
+int[0,100] telemetryLagBucket = 0;
+int[0,100] inspectionBacklog  = 0;
+int[0,100] servicePressure    = 0;
+
+/* ── Operational Abstraction (replaces naive strengths) ── */
+int[0,100] detectionReliability    = 50;
+int[0,100] telemetryCoverage       = 50;
+int[0,100] inspectionDepth         = 50;
+int[0,100] modelFidelity           = 50;
+int[0,100] mitigationEffectiveness = 50;
+int[0,100] signatureFreshness      = 50;
 
 /* ── Detection quality flags ── */
 bool truePositive  = false;
@@ -108,7 +123,7 @@ int[0,100] sensorSpoofingIntent    = 0;
 int[0,100] plcTraversalConfidence  = 0;
 int[0,100] telemetryManipulationIntent = 0;
 
-/* ── Bounded Operational Semantics (Phase 6 CPS) ── */
+/* ── Bounded Operational Semantics (Phase 6 and 8 CPS) ── */
 int[0,100] pipelinePressure        = 50;
 int[0,100] flowStability           = 100;
 int[0,100] controlLoopStability    = 100;
@@ -118,6 +133,12 @@ int[0,100] sensorConsistency       = 100;
 int[0,100] processDeviation        = 0;
 int[0,100] operationalStress       = 0;
 int[0,100] safetyMargin            = 100;
+
+int[0,100] controlLatency          = 0;
+int[0,100] actuatorInconsistency   = 0;
+int[0,100] delayedTelemetry        = 0;
+int[0,100] sensorDisagreement      = 0;
+int[0,100] processStabilizationLag = 0;
 
 /* ── System outcome ── */
 bool breach       = false;

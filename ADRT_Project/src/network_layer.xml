@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <nta>
 <template>
 		<name>OR_L12</name>
@@ -437,12 +437,12 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*5),
 energyCost := min(MAX_COST,energyCost+GATE_EC*5),
 carbonCost := min(MAX_COST,carbonCost+GATE_CC*5)</label>
-			<label kind="probability" x="70" y="305">8</label>
+			<label kind="probability" x="70" y="305">stealthPreference + congestionPressure</label>
 		</transition>
 		<transition id="id107">
 			<source ref="id97" />
 			<target ref="id98" />
-			<label kind="probability" x="70" y="235">2</label>
+			<label kind="probability" x="70" y="235">mitigationConfidence + telemetryTrust</label>
 		</transition>
 		<transition id="id108">
 			<source ref="id99" />
@@ -528,13 +528,13 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
 energyCost := min(MAX_COST,energyCost+GATE_EC*4),
 carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
-			<label kind="probability" x="70" y="305">7</label>
+			<label kind="probability" x="70" y="305">stealthPreference + congestionPressure</label>
 		</transition>
 		<transition id="id125">
 			<source ref="id115" />
 			<target ref="id116" />
 			<label kind="synchronisation" x="70" y="205">detect!</label>
-			<label kind="probability" x="70" y="235">3</label>
+			<label kind="probability" x="70" y="235">mitigationConfidence + telemetryTrust</label>
 		</transition>
 		<transition id="id126">
 			<source ref="id117" />
