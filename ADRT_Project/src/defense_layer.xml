@@ -47,52 +47,70 @@
 			<source ref="id436" />
 			<target ref="id437" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
-			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
-energyCost := min(MAX_COST,energyCost+FWD_EC),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC),
-fwQueueSize=min(100,fwQueueSize+5)</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC),
+fwQueueSize=min(100,
+fwQueueSize+5)</label>
 		<label kind="guard" x="70" y="50">fwQueueSize &lt; 80</label></transition>
 		<transition id="id447">
 			<source ref="id437" />
 			<target ref="id438" />
-			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
-energyCost := min(MAX_COST,energyCost+FWD_EC),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC)</label>
 		</transition>
 		<transition id="id448">
 			<source ref="id438" />
 			<target ref="id439" />
-			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
-energyCost := min(MAX_COST,energyCost+FWD_EC),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC)</label>
 		</transition>
 		<transition id="id449">
 			<source ref="id439" />
 			<target ref="id440" />
-			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
-energyCost := min(MAX_COST,energyCost+FWD_EC),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC)</label>
 		</transition>
 		<transition id="id450">
 			<source ref="id440" />
 			<target ref="id441" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">firewall=true,
-defense_score=defense_score+1,
-riskScore=(riskScore&gt;2)?riskScore-2:0,
-fw_strength=min(10,fw_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
-energyCost := min(MAX_COST,energyCost+FWD_EC),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+fw_strength=min(10,
+fw_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC)</label>
 		<label kind="guard" x="430" y="190">fwQueueSize &lt; 80</label></transition>
 		<transition id="id451">
 			<source ref="id440" />
 			<target ref="id445" />
 			<label kind="synchronisation" x="340" y="275">fail!</label>
 			<label kind="assignment" x="340" y="290">firewall=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2),
-energyCost := min(MAX_COST,energyCost+FWD_EC*2),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC*2)</label>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC*2),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC*2)</label>
 		<label kind="guard" x="340" y="260">fwQueueSize &lt; 80</label></transition>
 		<transition id="id452">
 			<source ref="id441" />
@@ -107,30 +125,39 @@ carbonCost := min(MAX_COST,carbonCost+FWD_CC*2)</label>
 		<transition id="id454">
 			<source ref="id443" />
 			<target ref="id444" />
-			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
-energyCost := min(MAX_COST,energyCost+FWD_EC),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC)</label>
 		</transition>
 		<transition id="id455">
 			<source ref="id444" />
 			<target ref="id436" />
 			<label kind="assignment" x="-20" y="220">firewall=true,
-fw_strength=min(10,fw_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2)</label>
+fw_strength=min(10,
+fw_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC*2)</label>
 		</transition>
 		<transition id="id456">
 			<source ref="id445" />
 			<target ref="id443" />
 			<label kind="synchronisation" x="70" y="275">detect!</label>
-			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*3)</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC*3)</label>
 		</transition>
 	<transition id="id457"><source ref="id436" /><target ref="id436" /><label kind="guard" x="70" y="10">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
 controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id458"><source ref="id440" /><target ref="id445" /><label kind="guard" x="340" y="310">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">firewall=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2),
-energyCost := min(MAX_COST,energyCost+FWD_EC*2),
-carbonCost := min(MAX_COST,carbonCost+FWD_CC*2)</label></transition><transition id="id459"><source ref="id436" /><target ref="id436" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=5)?fwQueueSize-5:0</label></transition><transition id="id460"><source ref="id439" /><target ref="id439" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=10)?fwQueueSize-10:0</label></transition></template>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+FWD_MC*2),
+energyCost := min(MAX_COST,
+energyCost+FWD_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+FWD_CC*2)</label></transition><transition id="id459"><source ref="id436" /><target ref="id436" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=5)?fwQueueSize-5:0</label></transition><transition id="id460"><source ref="id439" /><target ref="id439" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=10)?fwQueueSize-10:0</label></transition></template>
 	
 <template>
 		<name>IDS_Defense</name>
@@ -179,52 +206,70 @@ carbonCost := min(MAX_COST,carbonCost+FWD_CC*2)</label></transition><transition 
 			<source ref="id457" />
 			<target ref="id458" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
-			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
-energyCost := min(MAX_COST,energyCost+IDS_EC),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC),
-idsQueueSize=min(100,idsQueueSize+5)</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC),
+idsQueueSize=min(100,
+idsQueueSize+5)</label>
 		<label kind="guard" x="70" y="50">idsQueueSize &lt; 80</label></transition>
 		<transition id="id468">
 			<source ref="id458" />
 			<target ref="id459" />
-			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
-energyCost := min(MAX_COST,energyCost+IDS_EC),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC)</label>
 		</transition>
 		<transition id="id469">
 			<source ref="id459" />
 			<target ref="id460" />
-			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
-energyCost := min(MAX_COST,energyCost+IDS_EC),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC)</label>
 		</transition>
 		<transition id="id470">
 			<source ref="id460" />
 			<target ref="id461" />
-			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
-energyCost := min(MAX_COST,energyCost+IDS_EC),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC)</label>
 		</transition>
 		<transition id="id471">
 			<source ref="id461" />
 			<target ref="id462" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">ids=true,
-defense_score=defense_score+1,
-riskScore=(riskScore&gt;2)?riskScore-2:0,
-ids_strength=min(10,ids_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
-energyCost := min(MAX_COST,energyCost+IDS_EC),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+ids_strength=min(10,
+ids_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC)</label>
 		<label kind="guard" x="430" y="190">idsQueueSize &lt; 80</label></transition>
 		<transition id="id472">
 			<source ref="id461" />
 			<target ref="id466" />
 			<label kind="synchronisation" x="340" y="275">fail!</label>
 			<label kind="assignment" x="340" y="290">ids=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2),
-energyCost := min(MAX_COST,energyCost+IDS_EC*2),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC*2)</label>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC*2),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC*2)</label>
 		<label kind="guard" x="340" y="260">idsQueueSize &lt; 80</label></transition>
 		<transition id="id473">
 			<source ref="id462" />
@@ -239,30 +284,39 @@ carbonCost := min(MAX_COST,carbonCost+IDS_CC*2)</label>
 		<transition id="id475">
 			<source ref="id464" />
 			<target ref="id465" />
-			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
-energyCost := min(MAX_COST,energyCost+IDS_EC),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC)</label>
 		</transition>
 		<transition id="id476">
 			<source ref="id465" />
 			<target ref="id457" />
 			<label kind="assignment" x="-20" y="220">ids=true,
-ids_strength=min(10,ids_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2)</label>
+ids_strength=min(10,
+ids_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC*2)</label>
 		</transition>
 		<transition id="id477">
 			<source ref="id466" />
 			<target ref="id464" />
 			<label kind="synchronisation" x="70" y="275">detect!</label>
-			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*3)</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC*3)</label>
 		</transition>
 	<transition id="id478"><source ref="id457" /><target ref="id457" /><label kind="guard" x="70" y="10">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
 controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id479"><source ref="id461" /><target ref="id466" /><label kind="guard" x="340" y="310">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">ids=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2),
-energyCost := min(MAX_COST,energyCost+IDS_EC*2),
-carbonCost := min(MAX_COST,carbonCost+IDS_CC*2)</label></transition><transition id="id480"><source ref="id457" /><target ref="id457" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=5)?idsQueueSize-5:0</label></transition><transition id="id481"><source ref="id460" /><target ref="id460" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=10)?idsQueueSize-10:0</label></transition></template>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+IDS_MC*2),
+energyCost := min(MAX_COST,
+energyCost+IDS_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+IDS_CC*2)</label></transition><transition id="id480"><source ref="id457" /><target ref="id457" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=5)?idsQueueSize-5:0</label></transition><transition id="id481"><source ref="id460" /><target ref="id460" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=10)?idsQueueSize-10:0</label></transition></template>
 	
 <template>
 		<name>WAF_Defense</name>
@@ -311,52 +365,70 @@ carbonCost := min(MAX_COST,carbonCost+IDS_CC*2)</label></transition><transition 
 			<source ref="id478" />
 			<target ref="id479" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
-			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
-energyCost := min(MAX_COST,energyCost+WAF_EC),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC),
-wafQueueSize=min(100,wafQueueSize+5)</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC),
+wafQueueSize=min(100,
+wafQueueSize+5)</label>
 		<label kind="guard" x="70" y="50">wafQueueSize &lt; 80</label></transition>
 		<transition id="id489">
 			<source ref="id479" />
 			<target ref="id480" />
-			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
-energyCost := min(MAX_COST,energyCost+WAF_EC),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC)</label>
 		</transition>
 		<transition id="id490">
 			<source ref="id480" />
 			<target ref="id481" />
-			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
-energyCost := min(MAX_COST,energyCost+WAF_EC),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC)</label>
 		</transition>
 		<transition id="id491">
 			<source ref="id481" />
 			<target ref="id482" />
-			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
-energyCost := min(MAX_COST,energyCost+WAF_EC),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC)</label>
 		</transition>
 		<transition id="id492">
 			<source ref="id482" />
 			<target ref="id483" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">waf=true,
-defense_score=defense_score+1,
-riskScore=(riskScore&gt;2)?riskScore-2:0,
-waf_strength=min(10,waf_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
-energyCost := min(MAX_COST,energyCost+WAF_EC),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+waf_strength=min(10,
+waf_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC)</label>
 		<label kind="guard" x="430" y="190">wafQueueSize &lt; 80</label></transition>
 		<transition id="id493">
 			<source ref="id482" />
 			<target ref="id487" />
 			<label kind="synchronisation" x="340" y="275">fail!</label>
 			<label kind="assignment" x="340" y="290">waf=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2),
-energyCost := min(MAX_COST,energyCost+WAF_EC*2),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC*2)</label>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC*2),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC*2)</label>
 		<label kind="guard" x="340" y="260">wafQueueSize &lt; 80</label></transition>
 		<transition id="id494">
 			<source ref="id483" />
@@ -371,30 +443,39 @@ carbonCost := min(MAX_COST,carbonCost+WAF_CC*2)</label>
 		<transition id="id496">
 			<source ref="id485" />
 			<target ref="id486" />
-			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
-energyCost := min(MAX_COST,energyCost+WAF_EC),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC)</label>
 		</transition>
 		<transition id="id497">
 			<source ref="id486" />
 			<target ref="id478" />
 			<label kind="assignment" x="-20" y="220">waf=true,
-waf_strength=min(10,waf_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2)</label>
+waf_strength=min(10,
+waf_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC*2)</label>
 		</transition>
 		<transition id="id498">
 			<source ref="id487" />
 			<target ref="id485" />
 			<label kind="synchronisation" x="70" y="275">detect!</label>
-			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*3)</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC*3)</label>
 		</transition>
 	<transition id="id499"><source ref="id478" /><target ref="id478" /><label kind="guard" x="70" y="10">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
 controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id500"><source ref="id482" /><target ref="id487" /><label kind="guard" x="340" y="310">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">waf=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2),
-energyCost := min(MAX_COST,energyCost+WAF_EC*2),
-carbonCost := min(MAX_COST,carbonCost+WAF_CC*2)</label></transition><transition id="id501"><source ref="id478" /><target ref="id478" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=5)?wafQueueSize-5:0</label></transition><transition id="id502"><source ref="id481" /><target ref="id481" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=10)?wafQueueSize-10:0</label></transition></template>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+WAF_MC*2),
+energyCost := min(MAX_COST,
+energyCost+WAF_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+WAF_CC*2)</label></transition><transition id="id501"><source ref="id478" /><target ref="id478" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=5)?wafQueueSize-5:0</label></transition><transition id="id502"><source ref="id481" /><target ref="id481" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=10)?wafQueueSize-10:0</label></transition></template>
 	
 <template>
 		<name>EDR_Defense</name>
@@ -443,52 +524,70 @@ carbonCost := min(MAX_COST,carbonCost+WAF_CC*2)</label></transition><transition 
 			<source ref="id499" />
 			<target ref="id500" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
-			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
-energyCost := min(MAX_COST,energyCost+EDR_EC),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC),
-edrQueueSize=min(100,edrQueueSize+5)</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC),
+edrQueueSize=min(100,
+edrQueueSize+5)</label>
 		<label kind="guard" x="70" y="50">edrQueueSize &lt; 80</label></transition>
 		<transition id="id510">
 			<source ref="id500" />
 			<target ref="id501" />
-			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
-energyCost := min(MAX_COST,energyCost+EDR_EC),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC)</label>
 		</transition>
 		<transition id="id511">
 			<source ref="id501" />
 			<target ref="id502" />
-			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
-energyCost := min(MAX_COST,energyCost+EDR_EC),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC)</label>
 		</transition>
 		<transition id="id512">
 			<source ref="id502" />
 			<target ref="id503" />
-			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
-energyCost := min(MAX_COST,energyCost+EDR_EC),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC)</label>
 		</transition>
 		<transition id="id513">
 			<source ref="id503" />
 			<target ref="id504" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">edr=true,
-defense_score=defense_score+1,
-riskScore=(riskScore&gt;2)?riskScore-2:0,
-edr_strength=min(10,edr_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
-energyCost := min(MAX_COST,energyCost+EDR_EC),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+edr_strength=min(10,
+edr_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC)</label>
 		<label kind="guard" x="430" y="190">edrQueueSize &lt; 80</label></transition>
 		<transition id="id514">
 			<source ref="id503" />
 			<target ref="id508" />
 			<label kind="synchronisation" x="340" y="275">fail!</label>
 			<label kind="assignment" x="340" y="290">edr=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2),
-energyCost := min(MAX_COST,energyCost+EDR_EC*2),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC*2)</label>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC*2),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC*2)</label>
 		<label kind="guard" x="340" y="260">edrQueueSize &lt; 80</label></transition>
 		<transition id="id515">
 			<source ref="id504" />
@@ -503,30 +602,39 @@ carbonCost := min(MAX_COST,carbonCost+EDR_CC*2)</label>
 		<transition id="id517">
 			<source ref="id506" />
 			<target ref="id507" />
-			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
-energyCost := min(MAX_COST,energyCost+EDR_EC),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC)</label>
 		</transition>
 		<transition id="id518">
 			<source ref="id507" />
 			<target ref="id499" />
 			<label kind="assignment" x="-20" y="220">edr=true,
-edr_strength=min(10,edr_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2)</label>
+edr_strength=min(10,
+edr_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC*2)</label>
 		</transition>
 		<transition id="id519">
 			<source ref="id508" />
 			<target ref="id506" />
 			<label kind="synchronisation" x="70" y="275">detect!</label>
-			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*3)</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC*3)</label>
 		</transition>
 	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
 controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2),
-energyCost := min(MAX_COST,energyCost+EDR_EC*2),
-carbonCost := min(MAX_COST,carbonCost+EDR_CC*2)</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+EDR_MC*2),
+energyCost := min(MAX_COST,
+energyCost+EDR_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+EDR_CC*2)</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
 	
 <template>
 		<name>DLP_Defense</name>
@@ -575,52 +683,70 @@ carbonCost := min(MAX_COST,carbonCost+EDR_CC*2)</label></transition><transition 
 			<source ref="id520" />
 			<target ref="id521" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
-			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
-energyCost := min(MAX_COST,energyCost+DLP_EC),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC),
-dlpQueueSize=min(100,dlpQueueSize+5)</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC),
+dlpQueueSize=min(100,
+dlpQueueSize+5)</label>
 		<label kind="guard" x="70" y="50">dlpQueueSize &lt; 80</label></transition>
 		<transition id="id531">
 			<source ref="id521" />
 			<target ref="id522" />
-			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
-energyCost := min(MAX_COST,energyCost+DLP_EC),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC)</label>
 		</transition>
 		<transition id="id532">
 			<source ref="id522" />
 			<target ref="id523" />
-			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
-energyCost := min(MAX_COST,energyCost+DLP_EC),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC)</label>
 		</transition>
 		<transition id="id533">
 			<source ref="id523" />
 			<target ref="id524" />
-			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
-energyCost := min(MAX_COST,energyCost+DLP_EC),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC)</label>
 		</transition>
 		<transition id="id534">
 			<source ref="id524" />
 			<target ref="id525" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">dlp=true,
-defense_score=defense_score+1,
-riskScore=(riskScore&gt;2)?riskScore-2:0,
-dlp_strength=min(10,dlp_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
-energyCost := min(MAX_COST,energyCost+DLP_EC),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+dlp_strength=min(10,
+dlp_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC)</label>
 		<label kind="guard" x="430" y="190">dlpQueueSize &lt; 80</label></transition>
 		<transition id="id535">
 			<source ref="id524" />
 			<target ref="id529" />
 			<label kind="synchronisation" x="340" y="275">fail!</label>
 			<label kind="assignment" x="340" y="290">dlp=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2),
-energyCost := min(MAX_COST,energyCost+DLP_EC*2),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC*2)</label>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC*2),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC*2)</label>
 		<label kind="guard" x="340" y="260">dlpQueueSize &lt; 80</label></transition>
 		<transition id="id536">
 			<source ref="id525" />
@@ -635,29 +761,38 @@ carbonCost := min(MAX_COST,carbonCost+DLP_CC*2)</label>
 		<transition id="id538">
 			<source ref="id527" />
 			<target ref="id528" />
-			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
-energyCost := min(MAX_COST,energyCost+DLP_EC),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC)</label>
 		</transition>
 		<transition id="id539">
 			<source ref="id528" />
 			<target ref="id520" />
 			<label kind="assignment" x="-20" y="220">dlp=true,
-dlp_strength=min(10,dlp_strength+1),
-maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2)</label>
+dlp_strength=min(10,
+dlp_strength+1),
+maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC*2)</label>
 		</transition>
 		<transition id="id540">
 			<source ref="id529" />
 			<target ref="id527" />
 			<label kind="synchronisation" x="70" y="275">detect!</label>
-			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*3)</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC*3)</label>
 		</transition>
 	<transition id="id541"><source ref="id520" /><target ref="id520" /><label kind="guard" x="70" y="10">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
 controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id542"><source ref="id524" /><target ref="id529" /><label kind="guard" x="340" y="310">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">dlp=false,
-maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2),
-energyCost := min(MAX_COST,energyCost+DLP_EC*2),
-carbonCost := min(MAX_COST,carbonCost+DLP_CC*2)</label></transition><transition id="id543"><source ref="id520" /><target ref="id520" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=5)?dlpQueueSize-5:0</label></transition><transition id="id544"><source ref="id523" /><target ref="id523" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=10)?dlpQueueSize-10:0</label></transition></template>
+maintenanceCost := min(MAX_COST,
+maintenanceCost+DLP_MC*2),
+energyCost := min(MAX_COST,
+energyCost+DLP_EC*2),
+carbonCost := min(MAX_COST,
+carbonCost+DLP_CC*2)</label></transition><transition id="id543"><source ref="id520" /><target ref="id520" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=5)?dlpQueueSize-5:0</label></transition><transition id="id544"><source ref="id523" /><target ref="id523" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=10)?dlpQueueSize-10:0</label></transition></template>
 	
 </nta>

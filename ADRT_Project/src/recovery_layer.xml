@@ -55,7 +55,7 @@ downtime=downtime+1</label>
 			<source ref="id580" />
 			<target ref="id582" />
 			<label kind="guard" x="250" y="120">firewall==true &amp;&amp; ids==true</label>
-			<label kind="assignment" x="250" y="150">riskScore=(riskScore&gt;1)?riskScore-1:0</label>
+			<label kind="assignment" x="250" y="150">resilienceDegradation=(resilienceDegradation&gt;1)?resilienceDegradation-1:0</label>
 		</transition>
 		<transition id="id590">
 			<source ref="id581" />

@@ -19,16 +19,16 @@ Pr[<=150] (<> plcCompromised == true)
 
 /* 4. Recovery Probability Queries */
 Pr[<=300] (<> (downtime == 0 && breach == true))
-Pr[<=200] (<> (riskScore < 20))
+Pr[<=200] (<> (resilienceDegradation < 20))
 
 /* 5. Attack Progression Queries */
 Pr[<=100] (<> Network_Attack.NA_Exec)
 Pr[<=100] (<> API_Attack.AA_Bypass)
 
 /* 6. Congestion Queries */
-E<> firewallLoad > 50
-E<> idsLoad > 50
-Pr[<=200] (<> (wafLoad > 80))
+E<> fwQueueSize > 50
+E<> idsQueueSize > 50
+Pr[<=200] (<> (wafQueueSize > 80))
 
 /* 7. Topology Propagation Queries */
 Pr[<=150] (<> lateral == true)

@@ -19,7 +19,7 @@ Pr[<=150] (<> plcCompromised == true)
 
 /* 4. Recovery Probability Queries */
 Pr[<=300] (<> (downtime == 0 && breach == true))
-Pr[<=200] (<> (riskScore < 20))
+Pr[<=200] (<> (resilienceDegradation < 20))
 
 /* 5. Attack Progression Queries */
 Pr[<=100] (<> Network_Attack.NA_Execution)

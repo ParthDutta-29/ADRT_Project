@@ -20,11 +20,11 @@ Pr[<=400] (<> (Network_Attack.NA_Payload_Staging && Malware_Attack.MAL_Command_A
 Pr[<=400] (<> (lateral == true && persistence == true && breach == true))
 
 /* 5. Topology Stress Tests */
-Pr[<=300] (<> (riskScore >= 95))
+Pr[<=300] (<> (resilienceDegradation >= 95))
 Pr[<=600] (<> (maintenanceCost >= 500000))
 
 /* 6. Large-Scale Congestion Scenarios */
-Pr[<=500] (<> (fwQueueSize > 50 && downtime > 10 && severity > 5))
+Pr[<=500] (<> (fwQueueSize > 50 && downtime > 10 && operationalSafetyErosion > 5))
 
 /* 7. Congestion Persistence & Recovery Tests (Phase 2 Additions) */
 E<> (fwQueueSize > 80 && falseNegative == true)
@@ -60,3 +60,11 @@ E<> (controlLoopStability < 50 && operationalStress > 30)
 Pr[<=500] (<> (actuatorTrust < 50 && fwQueueSize >= 80))
 E<> (safetyMargin < 50 && downtime > 5)
 Pr[<=600] (<> (processDeviation > 50 && alertConfidence > 50))
+
+/* 12. Risk Metric Re-Engineering & Resilience Semantics (Phase 7 Additions) */
+Pr[<=500] (<> (resilienceDegradation > 50))
+Pr[<=500] (<> (cpsInstabilityProbability > 50))
+Pr[<=400] (<> (mitigationConfidence < 40))
+E<> (mitigationConfidence < 50 && stealthPreference > 50)
+Pr[<=600] (<> (telemetryTrust < 50 && alertConfidence < 30))
+E<> (operationalSafetyErosion > 50 && downtime > 5)

@@ -47,10 +47,13 @@ int[0,MAX_COST] maintenanceCost = 0;
 int[0,MAX_COST] energyCost      = 0;
 int[0,MAX_COST] carbonCost      = 0;
 
-/* ── Risk and performance KPIs ── */
-int[0,100] riskScore = 0;
-int        downtime  = 0;
-int        severity  = 0;
+/* ── Operational Continuity and Resilience KPIs ── */
+int[0,100] resilienceDegradation     = 0;
+int[0,100] mitigationConfidence      = 100;
+int[0,100] cpsInstabilityProbability = 0;
+int[0,100] breachLikelihood          = 0;
+int[0,100] operationalSafetyErosion  = 0;
+int        downtime                  = 0;
 
 /* ── Defense load / fatigue ── */
 int[0,100] fwQueueSize  = 0;
@@ -118,8 +121,6 @@ int[0,100] safetyMargin            = 100;
 
 /* ── System outcome ── */
 bool breach       = false;
-int  threat_score = 0;
-int  defense_score= 5;
 
 /* ── SLA limits ── */
 const int SLA_LIMIT      = 50;
