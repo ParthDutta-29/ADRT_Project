@@ -3,77 +3,72 @@ import pandas as pd
 import numpy as np
 import os
 import argparse
+import glob
 
-# Framework Visualizer for Publication-Grade SMC Experimentation
-# Converts bounded stochastic verification traces into interpretible robustness curves.
+# Phase 13: Publication-Grade Visualizer
+# Generates bounds, statistical envelopes (CI 95%), and comparative survivability curves.
 
-def plot_resilience_degradation_envelope(csv_file, output_path):
+def plot_trajectory_envelope(csv_file, output_dir):
     """
-    Plots the survivability envelope and resilience degradation over simulated time.
+    Plots the statistical survivability envelope with 95% Confidence Intervals.
     """
     try:
         data = pd.read_csv(csv_file)
-        time = data['Time']
-        resilience = data['resilienceDegradation']
-        safety = data['safetyMargin']
         
-        plt.figure(figsize=(10, 6))
-        
-        # Bounded probability fills
-        plt.plot(time, resilience, label='Resilience Degradation', color='#d62728', linewidth=2)
-        plt.plot(time, safety, label='Safety Margin', color='#1f77b4', linewidth=2, linestyle='--')
-        
-        plt.fill_between(time, resilience, alpha=0.1, color='#d62728')
-        plt.fill_between(time, safety, alpha=0.1, color='#1f77b4')
-        
-        plt.axhline(y=100, color='black', linestyle=':', alpha=0.5, label='Upper Bound (100)')
-        plt.axhline(y=0, color='black', linestyle=':', alpha=0.5, label='Lower Bound (0)')
-        
-        plt.title('SMC Bounded Resilience Envelope over Operational Time', fontsize=14, weight='bold')
-        plt.xlabel('Simulated Execution Time (ms)', fontsize=12)
-        plt.ylabel('Bounded Metric Level [0,100]', fontsize=12)
-        plt.legend(loc='center right')
-        plt.grid(True, linestyle='--', alpha=0.6)
-        plt.tight_layout()
-        
-        plt.savefig(output_path, dpi=300)
-        print(f"Generated publication plot: {output_path}")
-        
+        # Group by Metric and Experiment
+        for exp_id in data['Experiment_ID'].unique():
+            exp_data = data[data['Experiment_ID'] == exp_id]
+            
+            for metric in exp_data['Metric'].unique():
+                metric_data = exp_data[exp_data['Metric'] == metric]
+                
+                plt.figure(figsize=(10, 6))
+                
+                for val in metric_data['Value'].unique():
+                    val_data = metric_data[metric_data['Value'] == val]
+                    time = val_data['Time']
+                    mean = val_data['Mean']
+                    ci_lower = val_data['CI_95_Lower']
+                    ci_upper = val_data['CI_95_Upper']
+                    
+                    p = plt.plot(time, mean, label=f'Value: {val}', linewidth=2)
+                    plt.fill_between(time, ci_lower, ci_upper, alpha=0.2, color=p[0].get_color())
+                
+                plt.axhline(y=100, color='black', linestyle=':', alpha=0.5, label='Upper Bound (100)')
+                plt.axhline(y=0, color='black', linestyle=':', alpha=0.5, label='Lower Bound (0)')
+                
+                plt.title(f'SMC Bounded Envelope: {metric}\n({exp_id})', fontsize=14, weight='bold')
+                plt.xlabel('Simulated Execution Time (ms)', fontsize=12)
+                plt.ylabel('Bounded Metric Level [0,100]', fontsize=12)
+                plt.legend(loc='best')
+                plt.grid(True, linestyle='--', alpha=0.6)
+                plt.tight_layout()
+                
+                out_path = os.path.join(output_dir, f"{exp_id}_{metric}_trajectory.png")
+                plt.savefig(out_path, dpi=300)
+                plt.close()
+                print(f"Generated publication plot: {out_path}")
+                
     except FileNotFoundError:
-        print(f"Cannot generate plot: Data trace {csv_file} not found. (Run verifyta first)")
+        print(f"Cannot generate plot: Data trace {csv_file} not found.")
 
-def plot_sustainability_tradeoff(data_dir, output_path):
-    """
-    Plots the tradeoff between carbon/energy cost and mitigation capacity (sweep results).
-    """
-    # Simulated data generation for framework demonstration
-    capacities = [20, 50, 80]
-    carbon_costs = [12000, 8500, 5000] # Decreases as capacity increases (shorter attacks)
-    maintenance = [3000, 6000, 9500]   # Increases as capacity increases
+def main():
+    parser = argparse.ArgumentParser(description='Phase 13 Plot Generation')
+    parser.add_argument('--exp_dir', type=str, required=True, help='Path to the experiment run directory')
+    args = parser.parse_args()
     
-    fig, ax1 = plt.subplots(figsize=(9, 6))
-
-    color = 'tab:red'
-    ax1.set_xlabel('Mitigation Capacity Bound [0,100]', fontsize=12)
-    ax1.set_ylabel('Carbon Cost / Environmental Overhead', color=color, fontsize=12)
-    ax1.plot(capacities, carbon_costs, marker='o', color=color, linewidth=2, label='Carbon Cost')
-    ax1.tick_params(axis='y', labelcolor=color)
-
-    ax2 = ax1.twinx()  
-    color = 'tab:blue'
-    ax2.set_ylabel('Maintenance Cost Overhead', color=color, fontsize=12)  
-    ax2.plot(capacities, maintenance, marker='s', color=color, linewidth=2, linestyle='--', label='Maintenance Cost')
-    ax2.tick_params(axis='y', labelcolor=color)
-
-    fig.tight_layout()  
-    plt.title('Sustainability Tradeoff vs. Defense Capacity', fontsize=14, weight='bold')
-    plt.grid(True, linestyle='--', alpha=0.3)
-    plt.savefig(output_path, dpi=300)
-    print(f"Generated sustainability tradeoff plot: {output_path}")
+    plots_dir = os.path.join(args.exp_dir, 'plots')
+    os.makedirs(plots_dir, exist_ok=True)
+    
+    # Find trajectory CSV
+    traj_csvs = glob.glob(os.path.join(args.exp_dir, 'trajectory_statistics_*.csv'))
+    
+    if traj_csvs:
+        for csv_file in traj_csvs:
+            print(f"Processing trajectory data: {csv_file}")
+            plot_trajectory_envelope(csv_file, plots_dir)
+    else:
+        print(f"No trajectory_statistics CSV found in {args.exp_dir}")
 
 if __name__ == "__main__":
-    if not os.path.exists('../build/plots'):
-        os.makedirs('../build/plots')
-    
-    # Generate mock plots for demonstration
-    plot_sustainability_tradeoff('../build/experiments/', '../build/plots/sustainability_tradeoff.png')
+    main()

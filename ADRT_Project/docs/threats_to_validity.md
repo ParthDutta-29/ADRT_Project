@@ -26,3 +26,7 @@ The framework is explicitly positioned as a **bounded stochastic cyber-physical 
 ## E. Comparative and Distributed Topology Limitations
 *   **Abstract Segment Resolution:** Segment variables (segmentStress_A, segmentStress_B) abstract away the precise physics of pipeline sections. While they model cascading logic, they do not resolve the exact hydraulic backpressure physics that real pipeline compressors would face.
 *   **Synthetic Baseline Comparisons:** Comparative evaluations (e.g., Congestion-Aware vs Non-Aware) represent bounded theoretical extremes of the defined parameters. True operational baselines would require long-term historical calibration data from a specific utility.
+
+## F. Phase 13: Statistical Evaluation & Arithmetic Validation Limitations
+*   **Stochastic Trajectory Resolution:** While 95% Confidence Intervals provide bounds, the synthetic modeling of `mock_stochastic_trajectory` relies on bounded integer noise formulas (`max(0, min(100, x + noise))`). True UPPAAL execution provides actual probability distribution traces, but the overarching limitation remains that bounds are discretely stepped rather than perfectly continuous.
+*   **Absolute Arithmetic Bounding:** The requirement to eliminate `max(0, x-y)` and enforce `(x >= y) ? x - y : 0` guarantees parser safety, but introduces abrupt flattening of parameters exactly at zero. This structural cutoff creates artificial non-differentiable points in the survivability trajectories.

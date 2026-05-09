@@ -1,0 +1,51 @@
+{
+    "timestamp": "20260510_020856",
+    "framework_version": "Phase 13",
+    "description": "Evaluates bounded stochastic cyber-physical resilience dynamics under distributed topology and comparative defense regimes.",
+    "model_hash": "b3651168f6e2c68a52edeee75ad0ec81",
+    "query_file": "../validation/experimental_queries.q",
+    "stochastic_repetitions": 100,
+    "execution_environment": "Mock UPPAAL SMC Runner (Phase 13)",
+    "sweeps": [
+        {
+            "experiment_id": "EXP-01-DISTRIBUTED-STRESS",
+            "parameter": "segmentStress_A",
+            "range": [
+                20,
+                50,
+                80
+            ],
+            "metrics_to_collect": [
+                "segmentStress_B",
+                "localizedTelemetryTrust_A",
+                "compressorHealth_A"
+            ]
+        },
+        {
+            "experiment_id": "EXP-02-CONGESTION-AWARE-BASELINE",
+            "parameter": "congestionAwareDefense",
+            "range": [
+                0,
+                1
+            ],
+            "metrics_to_collect": [
+                "resilienceDegradation",
+                "downtime",
+                "safeModeOperation"
+            ]
+        },
+        {
+            "experiment_id": "EXP-03-TELEMETRY-TRUST-DECAY",
+            "parameter": "telemetryAwareDefense",
+            "range": [
+                0,
+                1
+            ],
+            "metrics_to_collect": [
+                "delayedTelemetry",
+                "processDeviation",
+                "controlLatency"
+            ]
+        }
+    ]
+}

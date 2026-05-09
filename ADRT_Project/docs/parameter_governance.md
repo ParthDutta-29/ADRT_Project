@@ -35,3 +35,9 @@ This document provides formal operational governance over key parameters used in
 | segmentStress_A/B | [0,100] | Localized pipeline strain and process risk. | Downstream propagation bounds limit infinite cascade loops. | Enables multi-zone simulation without fluid dynamics solvers. |
 | localizedTelemetryTrust_A | [0,100] | Segment-specific monitoring reliability. | Bounded decay isolates uncertainty geographically. | Simplifies massive distributed state spaces into discrete bounds. |
 | segmentShutdown_A | [0,1] | Emergency segment isolation state. | Binary bounding restricts operational availability. | Represents topological decoupling tractably. |
+
+## 6. Phase 13: Arithmetic Validation & Decrement Governance
+| Rule | Pattern | Structural Purpose | Phase 13 Tractability Guarantee |
+| :--- | :--- | :--- | :--- |
+| **Strict Guarded Decrements** | `(var >= dec) ? var - dec : 0` | Replaces unsafe `max(0, var - dec)`. | Ensures no intermediate negative assignments occur during stochastic SMC parsing, eliminating parser crashes and underflow exceptions. |
+| **Saturating Increments** | `(var + inc <= MAX) ? var + inc : MAX` | Enforces upper bounds without external overflow. | Keeps state space finite and computationally stable. |

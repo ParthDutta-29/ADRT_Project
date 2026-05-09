@@ -154,3 +154,27 @@ simulate 100 [<=500] { resilienceDegradation } : 1 : (congestionAwareDefense == 
 /* Distributed Telemetry Trust Evaluation */
 simulate 100 [<=600] { localizedTelemetryTrust_A, localizedTelemetryTrust_B }
 
+
+/* ====================================================
+ * PHASE 13: PUBLICATION-GRADE DISTRIBUTED RESILIENCE & COMPARATIVE EVALUATION
+ * ==================================================== */
+
+/* Segment Isolation Survivability Analysis */
+Pr[<=500] (<> (segmentShutdown_A == 1 && segmentStress_B < 50))
+simulate 100 [<=600] { segmentStress_A, segmentStress_B }
+
+/* Distributed Degradation Propagation */
+Pr[<=500] (<> (resilienceDegradation > 80 && telemetryTrust < 40))
+
+/* Localized Telemetry Collapse and Cascade */
+Pr[<=600] (<> (localizedTelemetryTrust_A < 20 && compressorHealth_A < 40))
+
+/* Compressor Dependency Stress and Downstream Instability */
+simulate 100 [<=500] { compressorHealth_A, segmentStress_A }
+
+/* Comparative Evaluation: Telemetry-Aware Defense vs Baseline */
+simulate 100 [<=500] { resilienceDegradation } : 1 : (telemetryAwareDefense == 1)
+simulate 100 [<=500] { resilienceDegradation } : 1 : (telemetryAwareDefense == 0)
+
+/* Resilience Envelope Evaluations */
+simulate 100 [<=500] { safetyMargin, resilienceDegradation }
