@@ -85,3 +85,19 @@ Pr[<=600] (<> (delayedTelemetry > 20 && sensorDisagreement > 20))
 E<> (controlLatency > 10 && resilienceDegradation > 50)
 Pr[<=400] (<> (detectionReliability < 30 && fwQueueSize >= mitigationCapacity))
 Pr[<=500] (<> (operationalSafetyErosion > 50 && safeModeOperation > 0))
+
+/* 15. Phase 8.1: Asymptotic Dynamics & Stochastic Consistency */
+Pr[<=500] (<> (detectionReliability > 80 && mitigationConfidence > 80))
+Pr[<=400] (<> (operationalStress > 70 && resilienceDegradation > 70))
+Pr[<=600] (<> (stealthPreference > 60 && congestionPressure > 80))
+Pr[<=600] (<> (controlLatency > 50 && operationalSafetyErosion > 50))
+E<> (processDeviation > 80 && safeModeOperation > 0)
+
+/* 16. Phase 8.1: Bounded-State Safety & Semantic Repair Verification */
+A[] (telemetryTrust >= 0 && telemetryTrust <= 100)
+A[] (resilienceDegradation >= 0 && resilienceDegradation <= 100)
+A[] (safetyMargin >= 0 && safetyMargin <= 100)
+A[] (recoveryCapacity >= 0 && recoveryCapacity <= 100)
+A[] (or_hits >= 0 && or_hits <= 100)
+A[] (or2_hits >= 0 && or2_hits <= 100)
+A[] (vg_count >= 0 && vg_count <= 100)

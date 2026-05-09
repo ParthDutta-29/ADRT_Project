@@ -52,12 +52,12 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id31">
 			<source ref="id22" />
 			<target ref="id24" />
-			<label kind="assignment" x="250" y="150">or_hits=(web==true)?or_hits+1:or_hits</label>
+			<label kind="assignment" x="250" y="150">or_hits=(web==true)?min(100, or_hits+1):or_hits</label>
 		</transition>
 		<transition id="id32">
 			<source ref="id23" />
 			<target ref="id25" />
-			<label kind="assignment" x="250" y="150">or_hits=(api==true)?or_hits+1:or_hits</label>
+			<label kind="assignment" x="250" y="150">or_hits=(api==true)?min(100, or_hits+1):or_hits</label>
 		</transition>
 		<transition id="id33">
 			<source ref="id24" />
@@ -66,7 +66,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id34">
 			<source ref="id25" />
 			<target ref="id26" />
-			<label kind="assignment" x="70" y="220">resilienceDegradation=min(100,resilienceDegradation+or_hits)</label>
+			<label kind="assignment" x="70" y="220">resilienceDegradation=min(100, resilienceDegradation + or_hits + congestionPressure/25)</label>
 		</transition>
 		<transition id="id35">
 			<source ref="id26" />
@@ -144,12 +144,12 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id49">
 			<source ref="id40" />
 			<target ref="id42" />
-			<label kind="assignment" x="250" y="150">or2_hits=(ransom==true)?or2_hits+1:or2_hits</label>
+			<label kind="assignment" x="250" y="150">or2_hits=(ransom==true)?min(100, or2_hits+1):or2_hits</label>
 		</transition>
 		<transition id="id50">
 			<source ref="id41" />
 			<target ref="id43" />
-			<label kind="assignment" x="250" y="150">or2_hits=(phishing==true)?or2_hits+1:or2_hits</label>
+			<label kind="assignment" x="250" y="150">or2_hits=(phishing==true)?min(100, or2_hits+1):or2_hits</label>
 		</transition>
 		<transition id="id51">
 			<source ref="id42" />
@@ -160,7 +160,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<target ref="id44" />
 			<label kind="guard" x="70" y="190">or2_hits&gt;=1</label>
 			<label kind="synchronisation" x="70" y="205">success?</label>
-			<label kind="assignment" x="70" y="220">resilienceDegradation=min(100,resilienceDegradation+or2_hits*2),
+			<label kind="assignment" x="70" y="220">resilienceDegradation=min(100, resilienceDegradation + or2_hits + operationalStress/20),
 breach=(or2_hits&gt;=2)?true:breach</label>
 		</transition>
 		<transition id="id53">
@@ -240,7 +240,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id68">
 			<source ref="id60" />
 			<target ref="id61" />
-			<label kind="assignment" x="250" y="220">resilienceDegradation=min(100,resilienceDegradation+3)</label>
+			<label kind="assignment" x="250" y="220">resilienceDegradation=min(100, resilienceDegradation + congestionPressure/20)</label>
 		</transition>
 		<transition id="id69">
 			<source ref="id61" />
@@ -331,7 +331,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id86">
 			<source ref="id78" />
 			<target ref="id79" />
-			<label kind="assignment" x="250" y="220">resilienceDegradation=min(100,resilienceDegradation+4)</label>
+			<label kind="assignment" x="250" y="220">resilienceDegradation=min(100, resilienceDegradation + operationalStress/15)</label>
 		</transition>
 		<transition id="id87">
 			<source ref="id79" />
@@ -418,7 +418,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<source ref="id94" />
 			<target ref="id96" />
 			<label kind="guard" x="250" y="120">firewall==false</label>
-			<label kind="assignment" x="250" y="150">resilienceDegradation=min(100,resilienceDegradation+3)</label>
+			<label kind="assignment" x="250" y="150">resilienceDegradation=min(100, resilienceDegradation + congestionPressure/20)</label>
 		</transition>
 		<transition id="id104">
 			<source ref="id95" />
@@ -428,7 +428,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id105">
 			<source ref="id96" />
 			<target ref="id97" />
-			<label kind="assignment" x="250" y="220">fwQueueSize=min(100,fwQueueSize+10)</label>
+			<label kind="assignment" x="250" y="220">fwQueueSize=min(100,fwQueueSize + 2 + congestionPressure/10)</label>
 		</transition>
 		<transition id="id106">
 			<source ref="id97" />
@@ -437,12 +437,12 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*5),
 energyCost := min(MAX_COST,energyCost+GATE_EC*5),
 carbonCost := min(MAX_COST,carbonCost+GATE_CC*5)</label>
-			<label kind="probability" x="70" y="305">stealthPreference + congestionPressure</label>
+			<label kind="probability" x="70" y="305">1 + stealthPreference/25 + congestionPressure/20</label>
 		</transition>
 		<transition id="id107">
 			<source ref="id97" />
 			<target ref="id98" />
-			<label kind="probability" x="70" y="235">mitigationConfidence + telemetryTrust</label>
+			<label kind="probability" x="70" y="235">1 + mitigationConfidence/25 + telemetryTrust/20</label>
 		</transition>
 		<transition id="id108">
 			<source ref="id99" />
@@ -509,7 +509,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<source ref="id112" />
 			<target ref="id114" />
 			<label kind="guard" x="250" y="120">ids==false</label>
-			<label kind="assignment" x="250" y="150">resilienceDegradation=min(100,resilienceDegradation+3)</label>
+			<label kind="assignment" x="250" y="150">resilienceDegradation=min(100, resilienceDegradation + congestionPressure/20)</label>
 		</transition>
 		<transition id="id122">
 			<source ref="id113" />
@@ -519,7 +519,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id123">
 			<source ref="id114" />
 			<target ref="id115" />
-			<label kind="assignment" x="250" y="220">idsQueueSize=min(100,idsQueueSize+10)</label>
+			<label kind="assignment" x="250" y="220">idsQueueSize=min(100,idsQueueSize + 2 + congestionPressure/10)</label>
 		</transition>
 		<transition id="id124">
 			<source ref="id115" />
@@ -528,13 +528,13 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
 energyCost := min(MAX_COST,energyCost+GATE_EC*4),
 carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
-			<label kind="probability" x="70" y="305">stealthPreference + congestionPressure</label>
+			<label kind="probability" x="70" y="305">1 + stealthPreference/25 + congestionPressure/20</label>
 		</transition>
 		<transition id="id125">
 			<source ref="id115" />
 			<target ref="id116" />
 			<label kind="synchronisation" x="70" y="205">detect!</label>
-			<label kind="probability" x="70" y="235">mitigationConfidence + telemetryTrust</label>
+			<label kind="probability" x="70" y="235">1 + mitigationConfidence/25 + telemetryTrust/20</label>
 		</transition>
 		<transition id="id126">
 			<source ref="id117" />
@@ -607,17 +607,17 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		<transition id="id140">
 			<source ref="id131" />
 			<target ref="id132" />
-			<label kind="assignment" x="340" y="150">vg_count=(firmware==true)?vg_count+1:vg_count</label>
+			<label kind="assignment" x="340" y="150">vg_count=(firmware==true)?min(100, vg_count+1):vg_count</label>
 		</transition>
 		<transition id="id141">
 			<source ref="id132" />
 			<target ref="id133" />
-			<label kind="assignment" x="250" y="220">vg_count=(insider==true)?vg_count+1:vg_count</label>
+			<label kind="assignment" x="250" y="220">vg_count=(insider==true)?min(100, vg_count+1):vg_count</label>
 		</transition>
 		<transition id="id142">
 			<source ref="id133" />
 			<target ref="id134" />
-			<label kind="assignment" x="70" y="220">resilienceDegradation=min(100,resilienceDegradation+vg_count*2)</label>
+			<label kind="assignment" x="70" y="220">resilienceDegradation=min(100, resilienceDegradation + vg_count + congestionPressure/20)</label>
 		</transition>
 		<transition id="id143">
 			<source ref="id134" />

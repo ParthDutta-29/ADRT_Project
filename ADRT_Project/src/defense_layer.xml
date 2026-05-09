@@ -53,8 +53,7 @@ energyCost := min(MAX_COST,
 energyCost+FWD_EC),
 carbonCost := min(MAX_COST,
 carbonCost+FWD_CC),
-fwQueueSize=min(100,
-fwQueueSize+5)</label>
+fwQueueSize=min(100, fwQueueSize + 1 + congestionPressure/20)</label>
 		<label kind="guard" x="70" y="50">fwQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id447">
 			<source ref="id437" />
@@ -91,14 +90,14 @@ carbonCost+FWD_CC)</label>
 			<target ref="id441" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">firewall=true,
-detectionReliability=min(100, detectionReliability + 5),
+detectionReliability=min(100, detectionReliability + (100-detectionReliability)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+FWD_MC),
 energyCost := min(MAX_COST,
 energyCost+FWD_EC),
 carbonCost := min(MAX_COST,
 carbonCost+FWD_CC)</label>
-		<label kind="guard" x="430" y="190">fwQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">detectionReliability + telemetryTrust</label></transition>
+		<label kind="guard" x="430" y="190">fwQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">1 + detectionReliability/20 + telemetryTrust/25</label></transition>
 		<transition id="id451">
 			<source ref="id440" />
 			<target ref="id445" />
@@ -110,7 +109,7 @@ energyCost := min(MAX_COST,
 energyCost+FWD_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+FWD_CC*2)</label>
-		<label kind="guard" x="340" y="260">fwQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
+		<label kind="guard" x="340" y="260">fwQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">1 + congestionPressure/20 + operationalStress/25</label></transition>
 		<transition id="id452">
 			<source ref="id441" />
 			<target ref="id442" />
@@ -135,7 +134,7 @@ carbonCost+FWD_CC)</label>
 			<source ref="id444" />
 			<target ref="id436" />
 			<label kind="assignment" x="-20" y="220">firewall=true,
-detectionReliability=min(100, detectionReliability + 5),
+detectionReliability=min(100, detectionReliability + (100-detectionReliability)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+FWD_MC*2)</label>
 		</transition>
@@ -210,8 +209,7 @@ energyCost := min(MAX_COST,
 energyCost+IDS_EC),
 carbonCost := min(MAX_COST,
 carbonCost+IDS_CC),
-idsQueueSize=min(100,
-idsQueueSize+5)</label>
+idsQueueSize=min(100, idsQueueSize + 1 + congestionPressure/20)</label>
 		<label kind="guard" x="70" y="50">idsQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id468">
 			<source ref="id458" />
@@ -248,14 +246,14 @@ carbonCost+IDS_CC)</label>
 			<target ref="id462" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">ids=true,
-telemetryCoverage=min(100, telemetryCoverage + 5),
+telemetryCoverage=min(100, telemetryCoverage + (100-telemetryCoverage)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+IDS_MC),
 energyCost := min(MAX_COST,
 energyCost+IDS_EC),
 carbonCost := min(MAX_COST,
 carbonCost+IDS_CC)</label>
-		<label kind="guard" x="430" y="190">idsQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">telemetryCoverage + telemetryTrust</label></transition>
+		<label kind="guard" x="430" y="190">idsQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">1 + telemetryCoverage/20 + telemetryTrust/25</label></transition>
 		<transition id="id472">
 			<source ref="id461" />
 			<target ref="id466" />
@@ -267,7 +265,7 @@ energyCost := min(MAX_COST,
 energyCost+IDS_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+IDS_CC*2)</label>
-		<label kind="guard" x="340" y="260">idsQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
+		<label kind="guard" x="340" y="260">idsQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">1 + congestionPressure/20 + operationalStress/25</label></transition>
 		<transition id="id473">
 			<source ref="id462" />
 			<target ref="id463" />
@@ -292,7 +290,7 @@ carbonCost+IDS_CC)</label>
 			<source ref="id465" />
 			<target ref="id457" />
 			<label kind="assignment" x="-20" y="220">ids=true,
-telemetryCoverage=min(100, telemetryCoverage + 5),
+telemetryCoverage=min(100, telemetryCoverage + (100-telemetryCoverage)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+IDS_MC*2)</label>
 		</transition>
@@ -367,8 +365,7 @@ energyCost := min(MAX_COST,
 energyCost+WAF_EC),
 carbonCost := min(MAX_COST,
 carbonCost+WAF_CC),
-wafQueueSize=min(100,
-wafQueueSize+5)</label>
+wafQueueSize=min(100, wafQueueSize + 1 + congestionPressure/20)</label>
 		<label kind="guard" x="70" y="50">wafQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id489">
 			<source ref="id479" />
@@ -405,14 +402,14 @@ carbonCost+WAF_CC)</label>
 			<target ref="id483" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">waf=true,
-inspectionDepth=min(100, inspectionDepth + 5),
+inspectionDepth=min(100, inspectionDepth + (100-inspectionDepth)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+WAF_MC),
 energyCost := min(MAX_COST,
 energyCost+WAF_EC),
 carbonCost := min(MAX_COST,
 carbonCost+WAF_CC)</label>
-		<label kind="guard" x="430" y="190">wafQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">inspectionDepth + telemetryTrust</label></transition>
+		<label kind="guard" x="430" y="190">wafQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">1 + inspectionDepth/20 + telemetryTrust/25</label></transition>
 		<transition id="id493">
 			<source ref="id482" />
 			<target ref="id487" />
@@ -424,7 +421,7 @@ energyCost := min(MAX_COST,
 energyCost+WAF_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+WAF_CC*2)</label>
-		<label kind="guard" x="340" y="260">wafQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
+		<label kind="guard" x="340" y="260">wafQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">1 + congestionPressure/20 + operationalStress/25</label></transition>
 		<transition id="id494">
 			<source ref="id483" />
 			<target ref="id484" />
@@ -449,7 +446,7 @@ carbonCost+WAF_CC)</label>
 			<source ref="id486" />
 			<target ref="id478" />
 			<label kind="assignment" x="-20" y="220">waf=true,
-inspectionDepth=min(100, inspectionDepth + 5),
+inspectionDepth=min(100, inspectionDepth + (100-inspectionDepth)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+WAF_MC*2)</label>
 		</transition>
@@ -524,8 +521,7 @@ energyCost := min(MAX_COST,
 energyCost+EDR_EC),
 carbonCost := min(MAX_COST,
 carbonCost+EDR_CC),
-edrQueueSize=min(100,
-edrQueueSize+5)</label>
+edrQueueSize=min(100, edrQueueSize + 1 + congestionPressure/20)</label>
 		<label kind="guard" x="70" y="50">edrQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id510">
 			<source ref="id500" />
@@ -562,14 +558,14 @@ carbonCost+EDR_CC)</label>
 			<target ref="id504" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">edr=true,
-modelFidelity=min(100, modelFidelity + 5),
+modelFidelity=min(100, modelFidelity + (100-modelFidelity)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+EDR_MC),
 energyCost := min(MAX_COST,
 energyCost+EDR_EC),
 carbonCost := min(MAX_COST,
 carbonCost+EDR_CC)</label>
-		<label kind="guard" x="430" y="190">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">modelFidelity + telemetryTrust</label></transition>
+		<label kind="guard" x="430" y="190">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">1 + modelFidelity/20 + telemetryTrust/25</label></transition>
 		<transition id="id514">
 			<source ref="id503" />
 			<target ref="id508" />
@@ -581,7 +577,7 @@ energyCost := min(MAX_COST,
 energyCost+EDR_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+EDR_CC*2)</label>
-		<label kind="guard" x="340" y="260">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
+		<label kind="guard" x="340" y="260">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">1 + congestionPressure/20 + operationalStress/25</label></transition>
 		<transition id="id515">
 			<source ref="id504" />
 			<target ref="id505" />
@@ -606,7 +602,7 @@ carbonCost+EDR_CC)</label>
 			<source ref="id507" />
 			<target ref="id499" />
 			<label kind="assignment" x="-20" y="220">edr=true,
-modelFidelity=min(100, modelFidelity + 5),
+modelFidelity=min(100, modelFidelity + (100-modelFidelity)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+EDR_MC*2)</label>
 		</transition>
@@ -681,8 +677,7 @@ energyCost := min(MAX_COST,
 energyCost+DLP_EC),
 carbonCost := min(MAX_COST,
 carbonCost+DLP_CC),
-dlpQueueSize=min(100,
-dlpQueueSize+5)</label>
+dlpQueueSize=min(100, dlpQueueSize + 1 + congestionPressure/20)</label>
 		<label kind="guard" x="70" y="50">dlpQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id531">
 			<source ref="id521" />
@@ -719,14 +714,14 @@ carbonCost+DLP_CC)</label>
 			<target ref="id525" />
 			<label kind="synchronisation" x="430" y="205">success!</label>
 			<label kind="assignment" x="430" y="220">dlp=true,
-mitigationEffectiveness=min(100, mitigationEffectiveness + 5),
+mitigationEffectiveness=min(100, mitigationEffectiveness + (100-mitigationEffectiveness)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DLP_MC),
 energyCost := min(MAX_COST,
 energyCost+DLP_EC),
 carbonCost := min(MAX_COST,
 carbonCost+DLP_CC)</label>
-		<label kind="guard" x="430" y="190">dlpQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">mitigationEffectiveness + telemetryTrust</label></transition>
+		<label kind="guard" x="430" y="190">dlpQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">1 + mitigationEffectiveness/20 + telemetryTrust/25</label></transition>
 		<transition id="id535">
 			<source ref="id524" />
 			<target ref="id529" />
@@ -738,7 +733,7 @@ energyCost := min(MAX_COST,
 energyCost+DLP_EC*2),
 carbonCost := min(MAX_COST,
 carbonCost+DLP_CC*2)</label>
-		<label kind="guard" x="340" y="260">dlpQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">100 + congestionPressure - mitigationConfidence</label></transition>
+		<label kind="guard" x="340" y="260">dlpQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">1 + congestionPressure/20 + operationalStress/25</label></transition>
 		<transition id="id536">
 			<source ref="id525" />
 			<target ref="id526" />
@@ -763,7 +758,7 @@ carbonCost+DLP_CC)</label>
 			<source ref="id528" />
 			<target ref="id520" />
 			<label kind="assignment" x="-20" y="220">dlp=true,
-mitigationEffectiveness=min(100, mitigationEffectiveness + 5),
+mitigationEffectiveness=min(100, mitigationEffectiveness + (100-mitigationEffectiveness)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DLP_MC*2)</label>
 		</transition>

@@ -96,7 +96,7 @@ falseNegative=false</label>
 			<target ref="id543" />
 			<label kind="assignment" x="250" y="80">alertConfidence=min(100,
 alertConfidence+(processDeviation/10)),
-telemetryTrust=(controlLoopStability&lt;50 &amp;&amp; telemetryTrust&gt;5)?telemetryTrust-5:telemetryTrust,
+telemetryTrust=(controlLoopStability&lt;50)?((telemetryTrust&gt;=5)?telemetryTrust-5:0):telemetryTrust,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC),
 energyCost := min(MAX_COST,
@@ -224,8 +224,8 @@ carbonCost+DR_CC*3)</label>
 		<transition id="id571">
 			<source ref="id552" />
 			<target ref="id553" />
-			<label kind="assignment" x="250" y="360">recoveryCapacity=(operationalStress&gt;50)?((recoveryCapacity&gt;10)?recoveryCapacity-10:0):recoveryCapacity,
-restorationConfidence=(recoveryCapacity&lt;50 || backupIntegrity&lt;50)?((restorationConfidence&gt;10)?restorationConfidence-10:0):restorationConfidence,
+			<label kind="assignment" x="250" y="360">recoveryCapacity=(operationalStress&gt;50)?((recoveryCapacity&gt;=10)?recoveryCapacity-10:0):recoveryCapacity,
+restorationConfidence=(recoveryCapacity&lt;50 || backupIntegrity&lt;50)?((restorationConfidence&gt;=10)?restorationConfidence-10:0):restorationConfidence,
 failSafeEngaged=(operationalSafetyErosion&gt;70 &amp;&amp; processDeviation&gt;50)?true:failSafeEngaged,
 safeModeOperation=(failSafeEngaged)?100:((telemetryTrust&lt;50)?50:0),
 downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:downtime),
@@ -256,7 +256,7 @@ plcCompromised=(safeModeOperation&gt;0)?plcCompromised:false,
 sensorCompromised=(telemetryTrust&lt;50)?sensorCompromised:false,
 resilienceDegradation=(safeModeOperation&gt;0)?resilienceDegradation:((resilienceDegradation&gt;10)?resilienceDegradation-10:0),
 mitigationConfidence=min(100, mitigationConfidence + (recoveryCapacity/10)),
-safetyMargin=(safeModeOperation&gt;0)?safetyMargin:min(100, safetyMargin+10),
+safetyMargin=(safeModeOperation&gt;0)?safetyMargin:min(100, safetyMargin + (100-safetyMargin)/10),
 downtime=(downtime&gt;0)?downtime-1:0,
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*6),
@@ -268,15 +268,15 @@ carbonCost+DR_CC*6)</label>
 		<transition id="id574">
 			<source ref="id555" />
 			<target ref="id556" />
-			<label kind="assignment" x="700" y="430">detectionReliability=min(100, detectionReliability+5),
-telemetryCoverage=min(100, telemetryCoverage+5),
-inspectionDepth=min(100, inspectionDepth+5),
-modelFidelity=min(100, modelFidelity+5),
-mitigationEffectiveness=min(100, mitigationEffectiveness+5),
-telemetryIntegrity=(safeModeOperation&gt;0)?telemetryIntegrity:min(100,telemetryIntegrity+10),
-controlLoopStability=(failSafeEngaged)?controlLoopStability:min(100,controlLoopStability+10),
-actuatorTrust=min(100,actuatorTrust+10),
-backupIntegrity=(backupIntegrity&lt;100)?backupIntegrity+5:backupIntegrity,
+			<label kind="assignment" x="700" y="430">detectionReliability=min(100, detectionReliability + (100-detectionReliability)/10),
+telemetryCoverage=min(100, telemetryCoverage + (100-telemetryCoverage)/10),
+inspectionDepth=min(100, inspectionDepth + (100-inspectionDepth)/10),
+modelFidelity=min(100, modelFidelity + (100-modelFidelity)/10),
+mitigationEffectiveness=min(100, mitigationEffectiveness + (100-mitigationEffectiveness)/10),
+telemetryIntegrity=(safeModeOperation&gt;0)?telemetryIntegrity:min(100, telemetryIntegrity + (100-telemetryIntegrity)/10),
+controlLoopStability=(failSafeEngaged)?controlLoopStability:min(100, controlLoopStability + (100-controlLoopStability)/10),
+actuatorTrust=min(100, actuatorTrust + (100-actuatorTrust)/10),
+backupIntegrity=min(100, backupIntegrity + (100-backupIntegrity)/10),
 maintenanceCost := min(MAX_COST,
 maintenanceCost+DR_MC*8),
 energyCost := min(MAX_COST,
@@ -293,8 +293,7 @@ scadaSuspicion=(breach)?scadaSuspicion:0,
 sensorSuspicion=(breach)?sensorSuspicion:0,
 networkThreatConfidence=(breach)?networkThreatConfidence:0,
 breachLikelihood=(breach)?breachLikelihood:0,
-cpsInstabilityProbability=(safeModeOperation&gt;0)?cpsInstabilityProbability:0,
-</label>
+cpsInstabilityProbability=(safeModeOperation&gt;0)?cpsInstabilityProbability:0</label>
 		</transition>
 		<transition id="id576">
 			<source ref="id557" />

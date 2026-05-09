@@ -96,14 +96,14 @@ carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
 			<target ref="id7" />
 			<label kind="synchronisation" x="70" y="205">success!</label>
 			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
-			<label kind="probability" x="70" y="235">stealthPreference + processDeviation</label>
+			<label kind="probability" x="70" y="235">1 + stealthPreference/25 + processDeviation/20</label>
 		</transition>
 		<transition id="id17">
 			<source ref="id6" />
 			<target ref="id8" />
 			<label kind="synchronisation" x="70" y="275">fail!</label>
 			<label kind="assignment" x="70" y="290">downtime=downtime</label>
-			<label kind="probability" x="70" y="305">mitigationConfidence + controlLoopStability</label>
+			<label kind="probability" x="70" y="305">1 + mitigationConfidence/25 + controlLoopStability/20</label>
 		</transition>
 		<transition id="id18">
 			<source ref="id7" />
