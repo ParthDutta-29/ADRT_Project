@@ -4576,19 +4576,19 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; Network_Attack.NA_Payload_Staging</formula>
+        <formula>E&lt;&gt; N.NA_Payload_Staging</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; Malware_Attack.MAL_PLC_Manipulation</formula>
+        <formula>E&lt;&gt; MA.MAL_PLC_Manipulation</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; Firewall_Defense.FWD_Block</formula>
+        <formula>E&lt;&gt; F.FWD_Block</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; Defender_Response.DR_Recover</formula>
+        <formula>E&lt;&gt; DR.DR_Recover</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
@@ -4612,11 +4612,11 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=100] (&lt;&gt; Network_Attack.NA_Execution)</formula>
+        <formula>Pr[&lt;=100] (&lt;&gt; N.NA_Execution)</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=100] (&lt;&gt; API_Attack.AA_OT_Traversal)</formula>
+        <formula>Pr[&lt;=100] (&lt;&gt; AA.AA_OT_Traversal)</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
@@ -4648,7 +4648,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (Firewall_Defense.FWD_Block &amp;&amp; IDS_Defense.IDSD_Block &amp;&amp; Defender_Response.DR_Recover)</formula>
+        <formula>E&lt;&gt; (F.FWD_Block &amp;&amp; IDSD.IDSD_Block &amp;&amp; DR.DR_Recover)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4672,7 +4672,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=400] (&lt;&gt; (Network_Attack.NA_Payload_Staging &amp;&amp; Malware_Attack.MAL_Command_And_Control))</formula>
+        <formula>Pr[&lt;=400] (&lt;&gt; (N.NA_Payload_Staging &amp;&amp; MA.MAL_Command_And_Control))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4696,7 +4696,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=500] (&lt;&gt; (fwQueueSize &gt; 0 &amp;&amp; Firewall_Defense.FWD_Analyse))</formula>
+        <formula>Pr[&lt;=500] (&lt;&gt; (fwQueueSize &gt; 0 &amp;&amp; F.FWD_Analyse))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4704,19 +4704,19 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (Firewall_Defense.FWD_Failed &amp;&amp; fwQueueSize &gt;= 80)</formula>
+        <formula>E&lt;&gt; (F.FWD_Failed &amp;&amp; fwQueueSize &gt;= 80)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=500] (&lt;&gt; (Defender_Response.DR_Intake &amp;&amp; fwQueueSize &gt; 50))</formula>
+        <formula>Pr[&lt;=500] (&lt;&gt; (DR.DR_Intake &amp;&amp; fwQueueSize &gt; 50))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=500] (&lt;&gt; (Firewall_Defense.FWD_Rule &amp;&amp; fwQueueSize &gt; 50))</formula>
+        <formula>Pr[&lt;=500] (&lt;&gt; (F.FWD_Rule &amp;&amp; fwQueueSize &gt; 50))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=400] (&lt;&gt; (falseNegative == true &amp;&amp; Network_Attack.NA_Execution))</formula>
+        <formula>Pr[&lt;=400] (&lt;&gt; (falseNegative == true &amp;&amp; N.NA_Execution))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4744,19 +4744,19 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; Defender_Response.DR_Sev_Low)</formula>
+        <formula>E&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; DR.DR_Sev_Low)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=500] (&lt;&gt; (stealthPreference &gt; 70 &amp;&amp; Network_Attack.NA_Execution))</formula>
+        <formula>Pr[&lt;=500] (&lt;&gt; (stealthPreference &gt; 70 &amp;&amp; N.NA_Execution))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (stealthPreference &gt;= 80 &amp;&amp; Defender_Response.DR_Sev_Low)</formula>
+        <formula>E&lt;&gt; (stealthPreference &gt;= 80 &amp;&amp; DR.DR_Sev_Low)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=400] (&lt;&gt; (fwQueueSize &gt;= 80 &amp;&amp; Network_Attack.NA_OT_Traversal))</formula>
+        <formula>Pr[&lt;=400] (&lt;&gt; (fwQueueSize &gt;= 80 &amp;&amp; N.NA_OT_Traversal))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>

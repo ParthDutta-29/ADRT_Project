@@ -7,10 +7,10 @@
 A[] not deadlock
 
 /* 2. Reachability Checks */
-E<> Network_Attack.NA_Post1
-E<> Malware_Attack.MAL_Impact
-E<> Firewall_Defense.FD_Blocked
-E<> Defender_Response.DR_Restored
+E<> N.NA_Command_And_Control
+E<> MA.MAL_PLC_Manipulation
+E<> F.FWD_Block
+E<> DR.DR_Recover
 
 /* 3. Breach Probability Queries */
 Pr[<=100] (<> breach == true)
@@ -22,8 +22,8 @@ Pr[<=300] (<> (downtime == 0 && breach == true))
 Pr[<=200] (<> (resilienceDegradation < 20))
 
 /* 5. Attack Progression Queries */
-Pr[<=100] (<> Network_Attack.NA_Exec)
-Pr[<=100] (<> API_Attack.AA_Bypass)
+Pr[<=100] (<> N.NA_Execution)
+Pr[<=100] (<> AA.AA_Evasion_Evasion_Check)
 
 /* 6. Congestion Queries */
 E<> fwQueueSize > 50

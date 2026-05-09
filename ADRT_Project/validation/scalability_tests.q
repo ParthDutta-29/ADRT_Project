@@ -4,7 +4,7 @@
  */
 
 /* 1. Deep Reachability Queries (Testing for state space explosions) */
-E<> (Firewall_Defense.FWD_Block && IDS_Defense.IDSD_Block && Defender_Response.DR_Recover)
+E<> (F.FWD_Block && IDSD.IDSD_Block && DR.DR_Recover)
 E<> (scadaCompromised == true && plcCompromised == true && breach == true)
 
 /* 2. Bounded-Time Probability Queries (SMC Tractability evaluation) */
@@ -16,7 +16,7 @@ Pr[<=300] (<> (fwQueueSize > 80 && wafQueueSize > 80 && edrQueueSize > 80))
 E<> fwQueueSize == 100
 
 /* 4. Concurrent Attack Propagation Checks */
-Pr[<=400] (<> (Network_Attack.NA_Payload_Staging && Malware_Attack.MAL_Command_And_Control))
+Pr[<=400] (<> (N.NA_Payload_Staging && MA.MAL_Command_And_Control))
 Pr[<=400] (<> (lateral == true && persistence == true && breach == true))
 
 /* 5. Topology Stress Tests */
@@ -28,14 +28,14 @@ Pr[<=500] (<> (fwQueueSize > 50 && downtime > 10 && operationalSafetyErosion > 5
 
 /* 7. Congestion Persistence & Recovery Tests (Phase 2 Additions) */
 E<> (fwQueueSize > 80 && falseNegative == true)
-Pr[<=500] (<> (fwQueueSize > 0 && Firewall_Defense.FWD_Analyse))
+Pr[<=500] (<> (fwQueueSize > 0 && F.FWD_Analyse))
 Pr[<=600] (<> (fwQueueSize == 0 && idsQueueSize == 0 && wafQueueSize == 0))
-E<> (Firewall_Defense.FWD_Failed && fwQueueSize >= 80)
+E<> (F.FWD_Failed && fwQueueSize >= 80)
 
 /* 8. Timing Dynamics & Latency Tests (Phase 3 Additions) */
-Pr[<=500] (<> (Defender_Response.DR_Intake && fwQueueSize > 50))
-Pr[<=500] (<> (Firewall_Defense.FWD_Rule && fwQueueSize > 50))
-Pr[<=400] (<> (falseNegative == true && Network_Attack.NA_Execution))
+Pr[<=500] (<> (DR.DR_Intake && fwQueueSize > 50))
+Pr[<=500] (<> (F.FWD_Rule && fwQueueSize > 50))
+Pr[<=400] (<> (falseNegative == true && N.NA_Execution))
 E<> (fwQueueSize > 50 && downtime > 5)
 
 /* 9. POMDP-Lite Observability & Belief-State Tests (Phase 4 Additions) */
@@ -44,12 +44,12 @@ Pr[<=500] (<> (telemetryTrust < 50))
 E<> (telemetryTrust < 20 && breach == true)
 E<> (alertConfidence < 40 && scadaCompromised == true)
 Pr[<=600] (<> (plcSuspicion > 50))
-E<> (telemetryTrust < 50 && Defender_Response.DR_Sev_Low)
+E<> (telemetryTrust < 50 && DR.DR_Sev_Low)
 
 /* 10. Adversarial Policy & Strategic Adaptation Tests (Phase 5 Additions) */
-Pr[<=500] (<> (stealthPreference > 70 && Network_Attack.NA_Execution))
-E<> (stealthPreference >= 80 && Defender_Response.DR_Sev_Low)
-Pr[<=400] (<> (fwQueueSize >= 80 && Network_Attack.NA_OT_Traversal))
+Pr[<=500] (<> (stealthPreference > 70 && N.NA_Execution))
+E<> (stealthPreference >= 80 && DR.DR_Sev_Low)
+Pr[<=400] (<> (fwQueueSize >= 80 && N.NA_OT_Traversal))
 E<> (telemetryTrust < 40 && scadaCompromised == true && stealthPreference > 60)
 Pr[<=600] (<> (stealthPreference > 50 && downtime < 5))
 
