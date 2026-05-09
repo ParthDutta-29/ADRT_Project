@@ -45,3 +45,10 @@ E<> (telemetryTrust < 20 && breach == true)
 E<> (alertConfidence < 40 && scadaCompromised == true)
 Pr[<=600] (<> (plcSuspicion > 50))
 E<> (telemetryTrust < 50 && Defender_Response.DR_Sev_Low)
+
+/* 10. Adversarial Policy & Strategic Adaptation Tests (Phase 5 Additions) */
+Pr[<=500] (<> (stealthPreference > 70 && Network_Attack.NA_Execution))
+E<> (stealthPreference >= 80 && Defender_Response.DR_Sev_Low)
+Pr[<=400] (<> (fwQueueSize >= 80 && Network_Attack.NA_OT_Traversal))
+E<> (telemetryTrust < 40 && scadaCompromised == true && stealthPreference > 60)
+Pr[<=600] (<> (stealthPreference > 50 && downtime < 5))

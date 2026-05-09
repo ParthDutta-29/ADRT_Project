@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <nta>
 <template>
 		<name>Network_Attack</name>
@@ -16,19 +16,19 @@
 		</location>
 		<location id="id151" x="580" y="80">
 			<name x="570" y="55">NA_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id152" x="760" y="80">
 			<name x="750" y="55">NA_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id153" x="760" y="220">
 			<name x="750" y="195">NA_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id154" x="580" y="220">
 			<name x="570" y="195">NA_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id155" x="400" y="220">
 			<name x="390" y="195">NA_Command_And_Control</name>
@@ -76,7 +76,7 @@ fwQueueSize=min(100,fwQueueSize+5)</label>
 			<target ref="id157" />
 			<label kind="guard" x="340" y="190">firewall==true &amp;&amp; fwQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id163">
 			<source ref="id151" />
 			<target ref="id152" />
@@ -100,7 +100,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id152" />
 			<target ref="id158" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id166">
 			<source ref="id153" />
 			<target ref="id154" />
@@ -129,7 +129,7 @@ downtime=downtime+2</label>
 			<source ref="id156" />
 			<target ref="id148" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id170">
 			<source ref="id157" />
 			<target ref="id148" />
@@ -157,19 +157,19 @@ downtime=downtime+2</label>
 		</location>
 		<location id="id175" x="580" y="80">
 			<name x="570" y="55">WA_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id176" x="760" y="80">
 			<name x="750" y="55">WA_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id177" x="760" y="220">
 			<name x="750" y="195">WA_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id178" x="580" y="220">
 			<name x="570" y="195">WA_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id179" x="400" y="220">
 			<name x="390" y="195">WA_Command_And_Control</name>
@@ -217,7 +217,7 @@ wafQueueSize=min(100,wafQueueSize+5)</label>
 			<target ref="id181" />
 			<label kind="guard" x="340" y="190">waf==true &amp;&amp; wafQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id187">
 			<source ref="id175" />
 			<target ref="id176" />
@@ -241,7 +241,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id176" />
 			<target ref="id182" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id190">
 			<source ref="id177" />
 			<target ref="id178" />
@@ -268,7 +268,7 @@ downtime=downtime+1</label>
 			<source ref="id180" />
 			<target ref="id172" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id194">
 			<source ref="id181" />
 			<target ref="id172" />
@@ -296,19 +296,19 @@ downtime=downtime+1</label>
 		</location>
 		<location id="id199" x="580" y="80">
 			<name x="570" y="55">AA_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id200" x="760" y="80">
 			<name x="750" y="55">AA_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id201" x="760" y="220">
 			<name x="750" y="195">AA_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id202" x="580" y="220">
 			<name x="570" y="195">AA_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id203" x="400" y="220">
 			<name x="390" y="195">AA_Command_And_Control</name>
@@ -356,7 +356,7 @@ wafQueueSize=min(100,wafQueueSize+5)</label>
 			<target ref="id205" />
 			<label kind="guard" x="340" y="190">waf==true &amp;&amp; wafQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id211">
 			<source ref="id199" />
 			<target ref="id200" />
@@ -380,7 +380,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id200" />
 			<target ref="id206" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id214">
 			<source ref="id201" />
 			<target ref="id202" />
@@ -407,7 +407,7 @@ downtime=downtime+1</label>
 			<source ref="id204" />
 			<target ref="id196" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id218">
 			<source ref="id205" />
 			<target ref="id196" />
@@ -435,19 +435,19 @@ downtime=downtime+1</label>
 		</location>
 		<location id="id223" x="580" y="80">
 			<name x="570" y="55">MAL_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id224" x="760" y="80">
 			<name x="750" y="55">MAL_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id225" x="760" y="220">
 			<name x="750" y="195">MAL_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id226" x="580" y="220">
 			<name x="570" y="195">MAL_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id227" x="400" y="220">
 			<name x="390" y="195">MAL_Command_And_Control</name>
@@ -495,7 +495,7 @@ fwQueueSize=min(100,fwQueueSize+5)</label>
 			<target ref="id229" />
 			<label kind="guard" x="340" y="190">firewall==true &amp;&amp; fwQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id235">
 			<source ref="id223" />
 			<target ref="id224" />
@@ -519,7 +519,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id224" />
 			<target ref="id230" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id238">
 			<source ref="id225" />
 			<target ref="id226" />
@@ -547,7 +547,7 @@ downtime=downtime+2</label>
 			<source ref="id228" />
 			<target ref="id220" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id242">
 			<source ref="id229" />
 			<target ref="id220" />
@@ -575,19 +575,19 @@ downtime=downtime+2</label>
 		</location>
 		<location id="id247" x="580" y="80">
 			<name x="570" y="55">RA_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id248" x="760" y="80">
 			<name x="750" y="55">RA_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id249" x="760" y="220">
 			<name x="750" y="195">RA_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id250" x="580" y="220">
 			<name x="570" y="195">RA_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id251" x="400" y="220">
 			<name x="390" y="195">RA_Command_And_Control</name>
@@ -635,7 +635,7 @@ edrQueueSize=min(100,edrQueueSize+5)</label>
 			<target ref="id253" />
 			<label kind="guard" x="340" y="190">edr==true &amp;&amp; edrQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id259">
 			<source ref="id247" />
 			<target ref="id248" />
@@ -659,7 +659,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id248" />
 			<target ref="id254" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id262">
 			<source ref="id249" />
 			<target ref="id250" />
@@ -688,7 +688,7 @@ severity=2</label>
 			<source ref="id252" />
 			<target ref="id244" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id266">
 			<source ref="id253" />
 			<target ref="id244" />
@@ -716,19 +716,19 @@ severity=2</label>
 		</location>
 		<location id="id271" x="580" y="80">
 			<name x="570" y="55">PH_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(dlpQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id272" x="760" y="80">
 			<name x="750" y="55">PH_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(dlpQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id273" x="760" y="220">
 			<name x="750" y="195">PH_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (dlpQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id274" x="580" y="220">
 			<name x="570" y="195">PH_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id275" x="400" y="220">
 			<name x="390" y="195">PH_Command_And_Control</name>
@@ -776,7 +776,7 @@ dlpQueueSize=min(100,dlpQueueSize+5)</label>
 			<target ref="id277" />
 			<label kind="guard" x="340" y="190">dlp==true &amp;&amp; dlpQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id283">
 			<source ref="id271" />
 			<target ref="id272" />
@@ -800,7 +800,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id272" />
 			<target ref="id278" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id286">
 			<source ref="id273" />
 			<target ref="id274" />
@@ -827,7 +827,7 @@ downtime=downtime+1</label>
 			<source ref="id276" />
 			<target ref="id268" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id290">
 			<source ref="id277" />
 			<target ref="id268" />
@@ -855,19 +855,19 @@ downtime=downtime+1</label>
 		</location>
 		<location id="id295" x="580" y="80">
 			<name x="570" y="55">CR_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id296" x="760" y="80">
 			<name x="750" y="55">CR_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id297" x="760" y="220">
 			<name x="750" y="195">CR_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id298" x="580" y="220">
 			<name x="570" y="195">CR_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id299" x="400" y="220">
 			<name x="390" y="195">CR_Command_And_Control</name>
@@ -915,7 +915,7 @@ idsQueueSize=min(100,idsQueueSize+5)</label>
 			<target ref="id301" />
 			<label kind="guard" x="340" y="190">ids==true &amp;&amp; idsQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id307">
 			<source ref="id295" />
 			<target ref="id296" />
@@ -939,7 +939,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id296" />
 			<target ref="id302" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id310">
 			<source ref="id297" />
 			<target ref="id298" />
@@ -966,7 +966,7 @@ downtime=downtime+1</label>
 			<source ref="id300" />
 			<target ref="id292" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id314">
 			<source ref="id301" />
 			<target ref="id292" />
@@ -994,19 +994,19 @@ downtime=downtime+1</label>
 		</location>
 		<location id="id319" x="580" y="80">
 			<name x="570" y="55">INS_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id320" x="760" y="80">
 			<name x="750" y="55">INS_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id321" x="760" y="220">
 			<name x="750" y="195">INS_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id322" x="580" y="220">
 			<name x="570" y="195">INS_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id323" x="400" y="220">
 			<name x="390" y="195">INS_Command_And_Control</name>
@@ -1054,7 +1054,7 @@ dlpQueueSize=min(100,dlpQueueSize+5)</label>
 			<target ref="id325" />
 			<label kind="guard" x="340" y="190">dlp==true &amp;&amp; dlpQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id331">
 			<source ref="id319" />
 			<target ref="id320" />
@@ -1078,7 +1078,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id320" />
 			<target ref="id326" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id334">
 			<source ref="id321" />
 			<target ref="id322" />
@@ -1107,7 +1107,7 @@ downtime=downtime+2</label>
 			<source ref="id324" />
 			<target ref="id316" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id338">
 			<source ref="id325" />
 			<target ref="id316" />
@@ -1135,19 +1135,19 @@ downtime=downtime+2</label>
 		</location>
 		<location id="id343" x="580" y="80">
 			<name x="570" y="55">SUP_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id344" x="760" y="80">
 			<name x="750" y="55">SUP_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id345" x="760" y="220">
 			<name x="750" y="195">SUP_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id346" x="580" y="220">
 			<name x="570" y="195">SUP_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id347" x="400" y="220">
 			<name x="390" y="195">SUP_Command_And_Control</name>
@@ -1195,7 +1195,7 @@ fwQueueSize=min(100,fwQueueSize+5)</label>
 			<target ref="id349" />
 			<label kind="guard" x="340" y="190">firewall==true &amp;&amp; fwQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id355">
 			<source ref="id343" />
 			<target ref="id344" />
@@ -1219,7 +1219,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id344" />
 			<target ref="id350" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id358">
 			<source ref="id345" />
 			<target ref="id346" />
@@ -1248,7 +1248,7 @@ severity=2</label>
 			<source ref="id348" />
 			<target ref="id340" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id362">
 			<source ref="id349" />
 			<target ref="id340" />
@@ -1276,19 +1276,19 @@ severity=2</label>
 		</location>
 		<location id="id367" x="580" y="80">
 			<name x="570" y="55">FWA_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id368" x="760" y="80">
 			<name x="750" y="55">FWA_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id369" x="760" y="220">
 			<name x="750" y="195">FWA_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id370" x="580" y="220">
 			<name x="570" y="195">FWA_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id371" x="400" y="220">
 			<name x="390" y="195">FWA_Command_And_Control</name>
@@ -1336,7 +1336,7 @@ edrQueueSize=min(100,edrQueueSize+5)</label>
 			<target ref="id373" />
 			<label kind="guard" x="340" y="190">edr==true &amp;&amp; edrQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id379">
 			<source ref="id367" />
 			<target ref="id368" />
@@ -1360,7 +1360,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id368" />
 			<target ref="id374" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id382">
 			<source ref="id369" />
 			<target ref="id370" />
@@ -1390,7 +1390,7 @@ severity=2</label>
 			<source ref="id372" />
 			<target ref="id364" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id386">
 			<source ref="id373" />
 			<target ref="id364" />
@@ -1418,19 +1418,19 @@ severity=2</label>
 		</location>
 		<location id="id391" x="580" y="80">
 			<name x="570" y="55">LM_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id392" x="760" y="80">
 			<name x="750" y="55">LM_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id393" x="760" y="220">
 			<name x="750" y="195">LM_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id394" x="580" y="220">
 			<name x="570" y="195">LM_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id395" x="400" y="220">
 			<name x="390" y="195">LM_Command_And_Control</name>
@@ -1478,7 +1478,7 @@ idsQueueSize=min(100,idsQueueSize+5)</label>
 			<target ref="id397" />
 			<label kind="guard" x="340" y="190">ids==true &amp;&amp; idsQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id403">
 			<source ref="id391" />
 			<target ref="id392" />
@@ -1502,7 +1502,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id392" />
 			<target ref="id398" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id406">
 			<source ref="id393" />
 			<target ref="id394" />
@@ -1529,7 +1529,7 @@ downtime=downtime+2</label>
 			<source ref="id396" />
 			<target ref="id388" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id410">
 			<source ref="id397" />
 			<target ref="id388" />
@@ -1557,19 +1557,19 @@ downtime=downtime+2</label>
 		</location>
 		<location id="id415" x="580" y="80">
 			<name x="570" y="55">PM_Evasion_Evasion_Check</name>
-			<label kind="exponentialrate" x="570" y="98">3</label>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id416" x="760" y="80">
 			<name x="750" y="55">PM_OT_Traversal</name>
-			<label kind="exponentialrate" x="750" y="98">3</label>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id417" x="760" y="220">
 			<name x="750" y="195">PM_Execution</name>
-			<label kind="exponentialrate" x="750" y="238">3</label>
+			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id418" x="580" y="220">
 			<name x="570" y="195">PM_Payload_Staging</name>
-			<label kind="exponentialrate" x="570" y="238">2</label>
+			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id419" x="400" y="220">
 			<name x="390" y="195">PM_Command_And_Control</name>
@@ -1617,7 +1617,7 @@ edrQueueSize=min(100,edrQueueSize+5)</label>
 			<target ref="id421" />
 			<label kind="guard" x="340" y="190">edr==true &amp;&amp; edrQueueSize&lt;80</label>
 			<label kind="synchronisation" x="340" y="205">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id427">
 			<source ref="id415" />
 			<target ref="id416" />
@@ -1641,7 +1641,7 @@ riskScore=min(100,riskScore+2)</label>
 			<source ref="id416" />
 			<target ref="id422" />
 			<label kind="synchronisation" x="340" y="135">fail?</label>
-		</transition>
+		<label kind="assignment">stealthPreference=min(100,stealthPreference+10)</label></transition>
 		<transition id="id430">
 			<source ref="id417" />
 			<target ref="id418" />
@@ -1668,7 +1668,7 @@ downtime=downtime+1</label>
 			<source ref="id420" />
 			<target ref="id412" />
 			<label kind="synchronisation" x="70" y="135">detect!</label>
-		</transition>
+		<label kind="assignment">telemetryTrust=(telemetryTrust&gt;10)?telemetryTrust-10:0</label></transition>
 		<transition id="id434">
 			<source ref="id421" />
 			<target ref="id412" />

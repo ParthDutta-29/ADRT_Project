@@ -93,6 +93,18 @@ int[0,100] telemetryTrust          = 100;
 int[0,100] alertConfidence         = 0;
 int[0,100] compromiseConfidence    = 0;
 
+/* ── Bounded Adversarial Policy States (Hidden from Defender) ── */
+int[0,100] stealthPreference       = 50;
+int[0,100] persistenceConfidence   = 50;
+int[0,100] exploitAggression       = 50;
+int[0,100] attackerPatience        = 50;
+
+/* ── Cyber-Physical Offensive Intentions (Phase 6 Prep) ── */
+int[0,100] controlSignalTargeting  = 0;
+int[0,100] sensorSpoofingIntent    = 0;
+int[0,100] plcTraversalConfidence  = 0;
+int[0,100] telemetryManipulationIntent = 0;
+
 /* ── System outcome ── */
 bool breach       = false;
 int  threat_score = 0;
