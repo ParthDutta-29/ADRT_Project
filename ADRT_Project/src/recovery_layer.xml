@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <nta>
 <template>
 		<name>Breach_Monitor</name>
@@ -49,7 +49,7 @@
 			<target ref="id581" />
 			<label kind="guard" x="340" y="120">firewall==false || ids==false</label>
 			<label kind="assignment" x="340" y="150">breach=true,
-downtime=downtime+1</label>
+downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id589">
 			<source ref="id580" />

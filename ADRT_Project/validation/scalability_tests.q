@@ -101,3 +101,11 @@ A[] (recoveryCapacity >= 0 && recoveryCapacity <= 100)
 A[] (or_hits >= 0 && or_hits <= 100)
 A[] (or2_hits >= 0 && or2_hits <= 100)
 A[] (vg_count >= 0 && vg_count <= 100)
+
+/* 17. Phase 9: Formal Robustness & Energy Tradeoff Tests */
+Pr[<=500] (<> (maintenanceCost > 10000 && congestionPressure > 50))
+Pr[<=500] (<> (energyCost > 10000 && safeModeOperation > 0))
+Pr[<=600] (<> (carbonCost > 10000 && resilienceDegradation > 50))
+Pr[<=400] (<> (operationalStress > 80 && controlLatency > 50))
+A[] (energyCost >= 0)
+A[] (carbonCost >= 0)

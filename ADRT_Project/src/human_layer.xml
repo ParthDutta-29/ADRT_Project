@@ -124,11 +124,11 @@ operationalSafetyErosion=(100-safetyMargin)</label>
 			<label kind="assignment" x="610" y="80">truePositive=(alertConfidence&gt;20)?true:false,
 falsePositive=(alertConfidence&lt;=20)?true:false,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*2),
+maintenanceCost+DR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*2),
+energyCost+DR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*2)</label>
+carbonCost+DR_CC*2 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id563">
 			<source ref="id544" />
@@ -136,33 +136,33 @@ carbonCost+DR_CC*2)</label>
 			<label kind="guard" x="610" y="120">alertConfidence&gt;=40 || actuatorTrust&lt;50</label>
 			<label kind="assignment" x="610" y="150">truePositive=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*3),
+maintenanceCost+DR_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*3),
+energyCost+DR_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*3),
-downtime=downtime+1</label>
+carbonCost+DR_CC*3 + (operationalStress/10)),
+downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id564">
 			<source ref="id545" />
 			<target ref="id547" />
 			<label kind="assignment" x="610" y="150">maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*2),
+maintenanceCost+DR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*2),
+energyCost+DR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*2)</label>
+carbonCost+DR_CC*2 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id565">
 			<source ref="id546" />
 			<target ref="id548" />
 			<label kind="assignment" x="520" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5),
+maintenanceCost+DR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5),
+energyCost+DR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5),
-downtime=downtime+1</label>
+carbonCost+DR_CC*5 + (operationalStress/10)),
+downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id566">
 			<source ref="id547" />
@@ -170,11 +170,11 @@ downtime=downtime+1</label>
 			<label kind="assignment" x="340" y="220">firewall=true,
 waf=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*2),
+maintenanceCost+DR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*2),
+energyCost+DR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*2)</label>
+carbonCost+DR_CC*2 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id567">
 			<source ref="id548" />
@@ -182,11 +182,11 @@ carbonCost+DR_CC*2)</label>
 			<label kind="assignment" x="250" y="220">firewall=true,
 waf=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*3),
+maintenanceCost+DR_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*3),
+energyCost+DR_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*3)</label>
+carbonCost+DR_CC*3 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id568">
 			<source ref="id549" />
@@ -194,32 +194,32 @@ carbonCost+DR_CC*3)</label>
 			<label kind="assignment" x="70" y="220">ids=true,
 edr=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5),
+maintenanceCost+DR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5),
+energyCost+DR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5)</label>
+carbonCost+DR_CC*5 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id569">
 			<source ref="id550" />
 			<target ref="id551" />
 			<label kind="assignment" x="-20" y="290">dlp=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5),
+maintenanceCost+DR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5),
+energyCost+DR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5)</label>
+carbonCost+DR_CC*5 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id570">
 			<source ref="id551" />
 			<target ref="id552" />
 			<label kind="assignment" x="70" y="360">maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*3),
+maintenanceCost+DR_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*4),
+energyCost+DR_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*3)</label>
+carbonCost+DR_CC*3 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id571">
 			<source ref="id552" />
@@ -230,11 +230,11 @@ failSafeEngaged=(operationalSafetyErosion&gt;70 &amp;&amp; processDeviation&gt;5
 safeModeOperation=(failSafeEngaged)?100:((telemetryTrust&lt;50)?50:0),
 downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:downtime),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*4),
+maintenanceCost+DR_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5),
+energyCost+DR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*4)</label>
+carbonCost+DR_CC*4 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id572">
 			<source ref="id553" />
@@ -242,11 +242,11 @@ carbonCost+DR_CC*4)</label>
 			<label kind="assignment" x="430" y="360">breach=(stealthPreference&gt;70 &amp;&amp; mitigationConfidence&lt;50)?true:false,
 downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:((downtime&gt;0)?downtime-1:0)),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5),
+maintenanceCost+DR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*6),
+energyCost+DR_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5)</label>
+carbonCost+DR_CC*5 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id573">
 			<source ref="id554" />
@@ -259,11 +259,11 @@ mitigationConfidence=min(100, mitigationConfidence + (recoveryCapacity/10)),
 safetyMargin=(safeModeOperation&gt;0)?safetyMargin:min(100, safetyMargin + (100-safetyMargin)/10),
 downtime=(downtime&gt;0)?downtime-1:0,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*6),
+maintenanceCost+DR_MC*6 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*7),
+energyCost+DR_EC*7 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*6)</label>
+carbonCost+DR_CC*6 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id574">
 			<source ref="id555" />
@@ -278,11 +278,11 @@ controlLoopStability=(failSafeEngaged)?controlLoopStability:min(100, controlLoop
 actuatorTrust=min(100, actuatorTrust + (100-actuatorTrust)/10),
 backupIntegrity=min(100, backupIntegrity + (100-backupIntegrity)/10),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*8),
+maintenanceCost+DR_MC*8 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*8),
+energyCost+DR_EC*8 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*7)</label>
+carbonCost+DR_CC*7 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id575">
 			<source ref="id556" />

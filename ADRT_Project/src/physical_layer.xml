@@ -84,12 +84,12 @@ carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
 			<source ref="id4" />
 			<target ref="id5" />
 			<label kind="synchronisation" x="430" y="205">start_malware!</label>
-			<label kind="assignment" x="430" y="220">downtime=downtime+1</label>
+			<label kind="assignment" x="430" y="220">downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id15">
 			<source ref="id5" />
 			<target ref="id6" />
-			<label kind="assignment" x="250" y="220">downtime=downtime+1</label>
+			<label kind="assignment" x="250" y="220">downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id16">
 			<source ref="id6" />

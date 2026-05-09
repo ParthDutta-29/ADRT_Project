@@ -73,7 +73,7 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<target ref="id27" />
 			<label kind="guard" x="-20" y="260">or_hits&gt;=1</label>
 			<label kind="synchronisation" x="-20" y="275">success?</label>
-			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*2)</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*2 + congestionPressure/10)</label>
 		</transition>
 		<transition id="id36">
 			<source ref="id26" />
@@ -247,9 +247,9 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<target ref="id62" />
 			<label kind="synchronisation" x="70" y="205">success?</label>
 			<label kind="assignment" x="70" y="220">breach=true,
-maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*3),
-energyCost := min(MAX_COST,energyCost+GATE_EC*3),
-carbonCost := min(MAX_COST,carbonCost+GATE_CC*3)</label>
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*3 + congestionPressure/10),
+energyCost := min(MAX_COST,energyCost+GATE_EC*3 + (operationalStress/10)),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*3 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id70">
 			<source ref="id61" />
@@ -338,9 +338,9 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<target ref="id80" />
 			<label kind="synchronisation" x="70" y="205">success?</label>
 			<label kind="assignment" x="70" y="220">breach=true,
-maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
-energyCost := min(MAX_COST,energyCost+GATE_EC*4),
-carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4 + congestionPressure/10),
+energyCost := min(MAX_COST,energyCost+GATE_EC*4 + (operationalStress/10)),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*4 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id88">
 			<source ref="id79" />
@@ -434,9 +434,9 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<source ref="id97" />
 			<target ref="id99" />
 			<label kind="assignment" x="70" y="290">breach=true,
-maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*5),
-energyCost := min(MAX_COST,energyCost+GATE_EC*5),
-carbonCost := min(MAX_COST,carbonCost+GATE_CC*5)</label>
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*5 + congestionPressure/10),
+energyCost := min(MAX_COST,energyCost+GATE_EC*5 + (operationalStress/10)),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*5 + (operationalStress/10))</label>
 			<label kind="probability" x="70" y="305">1 + stealthPreference/25 + congestionPressure/20</label>
 		</transition>
 		<transition id="id107">
@@ -525,9 +525,9 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 			<source ref="id115" />
 			<target ref="id117" />
 			<label kind="assignment" x="70" y="290">breach=true,
-maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
-energyCost := min(MAX_COST,energyCost+GATE_EC*4),
-carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4 + congestionPressure/10),
+energyCost := min(MAX_COST,energyCost+GATE_EC*4 + (operationalStress/10)),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*4 + (operationalStress/10))</label>
 			<label kind="probability" x="70" y="305">1 + stealthPreference/25 + congestionPressure/20</label>
 		</transition>
 		<transition id="id125">
