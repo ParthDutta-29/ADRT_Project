@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nta>
+<template>
+		<name>Attack_Coordinator</name>
+		<location id="id595" x="40" y="80">
+			<name x="30" y="55">AC_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id596" x="220" y="80">
+			<name x="210" y="55">AC_Net</name>
+			<label kind="exponentialrate" x="210" y="98">4</label>
+		</location>
+		<location id="id597" x="400" y="80">
+			<name x="390" y="55">AC_Web</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id598" x="580" y="80">
+			<name x="570" y="55">AC_API</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id599" x="760" y="80">
+			<name x="750" y="55">AC_Malware</name>
+			<label kind="exponentialrate" x="750" y="98">4</label>
+		</location>
+		<location id="id600" x="760" y="220">
+			<name x="750" y="195">AC_Ransom</name>
+			<label kind="exponentialrate" x="750" y="238">4</label>
+		</location>
+		<location id="id601" x="580" y="220">
+			<name x="570" y="195">AC_Phish</name>
+			<label kind="exponentialrate" x="570" y="238">4</label>
+		</location>
+		<location id="id602" x="400" y="220">
+			<name x="390" y="195">AC_Cred</name>
+			<label kind="exponentialrate" x="390" y="238">4</label>
+		</location>
+		<location id="id603" x="220" y="220">
+			<name x="210" y="195">AC_Insider</name>
+			<label kind="exponentialrate" x="210" y="238">4</label>
+		</location>
+		<location id="id604" x="40" y="220">
+			<name x="30" y="195">AC_Supply</name>
+			<label kind="exponentialrate" x="30" y="238">4</label>
+		</location>
+		<location id="id605" x="40" y="360">
+			<name x="30" y="335">AC_Firm</name>
+			<label kind="exponentialrate" x="30" y="378">4</label>
+		</location>
+		<location id="id606" x="220" y="360">
+			<name x="210" y="335">AC_Lateral</name>
+			<label kind="exponentialrate" x="210" y="378">4</label>
+		</location>
+		<location id="id607" x="400" y="360">
+			<name x="390" y="335">AC_Persist</name>
+			<label kind="exponentialrate" x="390" y="378">4</label>
+		</location>
+		<location id="id608" x="580" y="360">
+			<name x="570" y="335">AC_Done</name>
+			<label kind="exponentialrate" x="570" y="378">2</label>
+		</location>
+		<init ref="id595" />
+		<transition id="id609">
+			<source ref="id595" />
+			<target ref="id596" />
+			<label kind="synchronisation" x="70" y="65">start_net!</label>
+		</transition>
+		<transition id="id610">
+			<source ref="id596" />
+			<target ref="id597" />
+			<label kind="synchronisation" x="250" y="65">start_web!</label>
+		</transition>
+		<transition id="id611">
+			<source ref="id597" />
+			<target ref="id598" />
+			<label kind="synchronisation" x="430" y="65">start_api!</label>
+		</transition>
+		<transition id="id612">
+			<source ref="id598" />
+			<target ref="id599" />
+			<label kind="synchronisation" x="610" y="65">start_malware!</label>
+		</transition>
+		<transition id="id613">
+			<source ref="id599" />
+			<target ref="id600" />
+			<label kind="synchronisation" x="700" y="135">start_ransom!</label>
+		</transition>
+		<transition id="id614">
+			<source ref="id600" />
+			<target ref="id601" />
+			<label kind="synchronisation" x="610" y="205">start_phish!</label>
+		</transition>
+		<transition id="id615">
+			<source ref="id601" />
+			<target ref="id602" />
+			<label kind="synchronisation" x="430" y="205">start_cred!</label>
+		</transition>
+		<transition id="id616">
+			<source ref="id602" />
+			<target ref="id603" />
+			<label kind="synchronisation" x="250" y="205">start_insider!</label>
+		</transition>
+		<transition id="id617">
+			<source ref="id603" />
+			<target ref="id604" />
+			<label kind="synchronisation" x="70" y="205">start_supply!</label>
+		</transition>
+		<transition id="id618">
+			<source ref="id604" />
+			<target ref="id605" />
+			<label kind="synchronisation" x="-20" y="275">start_firmware!</label>
+		</transition>
+		<transition id="id619">
+			<source ref="id605" />
+			<target ref="id606" />
+			<label kind="synchronisation" x="70" y="345">start_lateral!</label>
+		</transition>
+		<transition id="id620">
+			<source ref="id606" />
+			<target ref="id607" />
+			<label kind="synchronisation" x="250" y="345">start_persist!</label>
+		</transition>
+		<transition id="id621">
+			<source ref="id607" />
+			<target ref="id608" />
+		</transition>
+		<transition id="id622">
+			<source ref="id608" />
+			<target ref="id595" />
+		</transition>
+	</template>
+	
+</nta>

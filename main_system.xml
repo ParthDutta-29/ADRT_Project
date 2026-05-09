@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.6//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd" [
+  <!ENTITY global_defs SYSTEM "global_defs.xml">
+  <!ENTITY physical_layer SYSTEM "physical_layer.xml">
+  <!ENTITY network_layer SYSTEM "network_layer.xml">
+  <!ENTITY attack_layer SYSTEM "attack_layer.xml">
+  <!ENTITY defense_layer SYSTEM "defense_layer.xml">
+  <!ENTITY human_layer SYSTEM "human_layer.xml">
+  <!ENTITY recovery_layer SYSTEM "recovery_layer.xml">
+  <!ENTITY strategy_layer SYSTEM "strategy_layer.xml">
+]>
+<nta>
+  &global_defs;
+  &physical_layer;
+  &network_layer;
+  &attack_layer;
+  &defense_layer;
+  &human_layer;
+  &recovery_layer;
+  &strategy_layer;
+  <system>
+
+E    = Environment();
+G1   = OR_L12();
+G2   = OR_L2();
+G3   = AND_L12();
+G4   = AND_L2();
+G5   = NOT_FW2();
+G6   = NOT_IDS();
+G7   = Voting_Gate();
+N    = Network_Attack();
+WA   = Web_Attack();
+AA   = API_Attack();
+MA   = Malware_Attack();
+RA   = Ransomware_Attack();
+PH   = Phishing_Attack();
+CR   = Credential_Attack();
+INS  = Insider_Attack();
+SUP  = Supply_Attack();
+FWA  = Firmware_Attack();
+LM   = Lateral_Movement();
+PM   = Persistence_Module();
+F    = Firewall_Defense();
+IDSD = IDS_Defense();
+WAFD = WAF_Defense();
+EDRD = EDR_Defense();
+DLPD = DLP_Defense();
+DR   = Defender_Response();
+BM   = Breach_Monitor();
+AC   = Attack_Coordinator();
+system E, G1, G2, G3, G4, G5, G6, G7,
+       N, WA, AA, MA, RA, PH, CR, INS, SUP, FWA, LM, PM,
+       F, IDSD, WAFD, EDRD, DLPD,
+       DR, BM, AC;
+
+  </system>
+</nta>

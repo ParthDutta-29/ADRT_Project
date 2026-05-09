@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nta>
+<template>
+		<name>OR_L12</name>
+		<declaration>int or_hits=0;</declaration>
+		<location id="id21" x="40" y="80">
+			<name x="30" y="55">OR_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id22" x="220" y="80">
+			<name x="210" y="55">OR_Armed</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id23" x="400" y="80">
+			<name x="390" y="55">Path_A</name>
+			<label kind="exponentialrate" x="390" y="98">3</label>
+		</location>
+		<location id="id24" x="400" y="220">
+			<name x="390" y="195">Path_B</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id25" x="220" y="220">
+			<name x="210" y="195">OR_Merge</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id26" x="40" y="220">
+			<name x="30" y="195">OR_Evaluate</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id27" x="40" y="360">
+			<name x="30" y="335">OR_Pass</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id28" x="220" y="360">
+			<name x="210" y="335">OR_Block</name>
+			<label kind="exponentialrate" x="210" y="378">1</label>
+		</location>
+		<init ref="id21" />
+		<transition id="id29">
+			<source ref="id21" />
+			<target ref="id22" />
+			<label kind="assignment" x="70" y="80">or_hits=0,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id30">
+			<source ref="id22" />
+			<target ref="id23" />
+			<label kind="assignment" x="250" y="80">or_hits=(net==true)?1:0</label>
+		</transition>
+		<transition id="id31">
+			<source ref="id22" />
+			<target ref="id24" />
+			<label kind="assignment" x="250" y="150">or_hits=(web==true)?or_hits+1:or_hits</label>
+		</transition>
+		<transition id="id32">
+			<source ref="id23" />
+			<target ref="id25" />
+			<label kind="assignment" x="250" y="150">or_hits=(api==true)?or_hits+1:or_hits</label>
+		</transition>
+		<transition id="id33">
+			<source ref="id24" />
+			<target ref="id25" />
+		</transition>
+		<transition id="id34">
+			<source ref="id25" />
+			<target ref="id26" />
+			<label kind="assignment" x="70" y="220">riskScore=min(100,riskScore+or_hits)</label>
+		</transition>
+		<transition id="id35">
+			<source ref="id26" />
+			<target ref="id27" />
+			<label kind="guard" x="-20" y="260">or_hits&gt;=1</label>
+			<label kind="synchronisation" x="-20" y="275">success?</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*2)</label>
+		</transition>
+		<transition id="id36">
+			<source ref="id26" />
+			<target ref="id28" />
+			<label kind="guard" x="70" y="260">or_hits==0</label>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id37">
+			<source ref="id27" />
+			<target ref="id21" />
+			<label kind="synchronisation" x="-20" y="205">detect!</label>
+		</transition>
+		<transition id="id38">
+			<source ref="id28" />
+			<target ref="id21" />
+		</transition>
+	</template>
+	
+<template>
+		<name>OR_L2</name>
+		<declaration>int or2_hits=0;</declaration>
+		<location id="id39" x="40" y="80">
+			<name x="30" y="55">OR2_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id40" x="220" y="80">
+			<name x="210" y="55">OR2_Armed</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id41" x="400" y="80">
+			<name x="390" y="55">OR2_Path_A</name>
+			<label kind="exponentialrate" x="390" y="98">3</label>
+		</location>
+		<location id="id42" x="400" y="220">
+			<name x="390" y="195">OR2_Path_B</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id43" x="220" y="220">
+			<name x="210" y="195">OR2_Merge</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id44" x="40" y="220">
+			<name x="30" y="195">OR2_Pass</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id45" x="40" y="360">
+			<name x="30" y="335">OR2_Block</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id46" x="220" y="360">
+			<name x="210" y="335">OR2_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id39" />
+		<transition id="id47">
+			<source ref="id39" />
+			<target ref="id40" />
+			<label kind="assignment" x="70" y="80">or2_hits := 0,
+    			maintenanceCost := min(MAX_COST, maintenanceCost + GATE_MC),
+    			energyCost := min(MAX_COST, energyCost + GATE_EC),
+    			carbonCost := min(MAX_COST, carbonCost + GATE_CC)</label>
+		</transition>
+		<transition id="id48">
+			<source ref="id40" />
+			<target ref="id41" />
+			<label kind="assignment" x="250" y="80">or2_hits=(malware==true)?1:0</label>
+		</transition>
+		<transition id="id49">
+			<source ref="id40" />
+			<target ref="id42" />
+			<label kind="assignment" x="250" y="150">or2_hits=(ransom==true)?or2_hits+1:or2_hits</label>
+		</transition>
+		<transition id="id50">
+			<source ref="id41" />
+			<target ref="id43" />
+			<label kind="assignment" x="250" y="150">or2_hits=(phishing==true)?or2_hits+1:or2_hits</label>
+		</transition>
+		<transition id="id51">
+			<source ref="id42" />
+			<target ref="id43" />
+		</transition>
+		<transition id="id52">
+			<source ref="id43" />
+			<target ref="id44" />
+			<label kind="guard" x="70" y="190">or2_hits&gt;=1</label>
+			<label kind="synchronisation" x="70" y="205">success?</label>
+			<label kind="assignment" x="70" y="220">riskScore=min(100,riskScore+or2_hits*2),
+breach=(or2_hits&gt;=2)?true:breach</label>
+		</transition>
+		<transition id="id53">
+			<source ref="id43" />
+			<target ref="id45" />
+			<label kind="guard" x="70" y="260">or2_hits==0</label>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id54">
+			<source ref="id44" />
+			<target ref="id46" />
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+		</transition>
+		<transition id="id55">
+			<source ref="id45" />
+			<target ref="id46" />
+		</transition>
+		<transition id="id56">
+			<source ref="id46" />
+			<target ref="id39" />
+			<label kind="assignment" x="70" y="220">or2_hits=0</label>
+		</transition>
+	</template>
+	
+<template>
+		<name>AND_L12</name>
+		<location id="id57" x="40" y="80">
+			<name x="30" y="55">AND_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id58" x="220" y="80">
+			<name x="210" y="55">AND_Cond_A</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id59" x="400" y="80">
+			<name x="390" y="55">AND_Cond_B</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id60" x="400" y="220">
+			<name x="390" y="195">AND_Both_Met</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id61" x="220" y="220">
+			<name x="210" y="195">AND_Evaluate</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id62" x="40" y="220">
+			<name x="30" y="195">AND_Pass</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id63" x="40" y="360">
+			<name x="30" y="335">AND_Fail</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id64" x="220" y="360">
+			<name x="210" y="335">AND_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id57" />
+		<transition id="id65">
+			<source ref="id57" />
+			<target ref="id58" />
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id66">
+			<source ref="id58" />
+			<target ref="id59" />
+			<label kind="guard" x="250" y="50">net==true</label>
+		</transition>
+		<transition id="id67">
+			<source ref="id59" />
+			<target ref="id60" />
+			<label kind="guard" x="340" y="120">web==true</label>
+		</transition>
+		<transition id="id68">
+			<source ref="id60" />
+			<target ref="id61" />
+			<label kind="assignment" x="250" y="220">riskScore=min(100,riskScore+3)</label>
+		</transition>
+		<transition id="id69">
+			<source ref="id61" />
+			<target ref="id62" />
+			<label kind="synchronisation" x="70" y="205">success?</label>
+			<label kind="assignment" x="70" y="220">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*3),
+energyCost := min(MAX_COST,energyCost+GATE_EC*3),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*3)</label>
+		</transition>
+		<transition id="id70">
+			<source ref="id61" />
+			<target ref="id63" />
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id71">
+			<source ref="id58" />
+			<target ref="id63" />
+			<label kind="guard" x="70" y="190">net==false</label>
+		</transition>
+		<transition id="id72">
+			<source ref="id62" />
+			<target ref="id64" />
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+		</transition>
+		<transition id="id73">
+			<source ref="id63" />
+			<target ref="id64" />
+		</transition>
+		<transition id="id74">
+			<source ref="id64" />
+			<target ref="id57" />
+		</transition>
+	</template>
+	
+<template>
+		<name>AND_L2</name>
+		<location id="id75" x="40" y="80">
+			<name x="30" y="55">AND2_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id76" x="220" y="80">
+			<name x="210" y="55">AND2_Wait_A</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id77" x="400" y="80">
+			<name x="390" y="55">AND2_Wait_B</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id78" x="400" y="220">
+			<name x="390" y="195">AND2_Sync</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id79" x="220" y="220">
+			<name x="210" y="195">AND2_Evaluate</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id80" x="40" y="220">
+			<name x="30" y="195">AND2_Pass</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id81" x="40" y="360">
+			<name x="30" y="335">AND2_Privilege_Escalation</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id82" x="220" y="360">
+			<name x="210" y="335">AND2_Done</name>
+			<label kind="exponentialrate" x="210" y="378">1</label>
+		</location>
+		<init ref="id75" />
+		<transition id="id83">
+			<source ref="id75" />
+			<target ref="id76" />
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id84">
+			<source ref="id76" />
+			<target ref="id77" />
+			<label kind="guard" x="250" y="50">lateral==true</label>
+		</transition>
+		<transition id="id85">
+			<source ref="id77" />
+			<target ref="id78" />
+			<label kind="guard" x="340" y="120">persistence==true</label>
+		</transition>
+		<transition id="id86">
+			<source ref="id78" />
+			<target ref="id79" />
+			<label kind="assignment" x="250" y="220">riskScore=min(100,riskScore+4)</label>
+		</transition>
+		<transition id="id87">
+			<source ref="id79" />
+			<target ref="id80" />
+			<label kind="synchronisation" x="70" y="205">success?</label>
+			<label kind="assignment" x="70" y="220">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
+energyCost := min(MAX_COST,energyCost+GATE_EC*4),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
+		</transition>
+		<transition id="id88">
+			<source ref="id79" />
+			<target ref="id81" />
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id89">
+			<source ref="id76" />
+			<target ref="id81" />
+			<label kind="guard" x="70" y="190">lateral==false</label>
+		</transition>
+		<transition id="id90">
+			<source ref="id80" />
+			<target ref="id82" />
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+		</transition>
+		<transition id="id91">
+			<source ref="id81" />
+			<target ref="id75" />
+		</transition>
+		<transition id="id92">
+			<source ref="id82" />
+			<target ref="id75" />
+		</transition>
+	</template>
+	
+<template>
+		<name>NOT_FW2</name>
+		<location id="id93" x="40" y="80">
+			<name x="30" y="55">NFW_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id94" x="220" y="80">
+			<name x="210" y="55">NFW_Check_FW</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id95" x="400" y="80">
+			<name x="390" y="55">NFW_FW_Active</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id96" x="400" y="220">
+			<name x="390" y="195">NFW_FW_Down</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id97" x="220" y="220">
+			<name x="210" y="195">NFW_OT_Traversal</name>
+			<label kind="exponentialrate" x="210" y="238">3</label>
+		</location>
+		<location id="id98" x="40" y="220">
+			<name x="30" y="195">NFW_Mitigated</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id99" x="40" y="360">
+			<name x="30" y="335">NFW_AttackWin</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id100" x="220" y="360">
+			<name x="210" y="335">NFW_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id93" />
+		<transition id="id101">
+			<source ref="id93" />
+			<target ref="id94" />
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id102">
+			<source ref="id94" />
+			<target ref="id95" />
+			<label kind="guard" x="250" y="50">firewall==true</label>
+		</transition>
+		<transition id="id103">
+			<source ref="id94" />
+			<target ref="id96" />
+			<label kind="guard" x="250" y="120">firewall==false</label>
+			<label kind="assignment" x="250" y="150">riskScore=min(100,riskScore+3)</label>
+		</transition>
+		<transition id="id104">
+			<source ref="id95" />
+			<target ref="id98" />
+			<label kind="synchronisation" x="160" y="135">detect!</label>
+		</transition>
+		<transition id="id105">
+			<source ref="id96" />
+			<target ref="id97" />
+			<label kind="assignment" x="250" y="220">fwQueueSize=min(100,fwQueueSize+10)</label>
+		</transition>
+		<transition id="id106">
+			<source ref="id97" />
+			<target ref="id99" />
+			<label kind="assignment" x="70" y="290">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*5),
+energyCost := min(MAX_COST,energyCost+GATE_EC*5),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*5)</label>
+			<label kind="probability" x="70" y="305">8</label>
+		</transition>
+		<transition id="id107">
+			<source ref="id97" />
+			<target ref="id98" />
+			<label kind="probability" x="70" y="235">2</label>
+		</transition>
+		<transition id="id108">
+			<source ref="id99" />
+			<target ref="id100" />
+		</transition>
+		<transition id="id109">
+			<source ref="id98" />
+			<target ref="id100" />
+		</transition>
+		<transition id="id110">
+			<source ref="id100" />
+			<target ref="id93" />
+		</transition>
+	</template>
+	
+<template>
+		<name>NOT_IDS</name>
+		<location id="id111" x="40" y="80">
+			<name x="30" y="55">NIDS_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id112" x="220" y="80">
+			<name x="210" y="55">NIDS_Check_IDS</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id113" x="400" y="80">
+			<name x="390" y="55">NIDS_IDS_Active</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id114" x="400" y="220">
+			<name x="390" y="195">NIDS_IDS_Down</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id115" x="220" y="220">
+			<name x="210" y="195">NIDS_Evade</name>
+			<label kind="exponentialrate" x="210" y="238">3</label>
+		</location>
+		<location id="id116" x="40" y="220">
+			<name x="30" y="195">NIDS_Caught</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id117" x="40" y="360">
+			<name x="30" y="335">NIDS_Exfil</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id118" x="220" y="360">
+			<name x="210" y="335">NIDS_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id111" />
+		<transition id="id119">
+			<source ref="id111" />
+			<target ref="id112" />
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id120">
+			<source ref="id112" />
+			<target ref="id113" />
+			<label kind="guard" x="250" y="50">ids==true</label>
+		</transition>
+		<transition id="id121">
+			<source ref="id112" />
+			<target ref="id114" />
+			<label kind="guard" x="250" y="120">ids==false</label>
+			<label kind="assignment" x="250" y="150">riskScore=min(100,riskScore+3)</label>
+		</transition>
+		<transition id="id122">
+			<source ref="id113" />
+			<target ref="id116" />
+			<label kind="synchronisation" x="160" y="135">detect!</label>
+		</transition>
+		<transition id="id123">
+			<source ref="id114" />
+			<target ref="id115" />
+			<label kind="assignment" x="250" y="220">idsQueueSize=min(100,idsQueueSize+10)</label>
+		</transition>
+		<transition id="id124">
+			<source ref="id115" />
+			<target ref="id117" />
+			<label kind="assignment" x="70" y="290">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
+energyCost := min(MAX_COST,energyCost+GATE_EC*4),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
+			<label kind="probability" x="70" y="305">7</label>
+		</transition>
+		<transition id="id125">
+			<source ref="id115" />
+			<target ref="id116" />
+			<label kind="synchronisation" x="70" y="205">detect!</label>
+			<label kind="probability" x="70" y="235">3</label>
+		</transition>
+		<transition id="id126">
+			<source ref="id117" />
+			<target ref="id118" />
+		</transition>
+		<transition id="id127">
+			<source ref="id116" />
+			<target ref="id118" />
+		</transition>
+		<transition id="id128">
+			<source ref="id118" />
+			<target ref="id111" />
+			<label kind="assignment" x="70" y="220">ids=true</label>
+		</transition>
+	</template>
+	
+<template>
+		<name>Voting_Gate</name>
+		<declaration>int vg_count=0;</declaration>
+		<location id="id129" x="40" y="80">
+			<name x="30" y="55">Vote_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id130" x="220" y="80">
+			<name x="210" y="55">Vote_Cast1</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id131" x="400" y="80">
+			<name x="390" y="55">Vote_Cast2</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id132" x="400" y="220">
+			<name x="390" y="195">Vote_Cast3</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id133" x="220" y="220">
+			<name x="210" y="195">Vote_Tally</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id134" x="40" y="220">
+			<name x="30" y="195">Vote_Threshold</name>
+			<label kind="exponentialrate" x="30" y="238">3</label>
+		</location>
+		<location id="id135" x="40" y="360">
+			<name x="30" y="335">Vote_Pass</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id136" x="220" y="360">
+			<name x="210" y="335">Vote_Reject</name>
+			<label kind="exponentialrate" x="210" y="378">1</label>
+		</location>
+		<location id="id137" x="400" y="360">
+			<name x="390" y="335">Vote_Reset</name>
+			<label kind="exponentialrate" x="390" y="378">2</label>
+		</location>
+		<init ref="id129" />
+		<transition id="id138">
+			<source ref="id129" />
+			<target ref="id130" />
+			<label kind="assignment" x="70" y="80">vg_count=0,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id139">
+			<source ref="id130" />
+			<target ref="id131" />
+			<label kind="assignment" x="250" y="80">vg_count=(supply==true)?1:0</label>
+		</transition>
+		<transition id="id140">
+			<source ref="id131" />
+			<target ref="id132" />
+			<label kind="assignment" x="340" y="150">vg_count=(firmware==true)?vg_count+1:vg_count</label>
+		</transition>
+		<transition id="id141">
+			<source ref="id132" />
+			<target ref="id133" />
+			<label kind="assignment" x="250" y="220">vg_count=(insider==true)?vg_count+1:vg_count</label>
+		</transition>
+		<transition id="id142">
+			<source ref="id133" />
+			<target ref="id134" />
+			<label kind="assignment" x="70" y="220">riskScore=min(100,riskScore+vg_count*2)</label>
+		</transition>
+		<transition id="id143">
+			<source ref="id134" />
+			<target ref="id135" />
+			<label kind="guard" x="-20" y="260">vg_count&gt;=2</label>
+			<label kind="synchronisation" x="-20" y="275">success?</label>
+			<label kind="assignment" x="-20" y="290">breach=true,
+				maintenanceCost := min(MAX_COST, maintenanceCost + GATE_MC),
+				energyCost := min(MAX_COST, energyCost + GATE_EC),
+				carbonCost := min(MAX_COST, carbonCost + GATE_CC)</label>
+		</transition>
+		<transition id="id144">
+			<source ref="id134" />
+			<target ref="id136" />
+			<label kind="guard" x="70" y="260">vg_count&lt;2</label>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id145">
+			<source ref="id135" />
+			<target ref="id137" />
+			<label kind="synchronisation" x="160" y="345">detect!</label>
+		</transition>
+		<transition id="id146">
+			<source ref="id136" />
+			<target ref="id137" />
+		</transition>
+		<transition id="id147">
+			<source ref="id137" />
+			<target ref="id129" />
+			<label kind="assignment" x="160" y="220">vg_count=0</label>
+		</transition>
+	</template>
+	
+</nta>

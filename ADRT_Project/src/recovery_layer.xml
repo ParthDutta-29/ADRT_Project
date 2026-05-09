@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nta>
+<template>
+		<name>Breach_Monitor</name>
+		<location id="id578" x="40" y="80">
+			<name x="30" y="55">BM_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id579" x="220" y="80">
+			<name x="210" y="55">BM_Evasion_Check</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id580" x="400" y="80">
+			<name x="390" y="55">BM_Evaluate</name>
+			<label kind="exponentialrate" x="390" y="98">3</label>
+		</location>
+		<location id="id581" x="400" y="220">
+			<name x="390" y="195">BM_Breach</name>
+			<label kind="exponentialrate" x="390" y="238">1</label>
+		</location>
+		<location id="id582" x="220" y="220">
+			<name x="210" y="195">BM_Safe</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id583" x="40" y="220">
+			<name x="30" y="195">BM_Merge</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id584" x="40" y="360">
+			<name x="30" y="335">BM_Report</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id585" x="220" y="360">
+			<name x="210" y="335">BM_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<init ref="id578" />
+		<transition id="id586">
+			<source ref="id578" />
+			<target ref="id579" />
+			<label kind="guard" x="70" y="50">net==true || web==true || api==true || malware==true || ransom==true || phishing==true || credential==true || insider==true || supply==true || firmware==true || lateral==true || persistence==true</label>
+		</transition>
+		<transition id="id587">
+			<source ref="id579" />
+			<target ref="id580" />
+		</transition>
+		<transition id="id588">
+			<source ref="id580" />
+			<target ref="id581" />
+			<label kind="guard" x="340" y="120">firewall==false || ids==false</label>
+			<label kind="assignment" x="340" y="150">breach=true,
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id589">
+			<source ref="id580" />
+			<target ref="id582" />
+			<label kind="guard" x="250" y="120">firewall==true &amp;&amp; ids==true</label>
+			<label kind="assignment" x="250" y="150">riskScore=(riskScore&gt;1)?riskScore-1:0</label>
+		</transition>
+		<transition id="id590">
+			<source ref="id581" />
+			<target ref="id583" />
+		</transition>
+		<transition id="id591">
+			<source ref="id582" />
+			<target ref="id583" />
+		</transition>
+		<transition id="id592">
+			<source ref="id583" />
+			<target ref="id584" />
+		</transition>
+		<transition id="id593">
+			<source ref="id584" />
+			<target ref="id585" />
+		</transition>
+		<transition id="id594">
+			<source ref="id585" />
+			<target ref="id578" />
+		</transition>
+	</template>
+	
+</nta>

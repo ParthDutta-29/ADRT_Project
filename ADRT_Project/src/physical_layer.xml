@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<nta>
+<template>
+		<name>Environment</name>
+		<declaration>clock env_t;
+int wave=0;</declaration>
+		<location id="id0" x="40" y="80">
+			<name x="30" y="55">Env_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id1" x="220" y="80">
+			<name x="210" y="55">Env_Init</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id2" x="400" y="80">
+			<name x="390" y="55">Env_Valve_Control</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id3" x="580" y="80">
+			<name x="570" y="55">Env_Flow_Dynamics</name>
+			<label kind="exponentialrate" x="570" y="98">2</label>
+		</location>
+		<location id="id4" x="580" y="220">
+			<name x="570" y="195">Env_PID_Control</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id5" x="400" y="220">
+			<name x="390" y="195">Env_Monitor</name>
+			<label kind="exponentialrate" x="390" y="238">4</label>
+		</location>
+		<location id="id6" x="220" y="220">
+			<name x="210" y="195">Env_Assess</name>
+			<label kind="exponentialrate" x="210" y="238">3</label>
+		</location>
+		<location id="id7" x="40" y="220">
+			<name x="30" y="195">Env_Success</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id8" x="40" y="360">
+			<name x="30" y="335">Env_Fail</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id9" x="220" y="360">
+			<name x="210" y="335">Env_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">4</label>
+		</location>
+		<init ref="id0" />
+		<transition id="id10">
+			<source ref="id0" />
+			<target ref="id1" />
+			<label kind="assignment" x="70" y="80">env_t=0,wave=0,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id11">
+			<source ref="id1" />
+			<target ref="id2" />
+			<label kind="synchronisation" x="250" y="65">start_net!</label>
+			<label kind="assignment" x="250" y="80">wave=1,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id12">
+			<source ref="id2" />
+			<target ref="id3" />
+			<label kind="synchronisation" x="430" y="65">start_web!</label>
+			<label kind="assignment" x="430" y="80">wave=2,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id13">
+			<source ref="id3" />
+			<target ref="id4" />
+			<label kind="synchronisation" x="520" y="135">start_api!</label>
+			<label kind="assignment" x="520" y="150">wave=3,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id14">
+			<source ref="id4" />
+			<target ref="id5" />
+			<label kind="synchronisation" x="430" y="205">start_malware!</label>
+			<label kind="assignment" x="430" y="220">downtime=downtime+1</label>
+		</transition>
+		<transition id="id15">
+			<source ref="id5" />
+			<target ref="id6" />
+			<label kind="assignment" x="250" y="220">downtime=downtime+1</label>
+		</transition>
+		<transition id="id16">
+			<source ref="id6" />
+			<target ref="id7" />
+			<label kind="synchronisation" x="70" y="205">success!</label>
+			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
+			<label kind="probability" x="70" y="235">7</label>
+		</transition>
+		<transition id="id17">
+			<source ref="id6" />
+			<target ref="id8" />
+			<label kind="synchronisation" x="70" y="275">fail!</label>
+			<label kind="assignment" x="70" y="290">riskScore=min(100,riskScore+1)</label>
+			<label kind="probability" x="70" y="305">3</label>
+		</transition>
+		<transition id="id18">
+			<source ref="id7" />
+			<target ref="id9" />
+			<label kind="assignment" x="70" y="290">wave=0</label>
+		</transition>
+		<transition id="id19">
+			<source ref="id8" />
+			<target ref="id9" />
+		</transition>
+		<transition id="id20">
+			<source ref="id9" />
+			<target ref="id0" />
+		</transition>
+	</template>
+	
+</nta>

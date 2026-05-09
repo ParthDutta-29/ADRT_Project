@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='utf-8'?>
+<nta>
+<template>
+		<name>Defender_Response</name>
+		<location id="id541" x="40" y="80">
+			<name x="30" y="55">DR_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id542" x="220" y="80">
+			<name x="210" y="55">DR_Intake</name>
+			<label kind="exponentialrate" x="210" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 5</label>
+		</location>
+		<location id="id543" x="400" y="80">
+			<name x="390" y="55">DR_Classify</name>
+			<label kind="exponentialrate" x="390" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 4</label>
+		</location>
+		<location id="id544" x="580" y="80">
+			<name x="570" y="55">DR_Risk_Score</name>
+			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 4</label>
+		</location>
+		<location id="id545" x="760" y="80">
+			<name x="750" y="55">DR_Sev_Low</name>
+			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
+		</location>
+		<location id="id546" x="760" y="220">
+			<name x="750" y="195">DR_Sev_High</name>
+			<label kind="exponentialrate" x="750" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
+		</location>
+		<location id="id547" x="580" y="220">
+			<name x="570" y="195">DR_Strat_Cheap</name>
+			<label kind="exponentialrate" x="570" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
+		</location>
+		<location id="id548" x="400" y="220">
+			<name x="390" y="195">DR_Strat_Aggr</name>
+			<label kind="exponentialrate" x="390" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
+		</location>
+		<location id="id549" x="220" y="220">
+			<name x="210" y="195">DR_Act_FW_WAF</name>
+			<label kind="exponentialrate" x="210" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
+		</location>
+		<location id="id550" x="40" y="220">
+			<name x="30" y="195">DR_Act_IDS_EDR</name>
+			<label kind="exponentialrate" x="30" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 2</label>
+		</location>
+		<location id="id551" x="40" y="360">
+			<name x="30" y="335">DR_Act_DLP</name>
+			<label kind="exponentialrate" x="30" y="378">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
+		</location>
+		<location id="id552" x="220" y="360">
+			<name x="210" y="335">DR_Contain</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<location id="id553" x="400" y="360">
+			<name x="390" y="335">DR_Isolate</name>
+			<label kind="exponentialrate" x="390" y="378">2</label>
+		</location>
+		<location id="id554" x="580" y="360">
+			<name x="570" y="335">DR_Recover</name>
+			<label kind="exponentialrate" x="570" y="378">2</label>
+		</location>
+		<location id="id555" x="760" y="360">
+			<name x="750" y="335">DR_Harden</name>
+			<label kind="exponentialrate" x="750" y="378">1</label>
+		</location>
+		<location id="id556" x="760" y="500">
+			<name x="750" y="475">DR_Feedback</name>
+			<label kind="exponentialrate" x="750" y="518">2</label>
+		</location>
+		<location id="id557" x="580" y="500">
+			<name x="570" y="475">DR_Log</name>
+			<label kind="exponentialrate" x="570" y="518">2</label>
+		</location>
+		<location id="id558" x="400" y="500">
+			<name x="390" y="475">DR_Reset</name>
+			<label kind="exponentialrate" x="390" y="518">3</label>
+		</location>
+		<init ref="id541" />
+		<transition id="id559">
+			<source ref="id541" />
+			<target ref="id542" />
+			<label kind="synchronisation" x="70" y="65">detect?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC),
+truePositive=false,
+falsePositive=false,
+falseNegative=false</label>
+		</transition>
+		<transition id="id560">
+			<source ref="id542" />
+			<target ref="id543" />
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
+		</transition>
+		<transition id="id561">
+			<source ref="id543" />
+			<target ref="id544" />
+			<label kind="assignment" x="430" y="80">severity=(riskScore&gt;=50)?2:(riskScore&gt;=20)?1:0,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
+		</transition>
+		<transition id="id562">
+			<source ref="id544" />
+			<target ref="id545" />
+			<label kind="guard" x="610" y="50">riskScore&lt;30</label>
+			<label kind="assignment" x="610" y="80">truePositive=(riskScore&gt;5)?true:false,
+falsePositive=(riskScore&lt;=5)?true:false,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
+energyCost := min(MAX_COST,energyCost+DR_EC*2),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
+		</transition>
+		<transition id="id563">
+			<source ref="id544" />
+			<target ref="id546" />
+			<label kind="guard" x="610" y="120">riskScore&gt;=30</label>
+			<label kind="assignment" x="610" y="150">truePositive=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
+energyCost := min(MAX_COST,energyCost+DR_EC*3),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*3),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id564">
+			<source ref="id545" />
+			<target ref="id547" />
+			<label kind="assignment" x="610" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
+energyCost := min(MAX_COST,energyCost+DR_EC*2),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
+		</transition>
+		<transition id="id565">
+			<source ref="id546" />
+			<target ref="id548" />
+			<label kind="assignment" x="520" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id566">
+			<source ref="id547" />
+			<target ref="id549" />
+			<label kind="assignment" x="340" y="220">firewall=true,
+waf=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
+energyCost := min(MAX_COST,energyCost+DR_EC*2),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
+		</transition>
+		<transition id="id567">
+			<source ref="id548" />
+			<target ref="id549" />
+			<label kind="assignment" x="250" y="220">firewall=true,
+waf=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
+energyCost := min(MAX_COST,energyCost+DR_EC*3),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*3)</label>
+		</transition>
+		<transition id="id568">
+			<source ref="id549" />
+			<target ref="id550" />
+			<label kind="assignment" x="70" y="220">ids=true,
+edr=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5)</label>
+		</transition>
+		<transition id="id569">
+			<source ref="id550" />
+			<target ref="id551" />
+			<label kind="assignment" x="-20" y="290">dlp=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5)</label>
+		</transition>
+		<transition id="id570">
+			<source ref="id551" />
+			<target ref="id552" />
+			<label kind="assignment" x="70" y="360">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
+energyCost := min(MAX_COST,energyCost+DR_EC*4),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*3)</label>
+		</transition>
+		<transition id="id571">
+			<source ref="id552" />
+			<target ref="id553" />
+			<label kind="assignment" x="250" y="360">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*4),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*4),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id572">
+			<source ref="id553" />
+			<target ref="id554" />
+			<label kind="assignment" x="430" y="360">breach=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*6),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5),
+downtime=(downtime&gt;1)?downtime-1:0</label>
+		</transition>
+		<transition id="id573">
+			<source ref="id554" />
+			<target ref="id555" />
+			<label kind="assignment" x="610" y="360">defense_score=5,
+scadaCompromised=false,
+plcCompromised=false,
+sensorCompromised=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*6),
+energyCost := min(MAX_COST,energyCost+DR_EC*7),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*6),
+downtime=(downtime&gt;0)?downtime-1:0</label>
+		</transition>
+		<transition id="id574">
+			<source ref="id555" />
+			<target ref="id556" />
+			<label kind="assignment" x="700" y="430">fw_strength=min(10,fw_strength+1),
+ids_strength=min(10,ids_strength+1),
+waf_strength=min(10,waf_strength+1),
+edr_strength=min(10,edr_strength+1),
+dlp_strength=min(10,dlp_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*8),
+energyCost := min(MAX_COST,energyCost+DR_EC*8),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*7)</label>
+		</transition>
+		<transition id="id575">
+			<source ref="id556" />
+			<target ref="id557" />
+			<label kind="assignment" x="610" y="500">threat_score=0,
+riskScore=(riskScore&gt;10)?riskScore-10:0,
+fwQueueSize=(fwQueueSize&gt;10)?fwQueueSize-10:0,
+idsQueueSize=(idsQueueSize&gt;10)?idsQueueSize-10:0,
+wafQueueSize=(wafQueueSize&gt;10)?wafQueueSize-10:0,
+edrQueueSize=(edrQueueSize&gt;10)?edrQueueSize-10:0,
+dlpQueueSize=(dlpQueueSize&gt;10)?dlpQueueSize-10:0</label>
+		</transition>
+		<transition id="id576">
+			<source ref="id557" />
+			<target ref="id558" />
+			<label kind="assignment" x="430" y="500">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
+		</transition>
+		<transition id="id577">
+			<source ref="id558" />
+			<target ref="id541" />
+		</transition>
+	</template>
+	
+</nta>

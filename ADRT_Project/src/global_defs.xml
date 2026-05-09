@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<declaration>
+/* ── Global clock ── */
+clock x;
+
+/* ── Cost ceiling ── */
+const int MAX_COST = 1000000;
+
+/* ── Helper functions (fix: min/max not built-in in UPPAAL) ── */
+
+int[0, MAX_COST] min(int[0, MAX_COST*2] a, int[0, MAX_COST*2] b) { 
+    return (a &lt; b) ? a : b; 
+}
+
+int[0, MAX_COST] max(int[0, MAX_COST*2] a, int[0, MAX_COST*2] b) { 
+    return (a &gt; b) ? a : b; 
+}
+
+
+/* ── Per-template cost constants (replaces parameters) ── */
+/* Environment / gates */
+const int ENV_MC  = 5;   const int ENV_EC  = 2;   const int ENV_CC  = 1;
+const int GATE_MC = 5;   const int GATE_EC = 2;   const int GATE_CC = 1;
+/* Attack costs */
+const int NET_MC  = 20;  const int NET_EC  = 10;  const int NET_CC  = 5;
+const int WEB_MC  = 15;  const int WEB_EC  = 8;   const int WEB_CC  = 3;
+const int API_MC  = 15;  const int API_EC  = 8;   const int API_CC  = 3;
+const int MAL_MC  = 25;  const int MAL_EC  = 15;  const int MAL_CC  = 7;
+const int RAN_MC  = 30;  const int RAN_EC  = 20;  const int RAN_CC  = 10;
+const int PHI_MC  = 10;  const int PHI_EC  = 5;   const int PHI_CC  = 2;
+const int CRE_MC  = 12;  const int CRE_EC  = 6;   const int CRE_CC  = 3;
+const int INS_MC  = 8;   const int INS_EC  = 4;   const int INS_CC  = 2;
+const int SUP_MC  = 35;  const int SUP_EC  = 25;  const int SUP_CC  = 12;
+const int FWA_MC  = 40;  const int FWA_EC  = 30;  const int FWA_CC  = 15;
+const int LMV_MC  = 20;  const int LMV_EC  = 12;  const int LMV_CC  = 6;
+const int PER_MC  = 20;  const int PER_EC  = 12;  const int PER_CC  = 6;
+/* Defense costs */
+const int FWD_MC  = 10;  const int FWD_EC  = 5;   const int FWD_CC  = 2;
+const int IDS_MC  = 100; const int IDS_EC  = 50;  const int IDS_CC  = 20;
+const int WAF_MC  = 10;  const int WAF_EC  = 5;   const int WAF_CC  = 2;
+const int EDR_MC  = 100; const int EDR_EC  = 50;  const int EDR_CC  = 20;
+const int DLP_MC  = 80;  const int DLP_EC  = 40;  const int DLP_CC  = 18;
+const int DR_MC   = 50;  const int DR_EC   = 25;  const int DR_CC   = 10;
+
+/* ── Multi-objective cost accumulators ── */
+int[0,MAX_COST] maintenanceCost = 0;
+int[0,MAX_COST] energyCost      = 0;
+int[0,MAX_COST] carbonCost      = 0;
+
+/* ── Risk and performance KPIs ── */
+int[0,100] riskScore = 0;
+int        downtime  = 0;
+int        severity  = 0;
+
+/* ── Defense load / fatigue ── */
+int[0,100] fwQueueSize  = 0;
+int[0,100] idsQueueSize = 0;
+int[0,100] wafQueueSize = 0;
+int[0,100] edrQueueSize = 0;
+int[0,100] dlpQueueSize = 0;
+
+/* ── Defense adaptive strength ── */
+int[0,10] fw_strength  = 5;
+int[0,10] ids_strength = 5;
+int[0,10] waf_strength = 5;
+int[0,10] edr_strength = 5;
+int[0,10] dlp_strength = 5;
+
+/* ── Detection quality flags ── */
+bool truePositive  = false;
+bool falsePositive = false;
+bool falseNegative = false;
+
+/* ── Attack outcome flags ── */
+bool net=false, web=false, api=false, malware=false, ransom=false;
+bool phishing=false, credential=false, insider=false;
+bool supply=false, firmware=false, lateral=false, persistence=false;
+
+/* ── Defense active flags ── */
+bool firewall=true, ids=true, waf=true, edr=true, dlp=true;
+
+/* ── Asset compromise flags ── */
+bool scadaCompromised  = false;
+bool plcCompromised    = false;
+bool sensorCompromised = false;
+
+/* ── System outcome ── */
+bool breach       = false;
+int  threat_score = 0;
+int  defense_score= 5;
+
+/* ── SLA limits ── */
+const int SLA_LIMIT      = 50;
+const int CARBON_LIMIT   = 900000;
+const int DOWNTIME_LIMIT = 30;
+
+/* ── Broadcast channels ── */
+broadcast chan start_net, start_web, start_api, start_malware, start_ransom;
+broadcast chan start_phish, start_cred, start_insider, start_supply;
+broadcast chan start_firmware, start_lateral, start_persist;
+broadcast chan success, fail, detect;
+broadcast chan activate_fw, activate_ids, activate_waf, activate_edr, activate_dlp;
+broadcast chan escalate, contain, isolate, recover_sys;
+broadcast chan alert_raised, threat_classified, strategy_selected, hardening_done;
+	</declaration>
+	

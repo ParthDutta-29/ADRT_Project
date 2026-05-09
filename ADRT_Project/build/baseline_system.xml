@@ -1,0 +1,3726 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>
+/* ── Global clock ── */
+clock x;
+
+/* ── Cost ceiling ── */
+const int MAX_COST = 1000000;
+
+/* ── Helper functions (fix: min/max not built-in in UPPAAL) ── */
+
+int[0, MAX_COST] min(int[0, MAX_COST*2] a, int[0, MAX_COST*2] b) { 
+    return (a &lt; b) ? a : b; 
+}
+
+int[0, MAX_COST] max(int[0, MAX_COST*2] a, int[0, MAX_COST*2] b) { 
+    return (a &gt; b) ? a : b; 
+}
+
+
+/* ── Per-template cost constants (replaces parameters) ── */
+/* Environment / gates */
+const int ENV_MC  = 5;   const int ENV_EC  = 2;   const int ENV_CC  = 1;
+const int GATE_MC = 5;   const int GATE_EC = 2;   const int GATE_CC = 1;
+/* Attack costs */
+const int NET_MC  = 20;  const int NET_EC  = 10;  const int NET_CC  = 5;
+const int WEB_MC  = 15;  const int WEB_EC  = 8;   const int WEB_CC  = 3;
+const int API_MC  = 15;  const int API_EC  = 8;   const int API_CC  = 3;
+const int MAL_MC  = 25;  const int MAL_EC  = 15;  const int MAL_CC  = 7;
+const int RAN_MC  = 30;  const int RAN_EC  = 20;  const int RAN_CC  = 10;
+const int PHI_MC  = 10;  const int PHI_EC  = 5;   const int PHI_CC  = 2;
+const int CRE_MC  = 12;  const int CRE_EC  = 6;   const int CRE_CC  = 3;
+const int INS_MC  = 8;   const int INS_EC  = 4;   const int INS_CC  = 2;
+const int SUP_MC  = 35;  const int SUP_EC  = 25;  const int SUP_CC  = 12;
+const int FWA_MC  = 40;  const int FWA_EC  = 30;  const int FWA_CC  = 15;
+const int LMV_MC  = 20;  const int LMV_EC  = 12;  const int LMV_CC  = 6;
+const int PER_MC  = 20;  const int PER_EC  = 12;  const int PER_CC  = 6;
+/* Defense costs */
+const int FWD_MC  = 10;  const int FWD_EC  = 5;   const int FWD_CC  = 2;
+const int IDS_MC  = 100; const int IDS_EC  = 50;  const int IDS_CC  = 20;
+const int WAF_MC  = 10;  const int WAF_EC  = 5;   const int WAF_CC  = 2;
+const int EDR_MC  = 100; const int EDR_EC  = 50;  const int EDR_CC  = 20;
+const int DLP_MC  = 80;  const int DLP_EC  = 40;  const int DLP_CC  = 18;
+const int DR_MC   = 50;  const int DR_EC   = 25;  const int DR_CC   = 10;
+
+/* ── Multi-objective cost accumulators ── */
+int[0,MAX_COST] maintenanceCost = 0;
+int[0,MAX_COST] energyCost      = 0;
+int[0,MAX_COST] carbonCost      = 0;
+
+/* ── Risk and performance KPIs ── */
+int[0,100] riskScore = 0;
+int        downtime  = 0;
+int        severity  = 0;
+
+/* ── Defense load / fatigue ── */
+int[0,100] firewallLoad = 0;
+int[0,100] idsLoad      = 0;
+int[0,100] wafLoad      = 0;
+int[0,100] edrLoad      = 0;
+int[0,100] dlpLoad      = 0;
+
+/* ── Defense adaptive strength ── */
+int[0,10] fw_strength  = 5;
+int[0,10] ids_strength = 5;
+int[0,10] waf_strength = 5;
+int[0,10] edr_strength = 5;
+int[0,10] dlp_strength = 5;
+
+/* ── Detection quality flags ── */
+bool truePositive  = false;
+bool falsePositive = false;
+bool falseNegative = false;
+
+/* ── Attack outcome flags ── */
+bool net=false, web=false, api=false, malware=false, ransom=false;
+bool phishing=false, credential=false, insider=false;
+bool supply=false, firmware=false, lateral=false, persistence=false;
+
+/* ── Defense active flags ── */
+bool firewall=true, ids=true, waf=true, edr=true, dlp=true;
+
+/* ── Asset compromise flags ── */
+bool scadaCompromised  = false;
+bool plcCompromised    = false;
+bool sensorCompromised = false;
+
+/* ── System outcome ── */
+bool breach       = false;
+int  threat_score = 0;
+int  defense_score= 5;
+
+/* ── SLA limits ── */
+const int SLA_LIMIT      = 50;
+const int CARBON_LIMIT   = 900000;
+const int DOWNTIME_LIMIT = 30;
+
+/* ── Broadcast channels ── */
+broadcast chan start_net, start_web, start_api, start_malware, start_ransom;
+broadcast chan start_phish, start_cred, start_insider, start_supply;
+broadcast chan start_firmware, start_lateral, start_persist;
+broadcast chan success, fail, detect;
+broadcast chan activate_fw, activate_ids, activate_waf, activate_edr, activate_dlp;
+broadcast chan escalate, contain, isolate, recover_sys;
+broadcast chan alert_raised, threat_classified, strategy_selected, hardening_done;
+	</declaration>
+	<template>
+		<name>Environment</name>
+		<declaration>clock env_t;
+int wave=0;</declaration>
+		<location id="id0" x="40" y="80">
+			<name x="30" y="55">Env_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id1" x="220" y="80">
+			<name x="210" y="55">Env_Init</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id2" x="400" y="80">
+			<name x="390" y="55">Env_Wave1</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id3" x="580" y="80">
+			<name x="570" y="55">Env_Wave2</name>
+			<label kind="exponentialrate" x="570" y="98">2</label>
+		</location>
+		<location id="id4" x="580" y="220">
+			<name x="570" y="195">Env_Wave3</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id5" x="400" y="220">
+			<name x="390" y="195">Env_Monitor</name>
+			<label kind="exponentialrate" x="390" y="238">4</label>
+		</location>
+		<location id="id6" x="220" y="220">
+			<name x="210" y="195">Env_Assess</name>
+			<label kind="exponentialrate" x="210" y="238">3</label>
+		</location>
+		<location id="id7" x="40" y="220">
+			<name x="30" y="195">Env_Success</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id8" x="40" y="360">
+			<name x="30" y="335">Env_Fail</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id9" x="220" y="360">
+			<name x="210" y="335">Env_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">4</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id10">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="assignment" x="70" y="80">env_t=0,wave=0,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id11">
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="250" y="65">start_net!</label>
+			<label kind="assignment" x="250" y="80">wave=1,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id12">
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="430" y="65">start_web!</label>
+			<label kind="assignment" x="430" y="80">wave=2,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id13">
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="520" y="135">start_api!</label>
+			<label kind="assignment" x="520" y="150">wave=3,
+maintenanceCost := min(MAX_COST,maintenanceCost+ENV_MC),
+energyCost := min(MAX_COST,energyCost+ENV_EC),
+carbonCost := min(MAX_COST,carbonCost+ENV_CC)</label>
+		</transition>
+		<transition id="id14">
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="430" y="205">start_malware!</label>
+			<label kind="assignment" x="430" y="220">downtime=downtime+1</label>
+		</transition>
+		<transition id="id15">
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="250" y="220">downtime=downtime+1</label>
+		</transition>
+		<transition id="id16">
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="synchronisation" x="70" y="205">success!</label>
+			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
+			<label kind="probability" x="70" y="235">7</label>
+		</transition>
+		<transition id="id17">
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="70" y="275">fail!</label>
+			<label kind="assignment" x="70" y="290">riskScore=min(100,riskScore+1)</label>
+			<label kind="probability" x="70" y="305">3</label>
+		</transition>
+		<transition id="id18">
+			<source ref="id7"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="70" y="290">wave=0</label>
+		</transition>
+		<transition id="id19">
+			<source ref="id8"/>
+			<target ref="id9"/>
+		</transition>
+		<transition id="id20">
+			<source ref="id9"/>
+			<target ref="id0"/>
+		</transition>
+	</template>
+	<template>
+		<name>OR_L12</name>
+		<declaration>int or_hits=0;</declaration>
+		<location id="id21" x="40" y="80">
+			<name x="30" y="55">OR_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id22" x="220" y="80">
+			<name x="210" y="55">OR_Armed</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id23" x="400" y="80">
+			<name x="390" y="55">Path_A</name>
+			<label kind="exponentialrate" x="390" y="98">3</label>
+		</location>
+		<location id="id24" x="400" y="220">
+			<name x="390" y="195">Path_B</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id25" x="220" y="220">
+			<name x="210" y="195">OR_Merge</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id26" x="40" y="220">
+			<name x="30" y="195">OR_Evaluate</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id27" x="40" y="360">
+			<name x="30" y="335">OR_Pass</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id28" x="220" y="360">
+			<name x="210" y="335">OR_Block</name>
+			<label kind="exponentialrate" x="210" y="378">1</label>
+		</location>
+		<init ref="id21"/>
+		<transition id="id29">
+			<source ref="id21"/>
+			<target ref="id22"/>
+			<label kind="assignment" x="70" y="80">or_hits=0,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id30">
+			<source ref="id22"/>
+			<target ref="id23"/>
+			<label kind="assignment" x="250" y="80">or_hits=(net==true)?1:0</label>
+		</transition>
+		<transition id="id31">
+			<source ref="id22"/>
+			<target ref="id24"/>
+			<label kind="assignment" x="250" y="150">or_hits=(web==true)?or_hits+1:or_hits</label>
+		</transition>
+		<transition id="id32">
+			<source ref="id23"/>
+			<target ref="id25"/>
+			<label kind="assignment" x="250" y="150">or_hits=(api==true)?or_hits+1:or_hits</label>
+		</transition>
+		<transition id="id33">
+			<source ref="id24"/>
+			<target ref="id25"/>
+		</transition>
+		<transition id="id34">
+			<source ref="id25"/>
+			<target ref="id26"/>
+			<label kind="assignment" x="70" y="220">riskScore=min(100,riskScore+or_hits)</label>
+		</transition>
+		<transition id="id35">
+			<source ref="id26"/>
+			<target ref="id27"/>
+			<label kind="guard" x="-20" y="260">or_hits&gt;=1</label>
+			<label kind="synchronisation" x="-20" y="275">success?</label>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*2)</label>
+		</transition>
+		<transition id="id36">
+			<source ref="id26"/>
+			<target ref="id28"/>
+			<label kind="guard" x="70" y="260">or_hits==0</label>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id37">
+			<source ref="id27"/>
+			<target ref="id21"/>
+			<label kind="synchronisation" x="-20" y="205">detect!</label>
+		</transition>
+		<transition id="id38">
+			<source ref="id28"/>
+			<target ref="id21"/>
+		</transition>
+	</template>
+	<template>
+		<name>OR_L2</name>
+		<declaration>int or2_hits=0;</declaration>
+		<location id="id39" x="40" y="80">
+			<name x="30" y="55">OR2_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id40" x="220" y="80">
+			<name x="210" y="55">OR2_Armed</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id41" x="400" y="80">
+			<name x="390" y="55">OR2_Path_A</name>
+			<label kind="exponentialrate" x="390" y="98">3</label>
+		</location>
+		<location id="id42" x="400" y="220">
+			<name x="390" y="195">OR2_Path_B</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id43" x="220" y="220">
+			<name x="210" y="195">OR2_Merge</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id44" x="40" y="220">
+			<name x="30" y="195">OR2_Pass</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id45" x="40" y="360">
+			<name x="30" y="335">OR2_Block</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id46" x="220" y="360">
+			<name x="210" y="335">OR2_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id39"/>
+		<transition id="id47">
+			<source ref="id39"/>
+			<target ref="id40"/>
+			<label kind="assignment" x="70" y="80">or2_hits := 0,
+    			maintenanceCost := min(MAX_COST, maintenanceCost + GATE_MC),
+    			energyCost := min(MAX_COST, energyCost + GATE_EC),
+    			carbonCost := min(MAX_COST, carbonCost + GATE_CC)</label>
+		</transition>
+		<transition id="id48">
+			<source ref="id40"/>
+			<target ref="id41"/>
+			<label kind="assignment" x="250" y="80">or2_hits=(malware==true)?1:0</label>
+		</transition>
+		<transition id="id49">
+			<source ref="id40"/>
+			<target ref="id42"/>
+			<label kind="assignment" x="250" y="150">or2_hits=(ransom==true)?or2_hits+1:or2_hits</label>
+		</transition>
+		<transition id="id50">
+			<source ref="id41"/>
+			<target ref="id43"/>
+			<label kind="assignment" x="250" y="150">or2_hits=(phishing==true)?or2_hits+1:or2_hits</label>
+		</transition>
+		<transition id="id51">
+			<source ref="id42"/>
+			<target ref="id43"/>
+		</transition>
+		<transition id="id52">
+			<source ref="id43"/>
+			<target ref="id44"/>
+			<label kind="guard" x="70" y="190">or2_hits&gt;=1</label>
+			<label kind="synchronisation" x="70" y="205">success?</label>
+			<label kind="assignment" x="70" y="220">riskScore=min(100,riskScore+or2_hits*2),
+breach=(or2_hits&gt;=2)?true:breach</label>
+		</transition>
+		<transition id="id53">
+			<source ref="id43"/>
+			<target ref="id45"/>
+			<label kind="guard" x="70" y="260">or2_hits==0</label>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id54">
+			<source ref="id44"/>
+			<target ref="id46"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+		</transition>
+		<transition id="id55">
+			<source ref="id45"/>
+			<target ref="id46"/>
+		</transition>
+		<transition id="id56">
+			<source ref="id46"/>
+			<target ref="id39"/>
+			<label kind="assignment" x="70" y="220">or2_hits=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>AND_L12</name>
+		<location id="id57" x="40" y="80">
+			<name x="30" y="55">AND_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id58" x="220" y="80">
+			<name x="210" y="55">AND_Cond_A</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id59" x="400" y="80">
+			<name x="390" y="55">AND_Cond_B</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id60" x="400" y="220">
+			<name x="390" y="195">AND_Both_Met</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id61" x="220" y="220">
+			<name x="210" y="195">AND_Evaluate</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id62" x="40" y="220">
+			<name x="30" y="195">AND_Pass</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id63" x="40" y="360">
+			<name x="30" y="335">AND_Fail</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id64" x="220" y="360">
+			<name x="210" y="335">AND_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id57"/>
+		<transition id="id65">
+			<source ref="id57"/>
+			<target ref="id58"/>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id66">
+			<source ref="id58"/>
+			<target ref="id59"/>
+			<label kind="guard" x="250" y="50">net==true</label>
+		</transition>
+		<transition id="id67">
+			<source ref="id59"/>
+			<target ref="id60"/>
+			<label kind="guard" x="340" y="120">web==true</label>
+		</transition>
+		<transition id="id68">
+			<source ref="id60"/>
+			<target ref="id61"/>
+			<label kind="assignment" x="250" y="220">riskScore=min(100,riskScore+3)</label>
+		</transition>
+		<transition id="id69">
+			<source ref="id61"/>
+			<target ref="id62"/>
+			<label kind="synchronisation" x="70" y="205">success?</label>
+			<label kind="assignment" x="70" y="220">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*3),
+energyCost := min(MAX_COST,energyCost+GATE_EC*3),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*3)</label>
+		</transition>
+		<transition id="id70">
+			<source ref="id61"/>
+			<target ref="id63"/>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id71">
+			<source ref="id58"/>
+			<target ref="id63"/>
+			<label kind="guard" x="70" y="190">net==false</label>
+		</transition>
+		<transition id="id72">
+			<source ref="id62"/>
+			<target ref="id64"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+		</transition>
+		<transition id="id73">
+			<source ref="id63"/>
+			<target ref="id64"/>
+		</transition>
+		<transition id="id74">
+			<source ref="id64"/>
+			<target ref="id57"/>
+		</transition>
+	</template>
+	<template>
+		<name>AND_L2</name>
+		<location id="id75" x="40" y="80">
+			<name x="30" y="55">AND2_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id76" x="220" y="80">
+			<name x="210" y="55">AND2_Wait_A</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id77" x="400" y="80">
+			<name x="390" y="55">AND2_Wait_B</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id78" x="400" y="220">
+			<name x="390" y="195">AND2_Sync</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id79" x="220" y="220">
+			<name x="210" y="195">AND2_Evaluate</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id80" x="40" y="220">
+			<name x="30" y="195">AND2_Pass</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id81" x="40" y="360">
+			<name x="30" y="335">AND2_Retry</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id82" x="220" y="360">
+			<name x="210" y="335">AND2_Done</name>
+			<label kind="exponentialrate" x="210" y="378">1</label>
+		</location>
+		<init ref="id75"/>
+		<transition id="id83">
+			<source ref="id75"/>
+			<target ref="id76"/>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id84">
+			<source ref="id76"/>
+			<target ref="id77"/>
+			<label kind="guard" x="250" y="50">lateral==true</label>
+		</transition>
+		<transition id="id85">
+			<source ref="id77"/>
+			<target ref="id78"/>
+			<label kind="guard" x="340" y="120">persistence==true</label>
+		</transition>
+		<transition id="id86">
+			<source ref="id78"/>
+			<target ref="id79"/>
+			<label kind="assignment" x="250" y="220">riskScore=min(100,riskScore+4)</label>
+		</transition>
+		<transition id="id87">
+			<source ref="id79"/>
+			<target ref="id80"/>
+			<label kind="synchronisation" x="70" y="205">success?</label>
+			<label kind="assignment" x="70" y="220">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
+energyCost := min(MAX_COST,energyCost+GATE_EC*4),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
+		</transition>
+		<transition id="id88">
+			<source ref="id79"/>
+			<target ref="id81"/>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id89">
+			<source ref="id76"/>
+			<target ref="id81"/>
+			<label kind="guard" x="70" y="190">lateral==false</label>
+		</transition>
+		<transition id="id90">
+			<source ref="id80"/>
+			<target ref="id82"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+		</transition>
+		<transition id="id91">
+			<source ref="id81"/>
+			<target ref="id75"/>
+		</transition>
+		<transition id="id92">
+			<source ref="id82"/>
+			<target ref="id75"/>
+		</transition>
+	</template>
+	<template>
+		<name>NOT_FW2</name>
+		<location id="id93" x="40" y="80">
+			<name x="30" y="55">NFW_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id94" x="220" y="80">
+			<name x="210" y="55">NFW_Check_FW</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id95" x="400" y="80">
+			<name x="390" y="55">NFW_FW_Active</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id96" x="400" y="220">
+			<name x="390" y="195">NFW_FW_Down</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id97" x="220" y="220">
+			<name x="210" y="195">NFW_Bypass</name>
+			<label kind="exponentialrate" x="210" y="238">3</label>
+		</location>
+		<location id="id98" x="40" y="220">
+			<name x="30" y="195">NFW_Blocked</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id99" x="40" y="360">
+			<name x="30" y="335">NFW_AttackWin</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id100" x="220" y="360">
+			<name x="210" y="335">NFW_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id93"/>
+		<transition id="id101">
+			<source ref="id93"/>
+			<target ref="id94"/>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id102">
+			<source ref="id94"/>
+			<target ref="id95"/>
+			<label kind="guard" x="250" y="50">firewall==true</label>
+		</transition>
+		<transition id="id103">
+			<source ref="id94"/>
+			<target ref="id96"/>
+			<label kind="guard" x="250" y="120">firewall==false</label>
+			<label kind="assignment" x="250" y="150">riskScore=min(100,riskScore+3)</label>
+		</transition>
+		<transition id="id104">
+			<source ref="id95"/>
+			<target ref="id98"/>
+			<label kind="synchronisation" x="160" y="135">detect!</label>
+		</transition>
+		<transition id="id105">
+			<source ref="id96"/>
+			<target ref="id97"/>
+			<label kind="assignment" x="250" y="220">firewallLoad=min(100,firewallLoad+10)</label>
+		</transition>
+		<transition id="id106">
+			<source ref="id97"/>
+			<target ref="id99"/>
+			<label kind="assignment" x="70" y="290">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*5),
+energyCost := min(MAX_COST,energyCost+GATE_EC*5),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*5)</label>
+			<label kind="probability" x="70" y="305">8</label>
+		</transition>
+		<transition id="id107">
+			<source ref="id97"/>
+			<target ref="id98"/>
+			<label kind="probability" x="70" y="235">2</label>
+		</transition>
+		<transition id="id108">
+			<source ref="id99"/>
+			<target ref="id100"/>
+		</transition>
+		<transition id="id109">
+			<source ref="id98"/>
+			<target ref="id100"/>
+		</transition>
+		<transition id="id110">
+			<source ref="id100"/>
+			<target ref="id93"/>
+		</transition>
+	</template>
+	<template>
+		<name>NOT_IDS</name>
+		<location id="id111" x="40" y="80">
+			<name x="30" y="55">NIDS_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id112" x="220" y="80">
+			<name x="210" y="55">NIDS_Check_IDS</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id113" x="400" y="80">
+			<name x="390" y="55">NIDS_IDS_Active</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id114" x="400" y="220">
+			<name x="390" y="195">NIDS_IDS_Down</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id115" x="220" y="220">
+			<name x="210" y="195">NIDS_Evade</name>
+			<label kind="exponentialrate" x="210" y="238">3</label>
+		</location>
+		<location id="id116" x="40" y="220">
+			<name x="30" y="195">NIDS_Caught</name>
+			<label kind="exponentialrate" x="30" y="238">1</label>
+		</location>
+		<location id="id117" x="40" y="360">
+			<name x="30" y="335">NIDS_Exfil</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id118" x="220" y="360">
+			<name x="210" y="335">NIDS_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id111"/>
+		<transition id="id119">
+			<source ref="id111"/>
+			<target ref="id112"/>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id120">
+			<source ref="id112"/>
+			<target ref="id113"/>
+			<label kind="guard" x="250" y="50">ids==true</label>
+		</transition>
+		<transition id="id121">
+			<source ref="id112"/>
+			<target ref="id114"/>
+			<label kind="guard" x="250" y="120">ids==false</label>
+			<label kind="assignment" x="250" y="150">riskScore=min(100,riskScore+3)</label>
+		</transition>
+		<transition id="id122">
+			<source ref="id113"/>
+			<target ref="id116"/>
+			<label kind="synchronisation" x="160" y="135">detect!</label>
+		</transition>
+		<transition id="id123">
+			<source ref="id114"/>
+			<target ref="id115"/>
+			<label kind="assignment" x="250" y="220">idsLoad=min(100,idsLoad+10)</label>
+		</transition>
+		<transition id="id124">
+			<source ref="id115"/>
+			<target ref="id117"/>
+			<label kind="assignment" x="70" y="290">breach=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC*4),
+energyCost := min(MAX_COST,energyCost+GATE_EC*4),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC*4)</label>
+			<label kind="probability" x="70" y="305">7</label>
+		</transition>
+		<transition id="id125">
+			<source ref="id115"/>
+			<target ref="id116"/>
+			<label kind="synchronisation" x="70" y="205">detect!</label>
+			<label kind="probability" x="70" y="235">3</label>
+		</transition>
+		<transition id="id126">
+			<source ref="id117"/>
+			<target ref="id118"/>
+		</transition>
+		<transition id="id127">
+			<source ref="id116"/>
+			<target ref="id118"/>
+		</transition>
+		<transition id="id128">
+			<source ref="id118"/>
+			<target ref="id111"/>
+			<label kind="assignment" x="70" y="220">ids=true</label>
+		</transition>
+	</template>
+	<template>
+		<name>Voting_Gate</name>
+		<declaration>int vg_count=0;</declaration>
+		<location id="id129" x="40" y="80">
+			<name x="30" y="55">Vote_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id130" x="220" y="80">
+			<name x="210" y="55">Vote_Cast1</name>
+			<label kind="exponentialrate" x="210" y="98">2</label>
+		</location>
+		<location id="id131" x="400" y="80">
+			<name x="390" y="55">Vote_Cast2</name>
+			<label kind="exponentialrate" x="390" y="98">2</label>
+		</location>
+		<location id="id132" x="400" y="220">
+			<name x="390" y="195">Vote_Cast3</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id133" x="220" y="220">
+			<name x="210" y="195">Vote_Tally</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id134" x="40" y="220">
+			<name x="30" y="195">Vote_Threshold</name>
+			<label kind="exponentialrate" x="30" y="238">3</label>
+		</location>
+		<location id="id135" x="40" y="360">
+			<name x="30" y="335">Vote_Pass</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id136" x="220" y="360">
+			<name x="210" y="335">Vote_Reject</name>
+			<label kind="exponentialrate" x="210" y="378">1</label>
+		</location>
+		<location id="id137" x="400" y="360">
+			<name x="390" y="335">Vote_Reset</name>
+			<label kind="exponentialrate" x="390" y="378">2</label>
+		</location>
+		<init ref="id129"/>
+		<transition id="id138">
+			<source ref="id129"/>
+			<target ref="id130"/>
+			<label kind="assignment" x="70" y="80">vg_count=0,
+maintenanceCost := min(MAX_COST,maintenanceCost+GATE_MC),
+energyCost := min(MAX_COST,energyCost+GATE_EC),
+carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
+		</transition>
+		<transition id="id139">
+			<source ref="id130"/>
+			<target ref="id131"/>
+			<label kind="assignment" x="250" y="80">vg_count=(supply==true)?1:0</label>
+		</transition>
+		<transition id="id140">
+			<source ref="id131"/>
+			<target ref="id132"/>
+			<label kind="assignment" x="340" y="150">vg_count=(firmware==true)?vg_count+1:vg_count</label>
+		</transition>
+		<transition id="id141">
+			<source ref="id132"/>
+			<target ref="id133"/>
+			<label kind="assignment" x="250" y="220">vg_count=(insider==true)?vg_count+1:vg_count</label>
+		</transition>
+		<transition id="id142">
+			<source ref="id133"/>
+			<target ref="id134"/>
+			<label kind="assignment" x="70" y="220">riskScore=min(100,riskScore+vg_count*2)</label>
+		</transition>
+		<transition id="id143">
+			<source ref="id134"/>
+			<target ref="id135"/>
+			<label kind="guard" x="-20" y="260">vg_count&gt;=2</label>
+			<label kind="synchronisation" x="-20" y="275">success?</label>
+			<label kind="assignment" x="-20" y="290">breach=true,
+				maintenanceCost := min(MAX_COST, maintenanceCost + GATE_MC),
+				energyCost := min(MAX_COST, energyCost + GATE_EC),
+				carbonCost := min(MAX_COST, carbonCost + GATE_CC)</label>
+		</transition>
+		<transition id="id144">
+			<source ref="id134"/>
+			<target ref="id136"/>
+			<label kind="guard" x="70" y="260">vg_count&lt;2</label>
+			<label kind="synchronisation" x="70" y="275">fail?</label>
+		</transition>
+		<transition id="id145">
+			<source ref="id135"/>
+			<target ref="id137"/>
+			<label kind="synchronisation" x="160" y="345">detect!</label>
+		</transition>
+		<transition id="id146">
+			<source ref="id136"/>
+			<target ref="id137"/>
+		</transition>
+		<transition id="id147">
+			<source ref="id137"/>
+			<target ref="id129"/>
+			<label kind="assignment" x="160" y="220">vg_count=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Network_Attack</name>
+		<location id="id148" x="40" y="80">
+			<name x="30" y="55">NA_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id149" x="220" y="80">
+			<name x="210" y="55">NA_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id150" x="400" y="80">
+			<name x="390" y="55">NA_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id151" x="580" y="80">
+			<name x="570" y="55">NA_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id152" x="760" y="80">
+			<name x="750" y="55">NA_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id153" x="760" y="220">
+			<name x="750" y="195">NA_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id154" x="580" y="220">
+			<name x="570" y="195">NA_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id155" x="400" y="220">
+			<name x="390" y="195">NA_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id156" x="220" y="220">
+			<name x="210" y="195">NA_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id157" x="220" y="360">
+			<name x="210" y="335">NA_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id158" x="40" y="220">
+			<name x="30" y="195">NA_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id148"/>
+		<transition id="id159">
+			<source ref="id148"/>
+			<target ref="id149"/>
+			<label kind="synchronisation" x="70" y="65">start_net?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC),
+energyCost := min(MAX_COST,energyCost+NET_EC),
+carbonCost := min(MAX_COST,carbonCost+NET_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id160">
+			<source ref="id149"/>
+			<target ref="id150"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC),
+energyCost := min(MAX_COST,energyCost+NET_EC*2),
+carbonCost := min(MAX_COST,carbonCost+NET_CC)</label>
+		</transition>
+		<transition id="id161">
+			<source ref="id150"/>
+			<target ref="id151"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC),
+energyCost := min(MAX_COST,energyCost+NET_EC*2),
+carbonCost := min(MAX_COST,carbonCost+NET_CC*2),
+firewallLoad=min(100,firewallLoad+5)</label>
+		</transition>
+		<transition id="id162">
+			<source ref="id151"/>
+			<target ref="id157"/>
+			<label kind="guard" x="340" y="190">firewall==true &amp;&amp; firewallLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id163">
+			<source ref="id151"/>
+			<target ref="id152"/>
+			<label kind="guard" x="610" y="50">firewall==false || firewallLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*2),
+energyCost := min(MAX_COST,energyCost+NET_EC*3),
+carbonCost := min(MAX_COST,carbonCost+NET_CC*2)</label>
+		</transition>
+		<transition id="id164">
+			<source ref="id152"/>
+			<target ref="id153"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">net=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*3),
+energyCost := min(MAX_COST,energyCost+NET_EC*4),
+carbonCost := min(MAX_COST,carbonCost+NET_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id165">
+			<source ref="id152"/>
+			<target ref="id158"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id166">
+			<source ref="id153"/>
+			<target ref="id154"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*3),
+energyCost := min(MAX_COST,energyCost+NET_EC*5),
+carbonCost := min(MAX_COST,carbonCost+NET_CC*4)</label>
+		</transition>
+		<transition id="id167">
+			<source ref="id154"/>
+			<target ref="id155"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*4),
+energyCost := min(MAX_COST,energyCost+NET_EC*5),
+carbonCost := min(MAX_COST,carbonCost+NET_CC*5)</label>
+		</transition>
+		<transition id="id168">
+			<source ref="id155"/>
+			<target ref="id156"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*5),
+energyCost := min(MAX_COST,energyCost+NET_EC*6),
+carbonCost := min(MAX_COST,carbonCost+NET_CC*6),
+breach=true,
+scadaCompromised=true,
+downtime=downtime+2</label>
+		</transition>
+		<transition id="id169">
+			<source ref="id156"/>
+			<target ref="id148"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id170">
+			<source ref="id157"/>
+			<target ref="id148"/>
+			<label kind="assignment" x="70" y="220">firewallLoad=min(100,firewallLoad+3)</label>
+		</transition>
+		<transition id="id171">
+			<source ref="id158"/>
+			<target ref="id150"/>
+		</transition>
+	</template>
+	<template>
+		<name>Web_Attack</name>
+		<location id="id172" x="40" y="80">
+			<name x="30" y="55">WA_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id173" x="220" y="80">
+			<name x="210" y="55">WA_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id174" x="400" y="80">
+			<name x="390" y="55">WA_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id175" x="580" y="80">
+			<name x="570" y="55">WA_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id176" x="760" y="80">
+			<name x="750" y="55">WA_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id177" x="760" y="220">
+			<name x="750" y="195">WA_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id178" x="580" y="220">
+			<name x="570" y="195">WA_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id179" x="400" y="220">
+			<name x="390" y="195">WA_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id180" x="220" y="220">
+			<name x="210" y="195">WA_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id181" x="220" y="360">
+			<name x="210" y="335">WA_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id182" x="40" y="220">
+			<name x="30" y="195">WA_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id172"/>
+		<transition id="id183">
+			<source ref="id172"/>
+			<target ref="id173"/>
+			<label kind="synchronisation" x="70" y="65">start_web?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC),
+energyCost := min(MAX_COST,energyCost+WEB_EC),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id184">
+			<source ref="id173"/>
+			<target ref="id174"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC),
+energyCost := min(MAX_COST,energyCost+WEB_EC*2),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC)</label>
+		</transition>
+		<transition id="id185">
+			<source ref="id174"/>
+			<target ref="id175"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC),
+energyCost := min(MAX_COST,energyCost+WEB_EC*2),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*2),
+wafLoad=min(100,wafLoad+5)</label>
+		</transition>
+		<transition id="id186">
+			<source ref="id175"/>
+			<target ref="id181"/>
+			<label kind="guard" x="340" y="190">waf==true &amp;&amp; wafLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id187">
+			<source ref="id175"/>
+			<target ref="id176"/>
+			<label kind="guard" x="610" y="50">waf==false || wafLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*2),
+energyCost := min(MAX_COST,energyCost+WEB_EC*3),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*2)</label>
+		</transition>
+		<transition id="id188">
+			<source ref="id176"/>
+			<target ref="id177"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">web=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*3),
+energyCost := min(MAX_COST,energyCost+WEB_EC*4),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id189">
+			<source ref="id176"/>
+			<target ref="id182"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id190">
+			<source ref="id177"/>
+			<target ref="id178"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*3),
+energyCost := min(MAX_COST,energyCost+WEB_EC*5),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*4)</label>
+		</transition>
+		<transition id="id191">
+			<source ref="id178"/>
+			<target ref="id179"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*4),
+energyCost := min(MAX_COST,energyCost+WEB_EC*5),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*5)</label>
+		</transition>
+		<transition id="id192">
+			<source ref="id179"/>
+			<target ref="id180"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*5),
+energyCost := min(MAX_COST,energyCost+WEB_EC*6),
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*6),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id193">
+			<source ref="id180"/>
+			<target ref="id172"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id194">
+			<source ref="id181"/>
+			<target ref="id172"/>
+			<label kind="assignment" x="70" y="220">wafLoad=min(100,wafLoad+3)</label>
+		</transition>
+		<transition id="id195">
+			<source ref="id182"/>
+			<target ref="id174"/>
+		</transition>
+	</template>
+	<template>
+		<name>API_Attack</name>
+		<location id="id196" x="40" y="80">
+			<name x="30" y="55">AA_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id197" x="220" y="80">
+			<name x="210" y="55">AA_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id198" x="400" y="80">
+			<name x="390" y="55">AA_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id199" x="580" y="80">
+			<name x="570" y="55">AA_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id200" x="760" y="80">
+			<name x="750" y="55">AA_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id201" x="760" y="220">
+			<name x="750" y="195">AA_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id202" x="580" y="220">
+			<name x="570" y="195">AA_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id203" x="400" y="220">
+			<name x="390" y="195">AA_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id204" x="220" y="220">
+			<name x="210" y="195">AA_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id205" x="220" y="360">
+			<name x="210" y="335">AA_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id206" x="40" y="220">
+			<name x="30" y="195">AA_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id196"/>
+		<transition id="id207">
+			<source ref="id196"/>
+			<target ref="id197"/>
+			<label kind="synchronisation" x="70" y="65">start_api?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC),
+energyCost := min(MAX_COST,energyCost+API_EC),
+carbonCost := min(MAX_COST,carbonCost+API_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id208">
+			<source ref="id197"/>
+			<target ref="id198"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC),
+energyCost := min(MAX_COST,energyCost+API_EC*2),
+carbonCost := min(MAX_COST,carbonCost+API_CC)</label>
+		</transition>
+		<transition id="id209">
+			<source ref="id198"/>
+			<target ref="id199"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC),
+energyCost := min(MAX_COST,energyCost+API_EC*2),
+carbonCost := min(MAX_COST,carbonCost+API_CC*2),
+wafLoad=min(100,wafLoad+5)</label>
+		</transition>
+		<transition id="id210">
+			<source ref="id199"/>
+			<target ref="id205"/>
+			<label kind="guard" x="340" y="190">waf==true &amp;&amp; wafLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id211">
+			<source ref="id199"/>
+			<target ref="id200"/>
+			<label kind="guard" x="610" y="50">waf==false || wafLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*2),
+energyCost := min(MAX_COST,energyCost+API_EC*3),
+carbonCost := min(MAX_COST,carbonCost+API_CC*2)</label>
+		</transition>
+		<transition id="id212">
+			<source ref="id200"/>
+			<target ref="id201"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">api=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*3),
+energyCost := min(MAX_COST,energyCost+API_EC*4),
+carbonCost := min(MAX_COST,carbonCost+API_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id213">
+			<source ref="id200"/>
+			<target ref="id206"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id214">
+			<source ref="id201"/>
+			<target ref="id202"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*3),
+energyCost := min(MAX_COST,energyCost+API_EC*5),
+carbonCost := min(MAX_COST,carbonCost+API_CC*4)</label>
+		</transition>
+		<transition id="id215">
+			<source ref="id202"/>
+			<target ref="id203"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*4),
+energyCost := min(MAX_COST,energyCost+API_EC*5),
+carbonCost := min(MAX_COST,carbonCost+API_CC*5)</label>
+		</transition>
+		<transition id="id216">
+			<source ref="id203"/>
+			<target ref="id204"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*5),
+energyCost := min(MAX_COST,energyCost+API_EC*6),
+carbonCost := min(MAX_COST,carbonCost+API_CC*6),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id217">
+			<source ref="id204"/>
+			<target ref="id196"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id218">
+			<source ref="id205"/>
+			<target ref="id196"/>
+			<label kind="assignment" x="70" y="220">wafLoad=min(100,wafLoad+3)</label>
+		</transition>
+		<transition id="id219">
+			<source ref="id206"/>
+			<target ref="id198"/>
+		</transition>
+	</template>
+	<template>
+		<name>Malware_Attack</name>
+		<location id="id220" x="40" y="80">
+			<name x="30" y="55">MAL_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id221" x="220" y="80">
+			<name x="210" y="55">MAL_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id222" x="400" y="80">
+			<name x="390" y="55">MAL_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id223" x="580" y="80">
+			<name x="570" y="55">MAL_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id224" x="760" y="80">
+			<name x="750" y="55">MAL_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id225" x="760" y="220">
+			<name x="750" y="195">MAL_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id226" x="580" y="220">
+			<name x="570" y="195">MAL_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id227" x="400" y="220">
+			<name x="390" y="195">MAL_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id228" x="220" y="220">
+			<name x="210" y="195">MAL_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id229" x="220" y="360">
+			<name x="210" y="335">MAL_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id230" x="40" y="220">
+			<name x="30" y="195">MAL_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id220"/>
+		<transition id="id231">
+			<source ref="id220"/>
+			<target ref="id221"/>
+			<label kind="synchronisation" x="70" y="65">start_malware?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC),
+energyCost := min(MAX_COST,energyCost+MAL_EC),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id232">
+			<source ref="id221"/>
+			<target ref="id222"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC),
+energyCost := min(MAX_COST,energyCost+MAL_EC*2),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC)</label>
+		</transition>
+		<transition id="id233">
+			<source ref="id222"/>
+			<target ref="id223"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC),
+energyCost := min(MAX_COST,energyCost+MAL_EC*2),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*2),
+firewallLoad=min(100,firewallLoad+5)</label>
+		</transition>
+		<transition id="id234">
+			<source ref="id223"/>
+			<target ref="id229"/>
+			<label kind="guard" x="340" y="190">firewall==true &amp;&amp; firewallLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id235">
+			<source ref="id223"/>
+			<target ref="id224"/>
+			<label kind="guard" x="610" y="50">firewall==false || firewallLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*2),
+energyCost := min(MAX_COST,energyCost+MAL_EC*3),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*2)</label>
+		</transition>
+		<transition id="id236">
+			<source ref="id224"/>
+			<target ref="id225"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">malware=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*3),
+energyCost := min(MAX_COST,energyCost+MAL_EC*4),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id237">
+			<source ref="id224"/>
+			<target ref="id230"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id238">
+			<source ref="id225"/>
+			<target ref="id226"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*3),
+energyCost := min(MAX_COST,energyCost+MAL_EC*5),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*4)</label>
+		</transition>
+		<transition id="id239">
+			<source ref="id226"/>
+			<target ref="id227"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*4),
+energyCost := min(MAX_COST,energyCost+MAL_EC*5),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*5)</label>
+		</transition>
+		<transition id="id240">
+			<source ref="id227"/>
+			<target ref="id228"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*5),
+energyCost := min(MAX_COST,energyCost+MAL_EC*6),
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*6),
+plcCompromised=true,
+downtime=downtime+2</label>
+		</transition>
+		<transition id="id241">
+			<source ref="id228"/>
+			<target ref="id220"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id242">
+			<source ref="id229"/>
+			<target ref="id220"/>
+			<label kind="assignment" x="70" y="220">firewallLoad=min(100,firewallLoad+3)</label>
+		</transition>
+		<transition id="id243">
+			<source ref="id230"/>
+			<target ref="id222"/>
+		</transition>
+	</template>
+	<template>
+		<name>Ransomware_Attack</name>
+		<location id="id244" x="40" y="80">
+			<name x="30" y="55">RA_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id245" x="220" y="80">
+			<name x="210" y="55">RA_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id246" x="400" y="80">
+			<name x="390" y="55">RA_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id247" x="580" y="80">
+			<name x="570" y="55">RA_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id248" x="760" y="80">
+			<name x="750" y="55">RA_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id249" x="760" y="220">
+			<name x="750" y="195">RA_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id250" x="580" y="220">
+			<name x="570" y="195">RA_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id251" x="400" y="220">
+			<name x="390" y="195">RA_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id252" x="220" y="220">
+			<name x="210" y="195">RA_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id253" x="220" y="360">
+			<name x="210" y="335">RA_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id254" x="40" y="220">
+			<name x="30" y="195">RA_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id244"/>
+		<transition id="id255">
+			<source ref="id244"/>
+			<target ref="id245"/>
+			<label kind="synchronisation" x="70" y="65">start_ransom?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC),
+energyCost := min(MAX_COST,energyCost+RAN_EC),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id256">
+			<source ref="id245"/>
+			<target ref="id246"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC),
+energyCost := min(MAX_COST,energyCost+RAN_EC*2),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC)</label>
+		</transition>
+		<transition id="id257">
+			<source ref="id246"/>
+			<target ref="id247"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC),
+energyCost := min(MAX_COST,energyCost+RAN_EC*2),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*2),
+edrLoad=min(100,edrLoad+5)</label>
+		</transition>
+		<transition id="id258">
+			<source ref="id247"/>
+			<target ref="id253"/>
+			<label kind="guard" x="340" y="190">edr==true &amp;&amp; edrLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id259">
+			<source ref="id247"/>
+			<target ref="id248"/>
+			<label kind="guard" x="610" y="50">edr==false || edrLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*2),
+energyCost := min(MAX_COST,energyCost+RAN_EC*3),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*2)</label>
+		</transition>
+		<transition id="id260">
+			<source ref="id248"/>
+			<target ref="id249"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">ransom=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*3),
+energyCost := min(MAX_COST,energyCost+RAN_EC*4),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id261">
+			<source ref="id248"/>
+			<target ref="id254"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id262">
+			<source ref="id249"/>
+			<target ref="id250"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*3),
+energyCost := min(MAX_COST,energyCost+RAN_EC*5),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*4)</label>
+		</transition>
+		<transition id="id263">
+			<source ref="id250"/>
+			<target ref="id251"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*4),
+energyCost := min(MAX_COST,energyCost+RAN_EC*5),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*5)</label>
+		</transition>
+		<transition id="id264">
+			<source ref="id251"/>
+			<target ref="id252"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*5),
+energyCost := min(MAX_COST,energyCost+RAN_EC*6),
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*6),
+breach=true,
+downtime=downtime+3,
+severity=2</label>
+		</transition>
+		<transition id="id265">
+			<source ref="id252"/>
+			<target ref="id244"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id266">
+			<source ref="id253"/>
+			<target ref="id244"/>
+			<label kind="assignment" x="70" y="220">edrLoad=min(100,edrLoad+3)</label>
+		</transition>
+		<transition id="id267">
+			<source ref="id254"/>
+			<target ref="id246"/>
+		</transition>
+	</template>
+	<template>
+		<name>Phishing_Attack</name>
+		<location id="id268" x="40" y="80">
+			<name x="30" y="55">PH_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id269" x="220" y="80">
+			<name x="210" y="55">PH_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id270" x="400" y="80">
+			<name x="390" y="55">PH_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id271" x="580" y="80">
+			<name x="570" y="55">PH_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id272" x="760" y="80">
+			<name x="750" y="55">PH_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id273" x="760" y="220">
+			<name x="750" y="195">PH_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id274" x="580" y="220">
+			<name x="570" y="195">PH_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id275" x="400" y="220">
+			<name x="390" y="195">PH_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id276" x="220" y="220">
+			<name x="210" y="195">PH_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id277" x="220" y="360">
+			<name x="210" y="335">PH_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id278" x="40" y="220">
+			<name x="30" y="195">PH_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id268"/>
+		<transition id="id279">
+			<source ref="id268"/>
+			<target ref="id269"/>
+			<label kind="synchronisation" x="70" y="65">start_phish?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC),
+energyCost := min(MAX_COST,energyCost+PHI_EC),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id280">
+			<source ref="id269"/>
+			<target ref="id270"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC),
+energyCost := min(MAX_COST,energyCost+PHI_EC*2),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC)</label>
+		</transition>
+		<transition id="id281">
+			<source ref="id270"/>
+			<target ref="id271"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC),
+energyCost := min(MAX_COST,energyCost+PHI_EC*2),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*2),
+dlpLoad=min(100,dlpLoad+5)</label>
+		</transition>
+		<transition id="id282">
+			<source ref="id271"/>
+			<target ref="id277"/>
+			<label kind="guard" x="340" y="190">dlp==true &amp;&amp; dlpLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id283">
+			<source ref="id271"/>
+			<target ref="id272"/>
+			<label kind="guard" x="610" y="50">dlp==false || dlpLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*2),
+energyCost := min(MAX_COST,energyCost+PHI_EC*3),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*2)</label>
+		</transition>
+		<transition id="id284">
+			<source ref="id272"/>
+			<target ref="id273"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">phishing=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*3),
+energyCost := min(MAX_COST,energyCost+PHI_EC*4),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id285">
+			<source ref="id272"/>
+			<target ref="id278"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id286">
+			<source ref="id273"/>
+			<target ref="id274"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*3),
+energyCost := min(MAX_COST,energyCost+PHI_EC*5),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*4)</label>
+		</transition>
+		<transition id="id287">
+			<source ref="id274"/>
+			<target ref="id275"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*4),
+energyCost := min(MAX_COST,energyCost+PHI_EC*5),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*5)</label>
+		</transition>
+		<transition id="id288">
+			<source ref="id275"/>
+			<target ref="id276"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*5),
+energyCost := min(MAX_COST,energyCost+PHI_EC*6),
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*6),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id289">
+			<source ref="id276"/>
+			<target ref="id268"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id290">
+			<source ref="id277"/>
+			<target ref="id268"/>
+			<label kind="assignment" x="70" y="220">dlpLoad=min(100,dlpLoad+3)</label>
+		</transition>
+		<transition id="id291">
+			<source ref="id278"/>
+			<target ref="id270"/>
+		</transition>
+	</template>
+	<template>
+		<name>Credential_Attack</name>
+		<location id="id292" x="40" y="80">
+			<name x="30" y="55">CR_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id293" x="220" y="80">
+			<name x="210" y="55">CR_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id294" x="400" y="80">
+			<name x="390" y="55">CR_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id295" x="580" y="80">
+			<name x="570" y="55">CR_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id296" x="760" y="80">
+			<name x="750" y="55">CR_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id297" x="760" y="220">
+			<name x="750" y="195">CR_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id298" x="580" y="220">
+			<name x="570" y="195">CR_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id299" x="400" y="220">
+			<name x="390" y="195">CR_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id300" x="220" y="220">
+			<name x="210" y="195">CR_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id301" x="220" y="360">
+			<name x="210" y="335">CR_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id302" x="40" y="220">
+			<name x="30" y="195">CR_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id292"/>
+		<transition id="id303">
+			<source ref="id292"/>
+			<target ref="id293"/>
+			<label kind="synchronisation" x="70" y="65">start_cred?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC),
+energyCost := min(MAX_COST,energyCost+CRE_EC),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id304">
+			<source ref="id293"/>
+			<target ref="id294"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC),
+energyCost := min(MAX_COST,energyCost+CRE_EC*2),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC)</label>
+		</transition>
+		<transition id="id305">
+			<source ref="id294"/>
+			<target ref="id295"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC),
+energyCost := min(MAX_COST,energyCost+CRE_EC*2),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*2),
+idsLoad=min(100,idsLoad+5)</label>
+		</transition>
+		<transition id="id306">
+			<source ref="id295"/>
+			<target ref="id301"/>
+			<label kind="guard" x="340" y="190">ids==true &amp;&amp; idsLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id307">
+			<source ref="id295"/>
+			<target ref="id296"/>
+			<label kind="guard" x="610" y="50">ids==false || idsLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*2),
+energyCost := min(MAX_COST,energyCost+CRE_EC*3),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*2)</label>
+		</transition>
+		<transition id="id308">
+			<source ref="id296"/>
+			<target ref="id297"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">credential=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*3),
+energyCost := min(MAX_COST,energyCost+CRE_EC*4),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id309">
+			<source ref="id296"/>
+			<target ref="id302"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id310">
+			<source ref="id297"/>
+			<target ref="id298"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*3),
+energyCost := min(MAX_COST,energyCost+CRE_EC*5),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*4)</label>
+		</transition>
+		<transition id="id311">
+			<source ref="id298"/>
+			<target ref="id299"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*4),
+energyCost := min(MAX_COST,energyCost+CRE_EC*5),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*5)</label>
+		</transition>
+		<transition id="id312">
+			<source ref="id299"/>
+			<target ref="id300"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*5),
+energyCost := min(MAX_COST,energyCost+CRE_EC*6),
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*6),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id313">
+			<source ref="id300"/>
+			<target ref="id292"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id314">
+			<source ref="id301"/>
+			<target ref="id292"/>
+			<label kind="assignment" x="70" y="220">idsLoad=min(100,idsLoad+3)</label>
+		</transition>
+		<transition id="id315">
+			<source ref="id302"/>
+			<target ref="id294"/>
+		</transition>
+	</template>
+	<template>
+		<name>Insider_Attack</name>
+		<location id="id316" x="40" y="80">
+			<name x="30" y="55">INS_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id317" x="220" y="80">
+			<name x="210" y="55">INS_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id318" x="400" y="80">
+			<name x="390" y="55">INS_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id319" x="580" y="80">
+			<name x="570" y="55">INS_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id320" x="760" y="80">
+			<name x="750" y="55">INS_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id321" x="760" y="220">
+			<name x="750" y="195">INS_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id322" x="580" y="220">
+			<name x="570" y="195">INS_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id323" x="400" y="220">
+			<name x="390" y="195">INS_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id324" x="220" y="220">
+			<name x="210" y="195">INS_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id325" x="220" y="360">
+			<name x="210" y="335">INS_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id326" x="40" y="220">
+			<name x="30" y="195">INS_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id316"/>
+		<transition id="id327">
+			<source ref="id316"/>
+			<target ref="id317"/>
+			<label kind="synchronisation" x="70" y="65">start_insider?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC),
+energyCost := min(MAX_COST,energyCost+INS_EC),
+carbonCost := min(MAX_COST,carbonCost+INS_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id328">
+			<source ref="id317"/>
+			<target ref="id318"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC),
+energyCost := min(MAX_COST,energyCost+INS_EC*2),
+carbonCost := min(MAX_COST,carbonCost+INS_CC)</label>
+		</transition>
+		<transition id="id329">
+			<source ref="id318"/>
+			<target ref="id319"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC),
+energyCost := min(MAX_COST,energyCost+INS_EC*2),
+carbonCost := min(MAX_COST,carbonCost+INS_CC*2),
+dlpLoad=min(100,dlpLoad+5)</label>
+		</transition>
+		<transition id="id330">
+			<source ref="id319"/>
+			<target ref="id325"/>
+			<label kind="guard" x="340" y="190">dlp==true &amp;&amp; dlpLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id331">
+			<source ref="id319"/>
+			<target ref="id320"/>
+			<label kind="guard" x="610" y="50">dlp==false || dlpLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*2),
+energyCost := min(MAX_COST,energyCost+INS_EC*3),
+carbonCost := min(MAX_COST,carbonCost+INS_CC*2)</label>
+		</transition>
+		<transition id="id332">
+			<source ref="id320"/>
+			<target ref="id321"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">insider=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*3),
+energyCost := min(MAX_COST,energyCost+INS_EC*4),
+carbonCost := min(MAX_COST,carbonCost+INS_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id333">
+			<source ref="id320"/>
+			<target ref="id326"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id334">
+			<source ref="id321"/>
+			<target ref="id322"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*3),
+energyCost := min(MAX_COST,energyCost+INS_EC*5),
+carbonCost := min(MAX_COST,carbonCost+INS_CC*4)</label>
+		</transition>
+		<transition id="id335">
+			<source ref="id322"/>
+			<target ref="id323"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*4),
+energyCost := min(MAX_COST,energyCost+INS_EC*5),
+carbonCost := min(MAX_COST,carbonCost+INS_CC*5)</label>
+		</transition>
+		<transition id="id336">
+			<source ref="id323"/>
+			<target ref="id324"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*5),
+energyCost := min(MAX_COST,energyCost+INS_EC*6),
+carbonCost := min(MAX_COST,carbonCost+INS_CC*6),
+breach=true,
+sensorCompromised=true,
+downtime=downtime+2</label>
+		</transition>
+		<transition id="id337">
+			<source ref="id324"/>
+			<target ref="id316"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id338">
+			<source ref="id325"/>
+			<target ref="id316"/>
+			<label kind="assignment" x="70" y="220">dlpLoad=min(100,dlpLoad+3)</label>
+		</transition>
+		<transition id="id339">
+			<source ref="id326"/>
+			<target ref="id318"/>
+		</transition>
+	</template>
+	<template>
+		<name>Supply_Attack</name>
+		<location id="id340" x="40" y="80">
+			<name x="30" y="55">SUP_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id341" x="220" y="80">
+			<name x="210" y="55">SUP_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id342" x="400" y="80">
+			<name x="390" y="55">SUP_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id343" x="580" y="80">
+			<name x="570" y="55">SUP_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id344" x="760" y="80">
+			<name x="750" y="55">SUP_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id345" x="760" y="220">
+			<name x="750" y="195">SUP_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id346" x="580" y="220">
+			<name x="570" y="195">SUP_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id347" x="400" y="220">
+			<name x="390" y="195">SUP_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id348" x="220" y="220">
+			<name x="210" y="195">SUP_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id349" x="220" y="360">
+			<name x="210" y="335">SUP_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id350" x="40" y="220">
+			<name x="30" y="195">SUP_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id340"/>
+		<transition id="id351">
+			<source ref="id340"/>
+			<target ref="id341"/>
+			<label kind="synchronisation" x="70" y="65">start_supply?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC),
+energyCost := min(MAX_COST,energyCost+SUP_EC),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id352">
+			<source ref="id341"/>
+			<target ref="id342"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC),
+energyCost := min(MAX_COST,energyCost+SUP_EC*2),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC)</label>
+		</transition>
+		<transition id="id353">
+			<source ref="id342"/>
+			<target ref="id343"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC),
+energyCost := min(MAX_COST,energyCost+SUP_EC*2),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*2),
+firewallLoad=min(100,firewallLoad+5)</label>
+		</transition>
+		<transition id="id354">
+			<source ref="id343"/>
+			<target ref="id349"/>
+			<label kind="guard" x="340" y="190">firewall==true &amp;&amp; firewallLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id355">
+			<source ref="id343"/>
+			<target ref="id344"/>
+			<label kind="guard" x="610" y="50">firewall==false || firewallLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*2),
+energyCost := min(MAX_COST,energyCost+SUP_EC*3),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*2)</label>
+		</transition>
+		<transition id="id356">
+			<source ref="id344"/>
+			<target ref="id345"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">supply=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*3),
+energyCost := min(MAX_COST,energyCost+SUP_EC*4),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id357">
+			<source ref="id344"/>
+			<target ref="id350"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id358">
+			<source ref="id345"/>
+			<target ref="id346"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*3),
+energyCost := min(MAX_COST,energyCost+SUP_EC*5),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*4)</label>
+		</transition>
+		<transition id="id359">
+			<source ref="id346"/>
+			<target ref="id347"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*4),
+energyCost := min(MAX_COST,energyCost+SUP_EC*5),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*5)</label>
+		</transition>
+		<transition id="id360">
+			<source ref="id347"/>
+			<target ref="id348"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*5),
+energyCost := min(MAX_COST,energyCost+SUP_EC*6),
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*6),
+breach=true,
+downtime=downtime+2,
+severity=2</label>
+		</transition>
+		<transition id="id361">
+			<source ref="id348"/>
+			<target ref="id340"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id362">
+			<source ref="id349"/>
+			<target ref="id340"/>
+			<label kind="assignment" x="70" y="220">firewallLoad=min(100,firewallLoad+3)</label>
+		</transition>
+		<transition id="id363">
+			<source ref="id350"/>
+			<target ref="id342"/>
+		</transition>
+	</template>
+	<template>
+		<name>Firmware_Attack</name>
+		<location id="id364" x="40" y="80">
+			<name x="30" y="55">FWA_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id365" x="220" y="80">
+			<name x="210" y="55">FWA_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id366" x="400" y="80">
+			<name x="390" y="55">FWA_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id367" x="580" y="80">
+			<name x="570" y="55">FWA_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id368" x="760" y="80">
+			<name x="750" y="55">FWA_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id369" x="760" y="220">
+			<name x="750" y="195">FWA_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id370" x="580" y="220">
+			<name x="570" y="195">FWA_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id371" x="400" y="220">
+			<name x="390" y="195">FWA_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id372" x="220" y="220">
+			<name x="210" y="195">FWA_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id373" x="220" y="360">
+			<name x="210" y="335">FWA_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id374" x="40" y="220">
+			<name x="30" y="195">FWA_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id364"/>
+		<transition id="id375">
+			<source ref="id364"/>
+			<target ref="id365"/>
+			<label kind="synchronisation" x="70" y="65">start_firmware?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC),
+energyCost := min(MAX_COST,energyCost+FWA_EC),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id376">
+			<source ref="id365"/>
+			<target ref="id366"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC),
+energyCost := min(MAX_COST,energyCost+FWA_EC*2),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC)</label>
+		</transition>
+		<transition id="id377">
+			<source ref="id366"/>
+			<target ref="id367"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC),
+energyCost := min(MAX_COST,energyCost+FWA_EC*2),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*2),
+edrLoad=min(100,edrLoad+5)</label>
+		</transition>
+		<transition id="id378">
+			<source ref="id367"/>
+			<target ref="id373"/>
+			<label kind="guard" x="340" y="190">edr==true &amp;&amp; edrLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id379">
+			<source ref="id367"/>
+			<target ref="id368"/>
+			<label kind="guard" x="610" y="50">edr==false || edrLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*2),
+energyCost := min(MAX_COST,energyCost+FWA_EC*3),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*2)</label>
+		</transition>
+		<transition id="id380">
+			<source ref="id368"/>
+			<target ref="id369"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">firmware=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*3),
+energyCost := min(MAX_COST,energyCost+FWA_EC*4),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id381">
+			<source ref="id368"/>
+			<target ref="id374"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id382">
+			<source ref="id369"/>
+			<target ref="id370"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*3),
+energyCost := min(MAX_COST,energyCost+FWA_EC*5),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*4)</label>
+		</transition>
+		<transition id="id383">
+			<source ref="id370"/>
+			<target ref="id371"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*4),
+energyCost := min(MAX_COST,energyCost+FWA_EC*5),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*5)</label>
+		</transition>
+		<transition id="id384">
+			<source ref="id371"/>
+			<target ref="id372"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*5),
+energyCost := min(MAX_COST,energyCost+FWA_EC*6),
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*6),
+breach=true,
+plcCompromised=true,
+downtime=downtime+3,
+severity=2</label>
+		</transition>
+		<transition id="id385">
+			<source ref="id372"/>
+			<target ref="id364"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id386">
+			<source ref="id373"/>
+			<target ref="id364"/>
+			<label kind="assignment" x="70" y="220">edrLoad=min(100,edrLoad+3)</label>
+		</transition>
+		<transition id="id387">
+			<source ref="id374"/>
+			<target ref="id366"/>
+		</transition>
+	</template>
+	<template>
+		<name>Lateral_Movement</name>
+		<location id="id388" x="40" y="80">
+			<name x="30" y="55">LM_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id389" x="220" y="80">
+			<name x="210" y="55">LM_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id390" x="400" y="80">
+			<name x="390" y="55">LM_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id391" x="580" y="80">
+			<name x="570" y="55">LM_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id392" x="760" y="80">
+			<name x="750" y="55">LM_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id393" x="760" y="220">
+			<name x="750" y="195">LM_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id394" x="580" y="220">
+			<name x="570" y="195">LM_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id395" x="400" y="220">
+			<name x="390" y="195">LM_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id396" x="220" y="220">
+			<name x="210" y="195">LM_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id397" x="220" y="360">
+			<name x="210" y="335">LM_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id398" x="40" y="220">
+			<name x="30" y="195">LM_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id388"/>
+		<transition id="id399">
+			<source ref="id388"/>
+			<target ref="id389"/>
+			<label kind="synchronisation" x="70" y="65">start_lateral?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC),
+energyCost := min(MAX_COST,energyCost+LMV_EC),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id400">
+			<source ref="id389"/>
+			<target ref="id390"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC),
+energyCost := min(MAX_COST,energyCost+LMV_EC*2),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC)</label>
+		</transition>
+		<transition id="id401">
+			<source ref="id390"/>
+			<target ref="id391"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC),
+energyCost := min(MAX_COST,energyCost+LMV_EC*2),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*2),
+idsLoad=min(100,idsLoad+5)</label>
+		</transition>
+		<transition id="id402">
+			<source ref="id391"/>
+			<target ref="id397"/>
+			<label kind="guard" x="340" y="190">ids==true &amp;&amp; idsLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id403">
+			<source ref="id391"/>
+			<target ref="id392"/>
+			<label kind="guard" x="610" y="50">ids==false || idsLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*2),
+energyCost := min(MAX_COST,energyCost+LMV_EC*3),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*2)</label>
+		</transition>
+		<transition id="id404">
+			<source ref="id392"/>
+			<target ref="id393"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">lateral=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*3),
+energyCost := min(MAX_COST,energyCost+LMV_EC*4),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id405">
+			<source ref="id392"/>
+			<target ref="id398"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id406">
+			<source ref="id393"/>
+			<target ref="id394"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*3),
+energyCost := min(MAX_COST,energyCost+LMV_EC*5),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*4)</label>
+		</transition>
+		<transition id="id407">
+			<source ref="id394"/>
+			<target ref="id395"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*4),
+energyCost := min(MAX_COST,energyCost+LMV_EC*5),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*5)</label>
+		</transition>
+		<transition id="id408">
+			<source ref="id395"/>
+			<target ref="id396"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*5),
+energyCost := min(MAX_COST,energyCost+LMV_EC*6),
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*6),
+downtime=downtime+2</label>
+		</transition>
+		<transition id="id409">
+			<source ref="id396"/>
+			<target ref="id388"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id410">
+			<source ref="id397"/>
+			<target ref="id388"/>
+			<label kind="assignment" x="70" y="220">idsLoad=min(100,idsLoad+3)</label>
+		</transition>
+		<transition id="id411">
+			<source ref="id398"/>
+			<target ref="id390"/>
+		</transition>
+	</template>
+	<template>
+		<name>Persistence_Module</name>
+		<location id="id412" x="40" y="80">
+			<name x="30" y="55">PM_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">2</label>
+		</location>
+		<location id="id413" x="220" y="80">
+			<name x="210" y="55">PM_Recon</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id414" x="400" y="80">
+			<name x="390" y="55">PM_Stage</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id415" x="580" y="80">
+			<name x="570" y="55">PM_Check</name>
+			<label kind="exponentialrate" x="570" y="98">3</label>
+		</location>
+		<location id="id416" x="760" y="80">
+			<name x="750" y="55">PM_Bypass</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id417" x="760" y="220">
+			<name x="750" y="195">PM_Exec</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id418" x="580" y="220">
+			<name x="570" y="195">PM_Post1</name>
+			<label kind="exponentialrate" x="570" y="238">2</label>
+		</location>
+		<location id="id419" x="400" y="220">
+			<name x="390" y="195">PM_Post2</name>
+			<label kind="exponentialrate" x="390" y="238">2</label>
+		</location>
+		<location id="id420" x="220" y="220">
+			<name x="210" y="195">PM_Impact</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id421" x="220" y="360">
+			<name x="210" y="335">PM_Blocked</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<location id="id422" x="40" y="220">
+			<name x="30" y="195">PM_Retry</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<init ref="id412"/>
+		<transition id="id423">
+			<source ref="id412"/>
+			<target ref="id413"/>
+			<label kind="synchronisation" x="70" y="65">start_persist?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC),
+energyCost := min(MAX_COST,energyCost+PER_EC),
+carbonCost := min(MAX_COST,carbonCost+PER_CC),
+riskScore=min(100,riskScore+1)</label>
+		</transition>
+		<transition id="id424">
+			<source ref="id413"/>
+			<target ref="id414"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC),
+energyCost := min(MAX_COST,energyCost+PER_EC*2),
+carbonCost := min(MAX_COST,carbonCost+PER_CC)</label>
+		</transition>
+		<transition id="id425">
+			<source ref="id414"/>
+			<target ref="id415"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC),
+energyCost := min(MAX_COST,energyCost+PER_EC*2),
+carbonCost := min(MAX_COST,carbonCost+PER_CC*2),
+edrLoad=min(100,edrLoad+5)</label>
+		</transition>
+		<transition id="id426">
+			<source ref="id415"/>
+			<target ref="id421"/>
+			<label kind="guard" x="340" y="190">edr==true &amp;&amp; edrLoad&lt;80</label>
+			<label kind="synchronisation" x="340" y="205">detect!</label>
+		</transition>
+		<transition id="id427">
+			<source ref="id415"/>
+			<target ref="id416"/>
+			<label kind="guard" x="610" y="50">edr==false || edrLoad&gt;=80</label>
+			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*2),
+energyCost := min(MAX_COST,energyCost+PER_EC*3),
+carbonCost := min(MAX_COST,carbonCost+PER_CC*2)</label>
+		</transition>
+		<transition id="id428">
+			<source ref="id416"/>
+			<target ref="id417"/>
+			<label kind="synchronisation" x="700" y="135">success?</label>
+			<label kind="assignment" x="700" y="150">persistence=true,
+threat_score=threat_score+1,
+maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*3),
+energyCost := min(MAX_COST,energyCost+PER_EC*4),
+carbonCost := min(MAX_COST,carbonCost+PER_CC*3),
+riskScore=min(100,riskScore+2)</label>
+		</transition>
+		<transition id="id429">
+			<source ref="id416"/>
+			<target ref="id422"/>
+			<label kind="synchronisation" x="340" y="135">fail?</label>
+		</transition>
+		<transition id="id430">
+			<source ref="id417"/>
+			<target ref="id418"/>
+			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*3),
+energyCost := min(MAX_COST,energyCost+PER_EC*5),
+carbonCost := min(MAX_COST,carbonCost+PER_CC*4)</label>
+		</transition>
+		<transition id="id431">
+			<source ref="id418"/>
+			<target ref="id419"/>
+			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*4),
+energyCost := min(MAX_COST,energyCost+PER_EC*5),
+carbonCost := min(MAX_COST,carbonCost+PER_CC*5)</label>
+		</transition>
+		<transition id="id432">
+			<source ref="id419"/>
+			<target ref="id420"/>
+			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*5),
+energyCost := min(MAX_COST,energyCost+PER_EC*6),
+carbonCost := min(MAX_COST,carbonCost+PER_CC*6),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id433">
+			<source ref="id420"/>
+			<target ref="id412"/>
+			<label kind="synchronisation" x="70" y="135">detect!</label>
+		</transition>
+		<transition id="id434">
+			<source ref="id421"/>
+			<target ref="id412"/>
+			<label kind="assignment" x="70" y="220">edrLoad=min(100,edrLoad+3)</label>
+		</transition>
+		<transition id="id435">
+			<source ref="id422"/>
+			<target ref="id414"/>
+		</transition>
+	</template>
+	<template>
+		<name>Firewall_Defense</name>
+		<location id="id436" x="40" y="80">
+			<name x="30" y="55">FWD_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id437" x="220" y="80">
+			<name x="210" y="55">FWD_Monitor</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id438" x="400" y="80">
+			<name x="390" y="55">FWD_Alert</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id439" x="580" y="80">
+			<name x="570" y="55">FWD_Analyse</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id440" x="580" y="220">
+			<name x="570" y="195">FWD_Rule</name>
+			<label kind="exponentialrate" x="570" y="238">3</label>
+		</location>
+		<location id="id441" x="400" y="220">
+			<name x="390" y="195">FWD_Block</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id442" x="220" y="220">
+			<name x="210" y="195">FWD_Contain</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id443" x="40" y="220">
+			<name x="30" y="195">FWD_Recover</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id444" x="40" y="360">
+			<name x="30" y="335">FWD_Harden</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id445" x="220" y="360">
+			<name x="210" y="335">FWD_Failed</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id436"/>
+		<transition id="id446">
+			<source ref="id436"/>
+			<target ref="id437"/>
+			<label kind="synchronisation" x="70" y="65">detect?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,energyCost+FWD_EC),
+carbonCost := min(MAX_COST,carbonCost+FWD_CC),
+firewallLoad=min(100,firewallLoad+5)</label>
+		</transition>
+		<transition id="id447">
+			<source ref="id437"/>
+			<target ref="id438"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,energyCost+FWD_EC),
+carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+		</transition>
+		<transition id="id448">
+			<source ref="id438"/>
+			<target ref="id439"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,energyCost+FWD_EC),
+carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+		</transition>
+		<transition id="id449">
+			<source ref="id439"/>
+			<target ref="id440"/>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,energyCost+FWD_EC),
+carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+		</transition>
+		<transition id="id450">
+			<source ref="id440"/>
+			<target ref="id441"/>
+			<label kind="synchronisation" x="430" y="205">success!</label>
+			<label kind="assignment" x="430" y="220">firewall=true,
+defense_score=defense_score+1,
+riskScore=(riskScore&gt;2)?riskScore-2:0,
+fw_strength=min(10,fw_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,energyCost+FWD_EC),
+carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+		</transition>
+		<transition id="id451">
+			<source ref="id440"/>
+			<target ref="id445"/>
+			<label kind="synchronisation" x="340" y="275">fail!</label>
+			<label kind="assignment" x="340" y="290">firewall=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2),
+energyCost := min(MAX_COST,energyCost+FWD_EC*2),
+carbonCost := min(MAX_COST,carbonCost+FWD_CC*2)</label>
+		</transition>
+		<transition id="id452">
+			<source ref="id441"/>
+			<target ref="id442"/>
+			<label kind="synchronisation" x="250" y="205">detect!</label>
+		</transition>
+		<transition id="id453">
+			<source ref="id442"/>
+			<target ref="id443"/>
+			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
+		</transition>
+		<transition id="id454">
+			<source ref="id443"/>
+			<target ref="id444"/>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC),
+energyCost := min(MAX_COST,energyCost+FWD_EC),
+carbonCost := min(MAX_COST,carbonCost+FWD_CC)</label>
+		</transition>
+		<transition id="id455">
+			<source ref="id444"/>
+			<target ref="id436"/>
+			<label kind="assignment" x="-20" y="220">firewall=true,
+fw_strength=min(10,fw_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2)</label>
+		</transition>
+		<transition id="id456">
+			<source ref="id445"/>
+			<target ref="id443"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*3)</label>
+		</transition>
+	</template>
+	<template>
+		<name>IDS_Defense</name>
+		<location id="id457" x="40" y="80">
+			<name x="30" y="55">IDSD_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id458" x="220" y="80">
+			<name x="210" y="55">IDSD_Monitor</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id459" x="400" y="80">
+			<name x="390" y="55">IDSD_Alert</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id460" x="580" y="80">
+			<name x="570" y="55">IDSD_Analyse</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id461" x="580" y="220">
+			<name x="570" y="195">IDSD_Rule</name>
+			<label kind="exponentialrate" x="570" y="238">3</label>
+		</location>
+		<location id="id462" x="400" y="220">
+			<name x="390" y="195">IDSD_Block</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id463" x="220" y="220">
+			<name x="210" y="195">IDSD_Contain</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id464" x="40" y="220">
+			<name x="30" y="195">IDSD_Recover</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id465" x="40" y="360">
+			<name x="30" y="335">IDSD_Harden</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id466" x="220" y="360">
+			<name x="210" y="335">IDSD_Failed</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id457"/>
+		<transition id="id467">
+			<source ref="id457"/>
+			<target ref="id458"/>
+			<label kind="synchronisation" x="70" y="65">detect?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,energyCost+IDS_EC),
+carbonCost := min(MAX_COST,carbonCost+IDS_CC),
+idsLoad=min(100,idsLoad+5)</label>
+		</transition>
+		<transition id="id468">
+			<source ref="id458"/>
+			<target ref="id459"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,energyCost+IDS_EC),
+carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+		</transition>
+		<transition id="id469">
+			<source ref="id459"/>
+			<target ref="id460"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,energyCost+IDS_EC),
+carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+		</transition>
+		<transition id="id470">
+			<source ref="id460"/>
+			<target ref="id461"/>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,energyCost+IDS_EC),
+carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+		</transition>
+		<transition id="id471">
+			<source ref="id461"/>
+			<target ref="id462"/>
+			<label kind="synchronisation" x="430" y="205">success!</label>
+			<label kind="assignment" x="430" y="220">ids=true,
+defense_score=defense_score+1,
+riskScore=(riskScore&gt;2)?riskScore-2:0,
+ids_strength=min(10,ids_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,energyCost+IDS_EC),
+carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+		</transition>
+		<transition id="id472">
+			<source ref="id461"/>
+			<target ref="id466"/>
+			<label kind="synchronisation" x="340" y="275">fail!</label>
+			<label kind="assignment" x="340" y="290">ids=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2),
+energyCost := min(MAX_COST,energyCost+IDS_EC*2),
+carbonCost := min(MAX_COST,carbonCost+IDS_CC*2)</label>
+		</transition>
+		<transition id="id473">
+			<source ref="id462"/>
+			<target ref="id463"/>
+			<label kind="synchronisation" x="250" y="205">detect!</label>
+		</transition>
+		<transition id="id474">
+			<source ref="id463"/>
+			<target ref="id464"/>
+			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
+		</transition>
+		<transition id="id475">
+			<source ref="id464"/>
+			<target ref="id465"/>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC),
+energyCost := min(MAX_COST,energyCost+IDS_EC),
+carbonCost := min(MAX_COST,carbonCost+IDS_CC)</label>
+		</transition>
+		<transition id="id476">
+			<source ref="id465"/>
+			<target ref="id457"/>
+			<label kind="assignment" x="-20" y="220">ids=true,
+ids_strength=min(10,ids_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2)</label>
+		</transition>
+		<transition id="id477">
+			<source ref="id466"/>
+			<target ref="id464"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*3)</label>
+		</transition>
+	</template>
+	<template>
+		<name>WAF_Defense</name>
+		<location id="id478" x="40" y="80">
+			<name x="30" y="55">WAFD_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id479" x="220" y="80">
+			<name x="210" y="55">WAFD_Monitor</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id480" x="400" y="80">
+			<name x="390" y="55">WAFD_Alert</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id481" x="580" y="80">
+			<name x="570" y="55">WAFD_Analyse</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id482" x="580" y="220">
+			<name x="570" y="195">WAFD_Rule</name>
+			<label kind="exponentialrate" x="570" y="238">3</label>
+		</location>
+		<location id="id483" x="400" y="220">
+			<name x="390" y="195">WAFD_Block</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id484" x="220" y="220">
+			<name x="210" y="195">WAFD_Contain</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id485" x="40" y="220">
+			<name x="30" y="195">WAFD_Recover</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id486" x="40" y="360">
+			<name x="30" y="335">WAFD_Harden</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id487" x="220" y="360">
+			<name x="210" y="335">WAFD_Failed</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id478"/>
+		<transition id="id488">
+			<source ref="id478"/>
+			<target ref="id479"/>
+			<label kind="synchronisation" x="70" y="65">detect?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,energyCost+WAF_EC),
+carbonCost := min(MAX_COST,carbonCost+WAF_CC),
+wafLoad=min(100,wafLoad+5)</label>
+		</transition>
+		<transition id="id489">
+			<source ref="id479"/>
+			<target ref="id480"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,energyCost+WAF_EC),
+carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+		</transition>
+		<transition id="id490">
+			<source ref="id480"/>
+			<target ref="id481"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,energyCost+WAF_EC),
+carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+		</transition>
+		<transition id="id491">
+			<source ref="id481"/>
+			<target ref="id482"/>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,energyCost+WAF_EC),
+carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+		</transition>
+		<transition id="id492">
+			<source ref="id482"/>
+			<target ref="id483"/>
+			<label kind="synchronisation" x="430" y="205">success!</label>
+			<label kind="assignment" x="430" y="220">waf=true,
+defense_score=defense_score+1,
+riskScore=(riskScore&gt;2)?riskScore-2:0,
+waf_strength=min(10,waf_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,energyCost+WAF_EC),
+carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+		</transition>
+		<transition id="id493">
+			<source ref="id482"/>
+			<target ref="id487"/>
+			<label kind="synchronisation" x="340" y="275">fail!</label>
+			<label kind="assignment" x="340" y="290">waf=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2),
+energyCost := min(MAX_COST,energyCost+WAF_EC*2),
+carbonCost := min(MAX_COST,carbonCost+WAF_CC*2)</label>
+		</transition>
+		<transition id="id494">
+			<source ref="id483"/>
+			<target ref="id484"/>
+			<label kind="synchronisation" x="250" y="205">detect!</label>
+		</transition>
+		<transition id="id495">
+			<source ref="id484"/>
+			<target ref="id485"/>
+			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
+		</transition>
+		<transition id="id496">
+			<source ref="id485"/>
+			<target ref="id486"/>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC),
+energyCost := min(MAX_COST,energyCost+WAF_EC),
+carbonCost := min(MAX_COST,carbonCost+WAF_CC)</label>
+		</transition>
+		<transition id="id497">
+			<source ref="id486"/>
+			<target ref="id478"/>
+			<label kind="assignment" x="-20" y="220">waf=true,
+waf_strength=min(10,waf_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2)</label>
+		</transition>
+		<transition id="id498">
+			<source ref="id487"/>
+			<target ref="id485"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*3)</label>
+		</transition>
+	</template>
+	<template>
+		<name>EDR_Defense</name>
+		<location id="id499" x="40" y="80">
+			<name x="30" y="55">EDRD_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id500" x="220" y="80">
+			<name x="210" y="55">EDRD_Monitor</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id501" x="400" y="80">
+			<name x="390" y="55">EDRD_Alert</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id502" x="580" y="80">
+			<name x="570" y="55">EDRD_Analyse</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id503" x="580" y="220">
+			<name x="570" y="195">EDRD_Rule</name>
+			<label kind="exponentialrate" x="570" y="238">3</label>
+		</location>
+		<location id="id504" x="400" y="220">
+			<name x="390" y="195">EDRD_Block</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id505" x="220" y="220">
+			<name x="210" y="195">EDRD_Contain</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id506" x="40" y="220">
+			<name x="30" y="195">EDRD_Recover</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id507" x="40" y="360">
+			<name x="30" y="335">EDRD_Harden</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id508" x="220" y="360">
+			<name x="210" y="335">EDRD_Failed</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id499"/>
+		<transition id="id509">
+			<source ref="id499"/>
+			<target ref="id500"/>
+			<label kind="synchronisation" x="70" y="65">detect?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,energyCost+EDR_EC),
+carbonCost := min(MAX_COST,carbonCost+EDR_CC),
+edrLoad=min(100,edrLoad+5)</label>
+		</transition>
+		<transition id="id510">
+			<source ref="id500"/>
+			<target ref="id501"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,energyCost+EDR_EC),
+carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+		</transition>
+		<transition id="id511">
+			<source ref="id501"/>
+			<target ref="id502"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,energyCost+EDR_EC),
+carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+		</transition>
+		<transition id="id512">
+			<source ref="id502"/>
+			<target ref="id503"/>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,energyCost+EDR_EC),
+carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+		</transition>
+		<transition id="id513">
+			<source ref="id503"/>
+			<target ref="id504"/>
+			<label kind="synchronisation" x="430" y="205">success!</label>
+			<label kind="assignment" x="430" y="220">edr=true,
+defense_score=defense_score+1,
+riskScore=(riskScore&gt;2)?riskScore-2:0,
+edr_strength=min(10,edr_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,energyCost+EDR_EC),
+carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+		</transition>
+		<transition id="id514">
+			<source ref="id503"/>
+			<target ref="id508"/>
+			<label kind="synchronisation" x="340" y="275">fail!</label>
+			<label kind="assignment" x="340" y="290">edr=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2),
+energyCost := min(MAX_COST,energyCost+EDR_EC*2),
+carbonCost := min(MAX_COST,carbonCost+EDR_CC*2)</label>
+		</transition>
+		<transition id="id515">
+			<source ref="id504"/>
+			<target ref="id505"/>
+			<label kind="synchronisation" x="250" y="205">detect!</label>
+		</transition>
+		<transition id="id516">
+			<source ref="id505"/>
+			<target ref="id506"/>
+			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
+		</transition>
+		<transition id="id517">
+			<source ref="id506"/>
+			<target ref="id507"/>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC),
+energyCost := min(MAX_COST,energyCost+EDR_EC),
+carbonCost := min(MAX_COST,carbonCost+EDR_CC)</label>
+		</transition>
+		<transition id="id518">
+			<source ref="id507"/>
+			<target ref="id499"/>
+			<label kind="assignment" x="-20" y="220">edr=true,
+edr_strength=min(10,edr_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2)</label>
+		</transition>
+		<transition id="id519">
+			<source ref="id508"/>
+			<target ref="id506"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*3)</label>
+		</transition>
+	</template>
+	<template>
+		<name>DLP_Defense</name>
+		<location id="id520" x="40" y="80">
+			<name x="30" y="55">DLPD_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id521" x="220" y="80">
+			<name x="210" y="55">DLPD_Monitor</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id522" x="400" y="80">
+			<name x="390" y="55">DLPD_Alert</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id523" x="580" y="80">
+			<name x="570" y="55">DLPD_Analyse</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id524" x="580" y="220">
+			<name x="570" y="195">DLPD_Rule</name>
+			<label kind="exponentialrate" x="570" y="238">3</label>
+		</location>
+		<location id="id525" x="400" y="220">
+			<name x="390" y="195">DLPD_Block</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id526" x="220" y="220">
+			<name x="210" y="195">DLPD_Contain</name>
+			<label kind="exponentialrate" x="210" y="238">2</label>
+		</location>
+		<location id="id527" x="40" y="220">
+			<name x="30" y="195">DLPD_Recover</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id528" x="40" y="360">
+			<name x="30" y="335">DLPD_Harden</name>
+			<label kind="exponentialrate" x="30" y="378">1</label>
+		</location>
+		<location id="id529" x="220" y="360">
+			<name x="210" y="335">DLPD_Failed</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<init ref="id520"/>
+		<transition id="id530">
+			<source ref="id520"/>
+			<target ref="id521"/>
+			<label kind="synchronisation" x="70" y="65">detect?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,energyCost+DLP_EC),
+carbonCost := min(MAX_COST,carbonCost+DLP_CC),
+dlpLoad=min(100,dlpLoad+5)</label>
+		</transition>
+		<transition id="id531">
+			<source ref="id521"/>
+			<target ref="id522"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,energyCost+DLP_EC),
+carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+		</transition>
+		<transition id="id532">
+			<source ref="id522"/>
+			<target ref="id523"/>
+			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,energyCost+DLP_EC),
+carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+		</transition>
+		<transition id="id533">
+			<source ref="id523"/>
+			<target ref="id524"/>
+			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,energyCost+DLP_EC),
+carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+		</transition>
+		<transition id="id534">
+			<source ref="id524"/>
+			<target ref="id525"/>
+			<label kind="synchronisation" x="430" y="205">success!</label>
+			<label kind="assignment" x="430" y="220">dlp=true,
+defense_score=defense_score+1,
+riskScore=(riskScore&gt;2)?riskScore-2:0,
+dlp_strength=min(10,dlp_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,energyCost+DLP_EC),
+carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+		</transition>
+		<transition id="id535">
+			<source ref="id524"/>
+			<target ref="id529"/>
+			<label kind="synchronisation" x="340" y="275">fail!</label>
+			<label kind="assignment" x="340" y="290">dlp=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2),
+energyCost := min(MAX_COST,energyCost+DLP_EC*2),
+carbonCost := min(MAX_COST,carbonCost+DLP_CC*2)</label>
+		</transition>
+		<transition id="id536">
+			<source ref="id525"/>
+			<target ref="id526"/>
+			<label kind="synchronisation" x="250" y="205">detect!</label>
+		</transition>
+		<transition id="id537">
+			<source ref="id526"/>
+			<target ref="id527"/>
+			<label kind="assignment" x="70" y="220">downtime=(downtime&gt;0)?downtime-1:0</label>
+		</transition>
+		<transition id="id538">
+			<source ref="id527"/>
+			<target ref="id528"/>
+			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC),
+energyCost := min(MAX_COST,energyCost+DLP_EC),
+carbonCost := min(MAX_COST,carbonCost+DLP_CC)</label>
+		</transition>
+		<transition id="id539">
+			<source ref="id528"/>
+			<target ref="id520"/>
+			<label kind="assignment" x="-20" y="220">dlp=true,
+dlp_strength=min(10,dlp_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2)</label>
+		</transition>
+		<transition id="id540">
+			<source ref="id529"/>
+			<target ref="id527"/>
+			<label kind="synchronisation" x="70" y="275">detect!</label>
+			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*3)</label>
+		</transition>
+	</template>
+	<template>
+		<name>Defender_Response</name>
+		<location id="id541" x="40" y="80">
+			<name x="30" y="55">DR_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id542" x="220" y="80">
+			<name x="210" y="55">DR_Intake</name>
+			<label kind="exponentialrate" x="210" y="98">5</label>
+		</location>
+		<location id="id543" x="400" y="80">
+			<name x="390" y="55">DR_Classify</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id544" x="580" y="80">
+			<name x="570" y="55">DR_Risk_Score</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id545" x="760" y="80">
+			<name x="750" y="55">DR_Sev_Low</name>
+			<label kind="exponentialrate" x="750" y="98">3</label>
+		</location>
+		<location id="id546" x="760" y="220">
+			<name x="750" y="195">DR_Sev_High</name>
+			<label kind="exponentialrate" x="750" y="238">3</label>
+		</location>
+		<location id="id547" x="580" y="220">
+			<name x="570" y="195">DR_Strat_Cheap</name>
+			<label kind="exponentialrate" x="570" y="238">3</label>
+		</location>
+		<location id="id548" x="400" y="220">
+			<name x="390" y="195">DR_Strat_Aggr</name>
+			<label kind="exponentialrate" x="390" y="238">3</label>
+		</location>
+		<location id="id549" x="220" y="220">
+			<name x="210" y="195">DR_Act_FW_WAF</name>
+			<label kind="exponentialrate" x="210" y="238">3</label>
+		</location>
+		<location id="id550" x="40" y="220">
+			<name x="30" y="195">DR_Act_IDS_EDR</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id551" x="40" y="360">
+			<name x="30" y="335">DR_Act_DLP</name>
+			<label kind="exponentialrate" x="30" y="378">3</label>
+		</location>
+		<location id="id552" x="220" y="360">
+			<name x="210" y="335">DR_Contain</name>
+			<label kind="exponentialrate" x="210" y="378">2</label>
+		</location>
+		<location id="id553" x="400" y="360">
+			<name x="390" y="335">DR_Isolate</name>
+			<label kind="exponentialrate" x="390" y="378">2</label>
+		</location>
+		<location id="id554" x="580" y="360">
+			<name x="570" y="335">DR_Recover</name>
+			<label kind="exponentialrate" x="570" y="378">2</label>
+		</location>
+		<location id="id555" x="760" y="360">
+			<name x="750" y="335">DR_Harden</name>
+			<label kind="exponentialrate" x="750" y="378">1</label>
+		</location>
+		<location id="id556" x="760" y="500">
+			<name x="750" y="475">DR_Feedback</name>
+			<label kind="exponentialrate" x="750" y="518">2</label>
+		</location>
+		<location id="id557" x="580" y="500">
+			<name x="570" y="475">DR_Log</name>
+			<label kind="exponentialrate" x="570" y="518">2</label>
+		</location>
+		<location id="id558" x="400" y="500">
+			<name x="390" y="475">DR_Reset</name>
+			<label kind="exponentialrate" x="390" y="518">3</label>
+		</location>
+		<init ref="id541"/>
+		<transition id="id559">
+			<source ref="id541"/>
+			<target ref="id542"/>
+			<label kind="synchronisation" x="70" y="65">detect?</label>
+			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC),
+truePositive=false,
+falsePositive=false,
+falseNegative=false</label>
+		</transition>
+		<transition id="id560">
+			<source ref="id542"/>
+			<target ref="id543"/>
+			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
+		</transition>
+		<transition id="id561">
+			<source ref="id543"/>
+			<target ref="id544"/>
+			<label kind="assignment" x="430" y="80">severity=(riskScore&gt;=50)?2:(riskScore&gt;=20)?1:0,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
+		</transition>
+		<transition id="id562">
+			<source ref="id544"/>
+			<target ref="id545"/>
+			<label kind="guard" x="610" y="50">riskScore&lt;30</label>
+			<label kind="assignment" x="610" y="80">truePositive=(riskScore&gt;5)?true:false,
+falsePositive=(riskScore&lt;=5)?true:false,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
+energyCost := min(MAX_COST,energyCost+DR_EC*2),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
+		</transition>
+		<transition id="id563">
+			<source ref="id544"/>
+			<target ref="id546"/>
+			<label kind="guard" x="610" y="120">riskScore&gt;=30</label>
+			<label kind="assignment" x="610" y="150">truePositive=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
+energyCost := min(MAX_COST,energyCost+DR_EC*3),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*3),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id564">
+			<source ref="id545"/>
+			<target ref="id547"/>
+			<label kind="assignment" x="610" y="150">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
+energyCost := min(MAX_COST,energyCost+DR_EC*2),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
+		</transition>
+		<transition id="id565">
+			<source ref="id546"/>
+			<target ref="id548"/>
+			<label kind="assignment" x="520" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id566">
+			<source ref="id547"/>
+			<target ref="id549"/>
+			<label kind="assignment" x="340" y="220">firewall=true,
+waf=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
+energyCost := min(MAX_COST,energyCost+DR_EC*2),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
+		</transition>
+		<transition id="id567">
+			<source ref="id548"/>
+			<target ref="id549"/>
+			<label kind="assignment" x="250" y="220">firewall=true,
+waf=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
+energyCost := min(MAX_COST,energyCost+DR_EC*3),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*3)</label>
+		</transition>
+		<transition id="id568">
+			<source ref="id549"/>
+			<target ref="id550"/>
+			<label kind="assignment" x="70" y="220">ids=true,
+edr=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5)</label>
+		</transition>
+		<transition id="id569">
+			<source ref="id550"/>
+			<target ref="id551"/>
+			<label kind="assignment" x="-20" y="290">dlp=true,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5)</label>
+		</transition>
+		<transition id="id570">
+			<source ref="id551"/>
+			<target ref="id552"/>
+			<label kind="assignment" x="70" y="360">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
+energyCost := min(MAX_COST,energyCost+DR_EC*4),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*3)</label>
+		</transition>
+		<transition id="id571">
+			<source ref="id552"/>
+			<target ref="id553"/>
+			<label kind="assignment" x="250" y="360">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*4),
+energyCost := min(MAX_COST,energyCost+DR_EC*5),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*4),
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id572">
+			<source ref="id553"/>
+			<target ref="id554"/>
+			<label kind="assignment" x="430" y="360">breach=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
+energyCost := min(MAX_COST,energyCost+DR_EC*6),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*5),
+downtime=(downtime&gt;1)?downtime-1:0</label>
+		</transition>
+		<transition id="id573">
+			<source ref="id554"/>
+			<target ref="id555"/>
+			<label kind="assignment" x="610" y="360">defense_score=5,
+scadaCompromised=false,
+plcCompromised=false,
+sensorCompromised=false,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*6),
+energyCost := min(MAX_COST,energyCost+DR_EC*7),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*6),
+downtime=(downtime&gt;0)?downtime-1:0</label>
+		</transition>
+		<transition id="id574">
+			<source ref="id555"/>
+			<target ref="id556"/>
+			<label kind="assignment" x="700" y="430">fw_strength=min(10,fw_strength+1),
+ids_strength=min(10,ids_strength+1),
+waf_strength=min(10,waf_strength+1),
+edr_strength=min(10,edr_strength+1),
+dlp_strength=min(10,dlp_strength+1),
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*8),
+energyCost := min(MAX_COST,energyCost+DR_EC*8),
+carbonCost := min(MAX_COST,carbonCost+DR_CC*7)</label>
+		</transition>
+		<transition id="id575">
+			<source ref="id556"/>
+			<target ref="id557"/>
+			<label kind="assignment" x="610" y="500">threat_score=0,
+riskScore=(riskScore&gt;10)?riskScore-10:0,
+firewallLoad=(firewallLoad&gt;10)?firewallLoad-10:0,
+idsLoad=(idsLoad&gt;10)?idsLoad-10:0,
+wafLoad=(wafLoad&gt;10)?wafLoad-10:0,
+edrLoad=(edrLoad&gt;10)?edrLoad-10:0,
+dlpLoad=(dlpLoad&gt;10)?dlpLoad-10:0</label>
+		</transition>
+		<transition id="id576">
+			<source ref="id557"/>
+			<target ref="id558"/>
+			<label kind="assignment" x="430" y="500">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+energyCost := min(MAX_COST,energyCost+DR_EC),
+carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
+		</transition>
+		<transition id="id577">
+			<source ref="id558"/>
+			<target ref="id541"/>
+		</transition>
+	</template>
+	<template>
+		<name>Breach_Monitor</name>
+		<location id="id578" x="40" y="80">
+			<name x="30" y="55">BM_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id579" x="220" y="80">
+			<name x="210" y="55">BM_Check</name>
+			<label kind="exponentialrate" x="210" y="98">3</label>
+		</location>
+		<location id="id580" x="400" y="80">
+			<name x="390" y="55">BM_Evaluate</name>
+			<label kind="exponentialrate" x="390" y="98">3</label>
+		</location>
+		<location id="id581" x="400" y="220">
+			<name x="390" y="195">BM_Breach</name>
+			<label kind="exponentialrate" x="390" y="238">1</label>
+		</location>
+		<location id="id582" x="220" y="220">
+			<name x="210" y="195">BM_Safe</name>
+			<label kind="exponentialrate" x="210" y="238">1</label>
+		</location>
+		<location id="id583" x="40" y="220">
+			<name x="30" y="195">BM_Merge</name>
+			<label kind="exponentialrate" x="30" y="238">2</label>
+		</location>
+		<location id="id584" x="40" y="360">
+			<name x="30" y="335">BM_Report</name>
+			<label kind="exponentialrate" x="30" y="378">2</label>
+		</location>
+		<location id="id585" x="220" y="360">
+			<name x="210" y="335">BM_Reset</name>
+			<label kind="exponentialrate" x="210" y="378">3</label>
+		</location>
+		<init ref="id578"/>
+		<transition id="id586">
+			<source ref="id578"/>
+			<target ref="id579"/>
+			<label kind="guard" x="70" y="50">net==true || web==true || api==true || malware==true || ransom==true || phishing==true || credential==true || insider==true || supply==true || firmware==true || lateral==true || persistence==true</label>
+		</transition>
+		<transition id="id587">
+			<source ref="id579"/>
+			<target ref="id580"/>
+		</transition>
+		<transition id="id588">
+			<source ref="id580"/>
+			<target ref="id581"/>
+			<label kind="guard" x="340" y="120">firewall==false || ids==false</label>
+			<label kind="assignment" x="340" y="150">breach=true,
+downtime=downtime+1</label>
+		</transition>
+		<transition id="id589">
+			<source ref="id580"/>
+			<target ref="id582"/>
+			<label kind="guard" x="250" y="120">firewall==true &amp;&amp; ids==true</label>
+			<label kind="assignment" x="250" y="150">riskScore=(riskScore&gt;1)?riskScore-1:0</label>
+		</transition>
+		<transition id="id590">
+			<source ref="id581"/>
+			<target ref="id583"/>
+		</transition>
+		<transition id="id591">
+			<source ref="id582"/>
+			<target ref="id583"/>
+		</transition>
+		<transition id="id592">
+			<source ref="id583"/>
+			<target ref="id584"/>
+		</transition>
+		<transition id="id593">
+			<source ref="id584"/>
+			<target ref="id585"/>
+		</transition>
+		<transition id="id594">
+			<source ref="id585"/>
+			<target ref="id578"/>
+		</transition>
+	</template>
+	<template>
+		<name>Attack_Coordinator</name>
+		<location id="id595" x="40" y="80">
+			<name x="30" y="55">AC_Idle</name>
+			<label kind="exponentialrate" x="30" y="98">1</label>
+		</location>
+		<location id="id596" x="220" y="80">
+			<name x="210" y="55">AC_Net</name>
+			<label kind="exponentialrate" x="210" y="98">4</label>
+		</location>
+		<location id="id597" x="400" y="80">
+			<name x="390" y="55">AC_Web</name>
+			<label kind="exponentialrate" x="390" y="98">4</label>
+		</location>
+		<location id="id598" x="580" y="80">
+			<name x="570" y="55">AC_API</name>
+			<label kind="exponentialrate" x="570" y="98">4</label>
+		</location>
+		<location id="id599" x="760" y="80">
+			<name x="750" y="55">AC_Malware</name>
+			<label kind="exponentialrate" x="750" y="98">4</label>
+		</location>
+		<location id="id600" x="760" y="220">
+			<name x="750" y="195">AC_Ransom</name>
+			<label kind="exponentialrate" x="750" y="238">4</label>
+		</location>
+		<location id="id601" x="580" y="220">
+			<name x="570" y="195">AC_Phish</name>
+			<label kind="exponentialrate" x="570" y="238">4</label>
+		</location>
+		<location id="id602" x="400" y="220">
+			<name x="390" y="195">AC_Cred</name>
+			<label kind="exponentialrate" x="390" y="238">4</label>
+		</location>
+		<location id="id603" x="220" y="220">
+			<name x="210" y="195">AC_Insider</name>
+			<label kind="exponentialrate" x="210" y="238">4</label>
+		</location>
+		<location id="id604" x="40" y="220">
+			<name x="30" y="195">AC_Supply</name>
+			<label kind="exponentialrate" x="30" y="238">4</label>
+		</location>
+		<location id="id605" x="40" y="360">
+			<name x="30" y="335">AC_Firm</name>
+			<label kind="exponentialrate" x="30" y="378">4</label>
+		</location>
+		<location id="id606" x="220" y="360">
+			<name x="210" y="335">AC_Lateral</name>
+			<label kind="exponentialrate" x="210" y="378">4</label>
+		</location>
+		<location id="id607" x="400" y="360">
+			<name x="390" y="335">AC_Persist</name>
+			<label kind="exponentialrate" x="390" y="378">4</label>
+		</location>
+		<location id="id608" x="580" y="360">
+			<name x="570" y="335">AC_Done</name>
+			<label kind="exponentialrate" x="570" y="378">2</label>
+		</location>
+		<init ref="id595"/>
+		<transition id="id609">
+			<source ref="id595"/>
+			<target ref="id596"/>
+			<label kind="synchronisation" x="70" y="65">start_net!</label>
+		</transition>
+		<transition id="id610">
+			<source ref="id596"/>
+			<target ref="id597"/>
+			<label kind="synchronisation" x="250" y="65">start_web!</label>
+		</transition>
+		<transition id="id611">
+			<source ref="id597"/>
+			<target ref="id598"/>
+			<label kind="synchronisation" x="430" y="65">start_api!</label>
+		</transition>
+		<transition id="id612">
+			<source ref="id598"/>
+			<target ref="id599"/>
+			<label kind="synchronisation" x="610" y="65">start_malware!</label>
+		</transition>
+		<transition id="id613">
+			<source ref="id599"/>
+			<target ref="id600"/>
+			<label kind="synchronisation" x="700" y="135">start_ransom!</label>
+		</transition>
+		<transition id="id614">
+			<source ref="id600"/>
+			<target ref="id601"/>
+			<label kind="synchronisation" x="610" y="205">start_phish!</label>
+		</transition>
+		<transition id="id615">
+			<source ref="id601"/>
+			<target ref="id602"/>
+			<label kind="synchronisation" x="430" y="205">start_cred!</label>
+		</transition>
+		<transition id="id616">
+			<source ref="id602"/>
+			<target ref="id603"/>
+			<label kind="synchronisation" x="250" y="205">start_insider!</label>
+		</transition>
+		<transition id="id617">
+			<source ref="id603"/>
+			<target ref="id604"/>
+			<label kind="synchronisation" x="70" y="205">start_supply!</label>
+		</transition>
+		<transition id="id618">
+			<source ref="id604"/>
+			<target ref="id605"/>
+			<label kind="synchronisation" x="-20" y="275">start_firmware!</label>
+		</transition>
+		<transition id="id619">
+			<source ref="id605"/>
+			<target ref="id606"/>
+			<label kind="synchronisation" x="70" y="345">start_lateral!</label>
+		</transition>
+		<transition id="id620">
+			<source ref="id606"/>
+			<target ref="id607"/>
+			<label kind="synchronisation" x="250" y="345">start_persist!</label>
+		</transition>
+		<transition id="id621">
+			<source ref="id607"/>
+			<target ref="id608"/>
+		</transition>
+		<transition id="id622">
+			<source ref="id608"/>
+			<target ref="id595"/>
+		</transition>
+	</template>
+	<system>
+E    = Environment();
+G1   = OR_L12();
+G2   = OR_L2();
+G3   = AND_L12();
+G4   = AND_L2();
+G5   = NOT_FW2();
+G6   = NOT_IDS();
+G7   = Voting_Gate();
+N    = Network_Attack();
+WA   = Web_Attack();
+AA   = API_Attack();
+MA   = Malware_Attack();
+RA   = Ransomware_Attack();
+PH   = Phishing_Attack();
+CR   = Credential_Attack();
+INS  = Insider_Attack();
+SUP  = Supply_Attack();
+FWA  = Firmware_Attack();
+LM   = Lateral_Movement();
+PM   = Persistence_Module();
+F    = Firewall_Defense();
+IDSD = IDS_Defense();
+WAFD = WAF_Defense();
+EDRD = EDR_Defense();
+DLPD = DLP_Defense();
+DR   = Defender_Response();
+BM   = Breach_Monitor();
+AC   = Attack_Coordinator();
+system E, G1, G2, G3, G4, G5, G6, G7,
+       N, WA, AA, MA, RA, PH, CR, INS, SUP, FWA, LM, PM,
+       F, IDSD, WAFD, EDRD, DLPD,
+       DR, BM, AC;
+</system>
+	
+<queries>
+    <query>
+        <formula>A[] not deadlock</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; Network_Attack.NA_Post1</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; Malware_Attack.MAL_Impact</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; Firewall_Defense.FD_Blocked</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; Defender_Response.DR_Restored</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=100] (&lt;&gt; breach == true)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=150] (&lt;&gt; scadaCompromised == true)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=150] (&lt;&gt; plcCompromised == true)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=300] (&lt;&gt; (downtime == 0 &amp;&amp; breach == true))</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=200] (&lt;&gt; (riskScore &lt; 20))</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=100] (&lt;&gt; Network_Attack.NA_Exec)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=100] (&lt;&gt; API_Attack.AA_Bypass)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; firewallLoad &gt; 50</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; idsLoad &gt; 50</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=200] (&lt;&gt; (wafLoad &gt; 80))</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=150] (&lt;&gt; lateral == true)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=150] (&lt;&gt; persistence == true)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=100] (&lt;&gt; truePositive == true)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=100] (&lt;&gt; falseNegative == true)</formula>
+        <comment>Imported from baseline_queries.q</comment>
+    </query>
+</queries>
+
+</nta>

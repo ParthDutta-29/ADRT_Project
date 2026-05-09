@@ -1,0 +1,34 @@
+<system>
+E    = Environment();
+G1   = OR_L12();
+G2   = OR_L2();
+G3   = AND_L12();
+G4   = AND_L2();
+G5   = NOT_FW2();
+G6   = NOT_IDS();
+G7   = Voting_Gate();
+N    = Network_Attack();
+WA   = Web_Attack();
+AA   = API_Attack();
+MA   = Malware_Attack();
+RA   = Ransomware_Attack();
+PH   = Phishing_Attack();
+CR   = Credential_Attack();
+INS  = Insider_Attack();
+SUP  = Supply_Attack();
+FWA  = Firmware_Attack();
+LM   = Lateral_Movement();
+PM   = Persistence_Module();
+F    = Firewall_Defense();
+IDSD = IDS_Defense();
+WAFD = WAF_Defense();
+EDRD = EDR_Defense();
+DLPD = DLP_Defense();
+DR   = Defender_Response();
+BM   = Breach_Monitor();
+AC   = Attack_Coordinator();
+system E, G1, G2, G3, G4, G5, G6, G7,
+       N, WA, AA, MA, RA, PH, CR, INS, SUP, FWA, LM, PM,
+       F, IDSD, WAFD, EDRD, DLPD,
+       DR, BM, AC;
+</system>
