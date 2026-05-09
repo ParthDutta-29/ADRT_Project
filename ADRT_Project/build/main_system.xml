@@ -81,10 +81,19 @@ bool supply=false, firmware=false, lateral=false, persistence=false;
 /* ── Defense active flags ── */
 bool firewall=true, ids=true, waf=true, edr=true, dlp=true;
 
-/* ── Asset compromise flags ── */
+/* ── Asset compromise flags (Truth - Hidden from Defender) ── */
 bool scadaCompromised  = false;
 bool plcCompromised    = false;
 bool sensorCompromised = false;
+
+/* ── POMDP-lite Belief States (Observed by Defender) ── */
+int[0,100] plcSuspicion            = 0;
+int[0,100] scadaSuspicion          = 0;
+int[0,100] sensorSuspicion         = 0;
+int[0,100] networkThreatConfidence = 0;
+int[0,100] telemetryTrust          = 100;
+int[0,100] alertConfidence         = 0;
+int[0,100] compromiseConfidence    = 0;
 
 /* ── System outcome ── */
 bool breach       = false;
@@ -2660,7 +2669,8 @@ maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2)</label>
 			<label kind="synchronisation" x="70" y="275">detect!</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*3)</label>
 		</transition>
-	<transition id="id457"><source ref="id436" /><target ref="id436" /><label kind="guard" x="70" y="10">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true</label></transition><transition id="id458"><source ref="id440" /><target ref="id445" /><label kind="guard" x="340" y="310">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">firewall=false,
+	<transition id="id457"><source ref="id436" /><target ref="id436" /><label kind="guard" x="70" y="10">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id458"><source ref="id440" /><target ref="id445" /><label kind="guard" x="340" y="310">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">firewall=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2),
 energyCost := min(MAX_COST,energyCost+FWD_EC*2),
 carbonCost := min(MAX_COST,carbonCost+FWD_CC*2)</label></transition><transition id="id459"><source ref="id436" /><target ref="id436" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=5)?fwQueueSize-5:0</label></transition><transition id="id460"><source ref="id439" /><target ref="id439" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=10)?fwQueueSize-10:0</label></transition></template>
@@ -2788,7 +2798,8 @@ maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2)</label>
 			<label kind="synchronisation" x="70" y="275">detect!</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*3)</label>
 		</transition>
-	<transition id="id478"><source ref="id457" /><target ref="id457" /><label kind="guard" x="70" y="10">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true</label></transition><transition id="id479"><source ref="id461" /><target ref="id466" /><label kind="guard" x="340" y="310">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">ids=false,
+	<transition id="id478"><source ref="id457" /><target ref="id457" /><label kind="guard" x="70" y="10">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id479"><source ref="id461" /><target ref="id466" /><label kind="guard" x="340" y="310">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">ids=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2),
 energyCost := min(MAX_COST,energyCost+IDS_EC*2),
 carbonCost := min(MAX_COST,carbonCost+IDS_CC*2)</label></transition><transition id="id480"><source ref="id457" /><target ref="id457" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=5)?idsQueueSize-5:0</label></transition><transition id="id481"><source ref="id460" /><target ref="id460" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=10)?idsQueueSize-10:0</label></transition></template>
@@ -2916,7 +2927,8 @@ maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2)</label>
 			<label kind="synchronisation" x="70" y="275">detect!</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*3)</label>
 		</transition>
-	<transition id="id499"><source ref="id478" /><target ref="id478" /><label kind="guard" x="70" y="10">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true</label></transition><transition id="id500"><source ref="id482" /><target ref="id487" /><label kind="guard" x="340" y="310">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">waf=false,
+	<transition id="id499"><source ref="id478" /><target ref="id478" /><label kind="guard" x="70" y="10">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id500"><source ref="id482" /><target ref="id487" /><label kind="guard" x="340" y="310">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">waf=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2),
 energyCost := min(MAX_COST,energyCost+WAF_EC*2),
 carbonCost := min(MAX_COST,carbonCost+WAF_CC*2)</label></transition><transition id="id501"><source ref="id478" /><target ref="id478" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=5)?wafQueueSize-5:0</label></transition><transition id="id502"><source ref="id481" /><target ref="id481" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=10)?wafQueueSize-10:0</label></transition></template>
@@ -3044,7 +3056,8 @@ maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2)</label>
 			<label kind="synchronisation" x="70" y="275">detect!</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*3)</label>
 		</transition>
-	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
+	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2),
 energyCost := min(MAX_COST,energyCost+EDR_EC*2),
 carbonCost := min(MAX_COST,carbonCost+EDR_CC*2)</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
@@ -3172,7 +3185,8 @@ maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2)</label>
 			<label kind="synchronisation" x="70" y="275">detect!</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*3)</label>
 		</transition>
-	<transition id="id541"><source ref="id520" /><target ref="id520" /><label kind="guard" x="70" y="10">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true</label></transition><transition id="id542"><source ref="id524" /><target ref="id529" /><label kind="guard" x="340" y="310">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">dlp=false,
+	<transition id="id541"><source ref="id520" /><target ref="id520" /><label kind="guard" x="70" y="10">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id542"><source ref="id524" /><target ref="id529" /><label kind="guard" x="340" y="310">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">dlp=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2),
 energyCost := min(MAX_COST,energyCost+DLP_EC*2),
 carbonCost := min(MAX_COST,carbonCost+DLP_CC*2)</label></transition><transition id="id543"><source ref="id520" /><target ref="id520" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=5)?dlpQueueSize-5:0</label></transition><transition id="id544"><source ref="id523" /><target ref="id523" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=10)?dlpQueueSize-10:0</label></transition></template>
@@ -3255,7 +3269,8 @@ carbonCost := min(MAX_COST,carbonCost+DLP_CC*2)</label></transition><transition 
 			<source ref="id541" />
 			<target ref="id542" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
-			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+			<label kind="assignment" x="70" y="80">alertConfidence=min(100,alertConfidence+(telemetryTrust/10)),
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
 energyCost := min(MAX_COST,energyCost+DR_EC),
 carbonCost := min(MAX_COST,carbonCost+DR_CC),
 truePositive=false,
@@ -3272,7 +3287,7 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
 		<transition id="id561">
 			<source ref="id543" />
 			<target ref="id544" />
-			<label kind="assignment" x="430" y="80">severity=(riskScore&gt;=50)?2:(riskScore&gt;=20)?1:0,
+			<label kind="assignment" x="430" y="80">severity=(alertConfidence&gt;=60)?2:(alertConfidence&gt;=30)?1:0,
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
 energyCost := min(MAX_COST,energyCost+DR_EC),
 carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
@@ -3280,9 +3295,9 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
 		<transition id="id562">
 			<source ref="id544" />
 			<target ref="id545" />
-			<label kind="guard" x="610" y="50">riskScore&lt;30</label>
-			<label kind="assignment" x="610" y="80">truePositive=(riskScore&gt;5)?true:false,
-falsePositive=(riskScore&lt;=5)?true:false,
+			<label kind="guard" x="610" y="50">alertConfidence&lt;40</label>
+			<label kind="assignment" x="610" y="80">truePositive=(alertConfidence&gt;20)?true:false,
+falsePositive=(alertConfidence&lt;=20)?true:false,
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
 energyCost := min(MAX_COST,energyCost+DR_EC*2),
 carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
@@ -3290,7 +3305,7 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
 		<transition id="id563">
 			<source ref="id544" />
 			<target ref="id546" />
-			<label kind="guard" x="610" y="120">riskScore&gt;=30</label>
+			<label kind="guard" x="610" y="120">alertConfidence&gt;=40</label>
 			<label kind="assignment" x="610" y="150">truePositive=true,
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
 energyCost := min(MAX_COST,energyCost+DR_EC*3),
@@ -3400,6 +3415,10 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC*7)</label>
 			<target ref="id557" />
 			<label kind="assignment" x="610" y="500">threat_score=0,
 riskScore=(riskScore&gt;10)?riskScore-10:0,
+alertConfidence=(alertConfidence&gt;10)?alertConfidence-10:0,
+plcSuspicion=(plcSuspicion&gt;10)?plcSuspicion-10:0,
+scadaSuspicion=(scadaSuspicion&gt;10)?scadaSuspicion-10:0,
+telemetryTrust=min(100,telemetryTrust+10),
 fwQueueSize=(fwQueueSize&gt;10)?fwQueueSize-10:0,
 idsQueueSize=(idsQueueSize&gt;10)?idsQueueSize-10:0,
 wafQueueSize=(wafQueueSize&gt;10)?wafQueueSize-10:0,
@@ -3811,6 +3830,30 @@ system E, G1, G2, G3, G4, G5, G6, G7,
     </query>
     <query>
         <formula>E&lt;&gt; (fwQueueSize &gt; 50 &amp;&amp; downtime &gt; 5)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (alertConfidence &gt; 80))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (telemetryTrust &lt; 50))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (telemetryTrust &lt; 20 &amp;&amp; breach == true)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (alertConfidence &lt; 40 &amp;&amp; scadaCompromised == true)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=600] (&lt;&gt; (plcSuspicion &gt; 50))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; Defender_Response.DR_Sev_Low)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
 </queries>

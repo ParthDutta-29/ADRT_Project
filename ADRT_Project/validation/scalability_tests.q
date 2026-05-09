@@ -37,3 +37,11 @@ Pr[<=500] (<> (Defender_Response.DR_Intake && fwQueueSize > 50))
 Pr[<=500] (<> (Firewall_Defense.FWD_Rule && fwQueueSize > 50))
 Pr[<=400] (<> (falseNegative == true && Network_Attack.NA_Execution))
 E<> (fwQueueSize > 50 && downtime > 5)
+
+/* 9. POMDP-Lite Observability & Belief-State Tests (Phase 4 Additions) */
+Pr[<=500] (<> (alertConfidence > 80))
+Pr[<=500] (<> (telemetryTrust < 50))
+E<> (telemetryTrust < 20 && breach == true)
+E<> (alertConfidence < 40 && scadaCompromised == true)
+Pr[<=600] (<> (plcSuspicion > 50))
+E<> (telemetryTrust < 50 && Defender_Response.DR_Sev_Low)
