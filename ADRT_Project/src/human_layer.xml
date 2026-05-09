@@ -90,7 +90,9 @@ falseNegative=false</label>
 		<transition id="id560">
 			<source ref="id542" />
 			<target ref="id543" />
-			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+			<label kind="assignment" x="250" y="80">alertConfidence=min(100,alertConfidence+(processDeviation/10)),
+telemetryTrust=(controlLoopStability&lt;50 &amp;&amp; telemetryTrust&gt;5)?telemetryTrust-5:telemetryTrust,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
 energyCost := min(MAX_COST,energyCost+DR_EC),
 carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
 		</transition>
@@ -105,7 +107,7 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
 		<transition id="id562">
 			<source ref="id544" />
 			<target ref="id545" />
-			<label kind="guard" x="610" y="50">alertConfidence&lt;40</label>
+			<label kind="guard" x="610" y="50">alertConfidence&lt;40 &amp;&amp; actuatorTrust&gt;=50</label>
 			<label kind="assignment" x="610" y="80">truePositive=(alertConfidence&gt;20)?true:false,
 falsePositive=(alertConfidence&lt;=20)?true:false,
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
@@ -115,7 +117,7 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
 		<transition id="id563">
 			<source ref="id544" />
 			<target ref="id546" />
-			<label kind="guard" x="610" y="120">alertConfidence&gt;=40</label>
+			<label kind="guard" x="610" y="120">alertConfidence&gt;=40 || actuatorTrust&lt;50</label>
 			<label kind="assignment" x="610" y="150">truePositive=true,
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
 energyCost := min(MAX_COST,energyCost+DR_EC*3),
@@ -194,7 +196,7 @@ downtime=downtime+1</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
 energyCost := min(MAX_COST,energyCost+DR_EC*6),
 carbonCost := min(MAX_COST,carbonCost+DR_CC*5),
-downtime=(downtime&gt;1)?downtime-1:0</label>
+downtime=(operationalStress&gt;50)?downtime+1:((downtime&gt;1)?downtime-1:0)</label>
 		</transition>
 		<transition id="id573">
 			<source ref="id554" />

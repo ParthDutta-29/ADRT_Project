@@ -105,6 +105,17 @@ int[0,100] sensorSpoofingIntent    = 0;
 int[0,100] plcTraversalConfidence  = 0;
 int[0,100] telemetryManipulationIntent = 0;
 
+/* ── Bounded Operational Semantics (Phase 6 CPS) ── */
+int[0,100] pipelinePressure        = 50;
+int[0,100] flowStability           = 100;
+int[0,100] controlLoopStability    = 100;
+int[0,100] telemetryIntegrity      = 100;
+int[0,100] actuatorTrust           = 100;
+int[0,100] sensorConsistency       = 100;
+int[0,100] processDeviation        = 0;
+int[0,100] operationalStress       = 0;
+int[0,100] safetyMargin            = 100;
+
 /* ── System outcome ── */
 bool breach       = false;
 int  threat_score = 0;

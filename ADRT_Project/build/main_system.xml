@@ -107,6 +107,17 @@ int[0,100] sensorSpoofingIntent    = 0;
 int[0,100] plcTraversalConfidence  = 0;
 int[0,100] telemetryManipulationIntent = 0;
 
+/* ── Bounded Operational Semantics (Phase 6 CPS) ── */
+int[0,100] pipelinePressure        = 50;
+int[0,100] flowStability           = 100;
+int[0,100] controlLoopStability    = 100;
+int[0,100] telemetryIntegrity      = 100;
+int[0,100] actuatorTrust           = 100;
+int[0,100] sensorConsistency       = 100;
+int[0,100] processDeviation        = 0;
+int[0,100] operationalStress       = 0;
+int[0,100] safetyMargin            = 100;
+
 /* ── System outcome ── */
 bool breach       = false;
 int  threat_score = 0;
@@ -950,7 +961,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id150" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC),
 energyCost := min(MAX_COST,energyCost+NET_EC*2),
-carbonCost := min(MAX_COST,carbonCost+NET_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+NET_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id161">
 			<source ref="id150" />
@@ -958,7 +972,10 @@ carbonCost := min(MAX_COST,carbonCost+NET_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC),
 energyCost := min(MAX_COST,energyCost+NET_EC*2),
 carbonCost := min(MAX_COST,carbonCost+NET_CC*2),
-fwQueueSize=min(100,fwQueueSize+5)</label>
+fwQueueSize=min(100,fwQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id162">
 			<source ref="id151" />
@@ -972,7 +989,10 @@ fwQueueSize=min(100,fwQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">firewall==false || fwQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*2),
 energyCost := min(MAX_COST,energyCost+NET_EC*3),
-carbonCost := min(MAX_COST,carbonCost+NET_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+NET_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id164">
 			<source ref="id152" />
@@ -983,7 +1003,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*3),
 energyCost := min(MAX_COST,energyCost+NET_EC*4),
 carbonCost := min(MAX_COST,carbonCost+NET_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id165">
 			<source ref="id152" />
@@ -995,14 +1017,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id154" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*3),
 energyCost := min(MAX_COST,energyCost+NET_EC*5),
-carbonCost := min(MAX_COST,carbonCost+NET_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+NET_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id167">
 			<source ref="id154" />
 			<target ref="id155" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+NET_MC*4),
 energyCost := min(MAX_COST,energyCost+NET_EC*5),
-carbonCost := min(MAX_COST,carbonCost+NET_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+NET_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id168">
 			<source ref="id155" />
@@ -1012,7 +1040,9 @@ energyCost := min(MAX_COST,energyCost+NET_EC*6),
 carbonCost := min(MAX_COST,carbonCost+NET_CC*6),
 breach=true,
 scadaCompromised=true,
-downtime=downtime+2</label>
+downtime=downtime+2,
+safetyMargin=(processDeviation&gt;50 &amp;&amp; safetyMargin&gt;=10)?safetyMargin-10:safetyMargin,
+operationalStress=(controlLoopStability&lt;50)?min(100,operationalStress+10):operationalStress</label>
 		</transition>
 		<transition id="id169">
 			<source ref="id156" />
@@ -1090,7 +1120,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id174" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC),
 energyCost := min(MAX_COST,energyCost+WEB_EC*2),
-carbonCost := min(MAX_COST,carbonCost+WEB_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+WEB_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id185">
 			<source ref="id174" />
@@ -1098,7 +1131,10 @@ carbonCost := min(MAX_COST,carbonCost+WEB_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC),
 energyCost := min(MAX_COST,energyCost+WEB_EC*2),
 carbonCost := min(MAX_COST,carbonCost+WEB_CC*2),
-wafQueueSize=min(100,wafQueueSize+5)</label>
+wafQueueSize=min(100,wafQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id186">
 			<source ref="id175" />
@@ -1112,7 +1148,10 @@ wafQueueSize=min(100,wafQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">waf==false || wafQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*2),
 energyCost := min(MAX_COST,energyCost+WEB_EC*3),
-carbonCost := min(MAX_COST,carbonCost+WEB_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id188">
 			<source ref="id176" />
@@ -1123,7 +1162,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*3),
 energyCost := min(MAX_COST,energyCost+WEB_EC*4),
 carbonCost := min(MAX_COST,carbonCost+WEB_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id189">
 			<source ref="id176" />
@@ -1135,14 +1176,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id178" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*3),
 energyCost := min(MAX_COST,energyCost+WEB_EC*5),
-carbonCost := min(MAX_COST,carbonCost+WEB_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id191">
 			<source ref="id178" />
 			<target ref="id179" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+WEB_MC*4),
 energyCost := min(MAX_COST,energyCost+WEB_EC*5),
-carbonCost := min(MAX_COST,carbonCost+WEB_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+WEB_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id192">
 			<source ref="id179" />
@@ -1228,7 +1275,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id198" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC),
 energyCost := min(MAX_COST,energyCost+API_EC*2),
-carbonCost := min(MAX_COST,carbonCost+API_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+API_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id209">
 			<source ref="id198" />
@@ -1236,7 +1286,10 @@ carbonCost := min(MAX_COST,carbonCost+API_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC),
 energyCost := min(MAX_COST,energyCost+API_EC*2),
 carbonCost := min(MAX_COST,carbonCost+API_CC*2),
-wafQueueSize=min(100,wafQueueSize+5)</label>
+wafQueueSize=min(100,wafQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id210">
 			<source ref="id199" />
@@ -1250,7 +1303,10 @@ wafQueueSize=min(100,wafQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">waf==false || wafQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*2),
 energyCost := min(MAX_COST,energyCost+API_EC*3),
-carbonCost := min(MAX_COST,carbonCost+API_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+API_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id212">
 			<source ref="id200" />
@@ -1261,7 +1317,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*3),
 energyCost := min(MAX_COST,energyCost+API_EC*4),
 carbonCost := min(MAX_COST,carbonCost+API_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id213">
 			<source ref="id200" />
@@ -1273,14 +1331,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id202" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*3),
 energyCost := min(MAX_COST,energyCost+API_EC*5),
-carbonCost := min(MAX_COST,carbonCost+API_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+API_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id215">
 			<source ref="id202" />
 			<target ref="id203" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+API_MC*4),
 energyCost := min(MAX_COST,energyCost+API_EC*5),
-carbonCost := min(MAX_COST,carbonCost+API_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+API_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id216">
 			<source ref="id203" />
@@ -1366,7 +1430,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id222" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC),
 energyCost := min(MAX_COST,energyCost+MAL_EC*2),
-carbonCost := min(MAX_COST,carbonCost+MAL_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+MAL_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id233">
 			<source ref="id222" />
@@ -1374,7 +1441,10 @@ carbonCost := min(MAX_COST,carbonCost+MAL_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC),
 energyCost := min(MAX_COST,energyCost+MAL_EC*2),
 carbonCost := min(MAX_COST,carbonCost+MAL_CC*2),
-fwQueueSize=min(100,fwQueueSize+5)</label>
+fwQueueSize=min(100,fwQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id234">
 			<source ref="id223" />
@@ -1388,7 +1458,10 @@ fwQueueSize=min(100,fwQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">firewall==false || fwQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*2),
 energyCost := min(MAX_COST,energyCost+MAL_EC*3),
-carbonCost := min(MAX_COST,carbonCost+MAL_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id236">
 			<source ref="id224" />
@@ -1399,7 +1472,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*3),
 energyCost := min(MAX_COST,energyCost+MAL_EC*4),
 carbonCost := min(MAX_COST,carbonCost+MAL_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id237">
 			<source ref="id224" />
@@ -1411,14 +1486,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id226" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*3),
 energyCost := min(MAX_COST,energyCost+MAL_EC*5),
-carbonCost := min(MAX_COST,carbonCost+MAL_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id239">
 			<source ref="id226" />
 			<target ref="id227" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+MAL_MC*4),
 energyCost := min(MAX_COST,energyCost+MAL_EC*5),
-carbonCost := min(MAX_COST,carbonCost+MAL_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+MAL_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id240">
 			<source ref="id227" />
@@ -1505,7 +1586,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id246" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC),
 energyCost := min(MAX_COST,energyCost+RAN_EC*2),
-carbonCost := min(MAX_COST,carbonCost+RAN_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+RAN_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id257">
 			<source ref="id246" />
@@ -1513,7 +1597,10 @@ carbonCost := min(MAX_COST,carbonCost+RAN_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC),
 energyCost := min(MAX_COST,energyCost+RAN_EC*2),
 carbonCost := min(MAX_COST,carbonCost+RAN_CC*2),
-edrQueueSize=min(100,edrQueueSize+5)</label>
+edrQueueSize=min(100,edrQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id258">
 			<source ref="id247" />
@@ -1527,7 +1614,10 @@ edrQueueSize=min(100,edrQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">edr==false || edrQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*2),
 energyCost := min(MAX_COST,energyCost+RAN_EC*3),
-carbonCost := min(MAX_COST,carbonCost+RAN_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id260">
 			<source ref="id248" />
@@ -1538,7 +1628,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*3),
 energyCost := min(MAX_COST,energyCost+RAN_EC*4),
 carbonCost := min(MAX_COST,carbonCost+RAN_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id261">
 			<source ref="id248" />
@@ -1550,14 +1642,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id250" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*3),
 energyCost := min(MAX_COST,energyCost+RAN_EC*5),
-carbonCost := min(MAX_COST,carbonCost+RAN_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id263">
 			<source ref="id250" />
 			<target ref="id251" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+RAN_MC*4),
 energyCost := min(MAX_COST,energyCost+RAN_EC*5),
-carbonCost := min(MAX_COST,carbonCost+RAN_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+RAN_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id264">
 			<source ref="id251" />
@@ -1567,7 +1665,9 @@ energyCost := min(MAX_COST,energyCost+RAN_EC*6),
 carbonCost := min(MAX_COST,carbonCost+RAN_CC*6),
 breach=true,
 downtime=downtime+3,
-severity=2</label>
+severity=2,
+safetyMargin=(processDeviation&gt;50 &amp;&amp; safetyMargin&gt;=10)?safetyMargin-10:safetyMargin,
+operationalStress=(controlLoopStability&lt;50)?min(100,operationalStress+10):operationalStress</label>
 		</transition>
 		<transition id="id265">
 			<source ref="id252" />
@@ -1645,7 +1745,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id270" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC),
 energyCost := min(MAX_COST,energyCost+PHI_EC*2),
-carbonCost := min(MAX_COST,carbonCost+PHI_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+PHI_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id281">
 			<source ref="id270" />
@@ -1653,7 +1756,10 @@ carbonCost := min(MAX_COST,carbonCost+PHI_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC),
 energyCost := min(MAX_COST,energyCost+PHI_EC*2),
 carbonCost := min(MAX_COST,carbonCost+PHI_CC*2),
-dlpQueueSize=min(100,dlpQueueSize+5)</label>
+dlpQueueSize=min(100,dlpQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id282">
 			<source ref="id271" />
@@ -1667,7 +1773,10 @@ dlpQueueSize=min(100,dlpQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">dlp==false || dlpQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*2),
 energyCost := min(MAX_COST,energyCost+PHI_EC*3),
-carbonCost := min(MAX_COST,carbonCost+PHI_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id284">
 			<source ref="id272" />
@@ -1678,7 +1787,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*3),
 energyCost := min(MAX_COST,energyCost+PHI_EC*4),
 carbonCost := min(MAX_COST,carbonCost+PHI_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id285">
 			<source ref="id272" />
@@ -1690,14 +1801,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id274" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*3),
 energyCost := min(MAX_COST,energyCost+PHI_EC*5),
-carbonCost := min(MAX_COST,carbonCost+PHI_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id287">
 			<source ref="id274" />
 			<target ref="id275" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PHI_MC*4),
 energyCost := min(MAX_COST,energyCost+PHI_EC*5),
-carbonCost := min(MAX_COST,carbonCost+PHI_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+PHI_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id288">
 			<source ref="id275" />
@@ -1783,7 +1900,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id294" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC),
 energyCost := min(MAX_COST,energyCost+CRE_EC*2),
-carbonCost := min(MAX_COST,carbonCost+CRE_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+CRE_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id305">
 			<source ref="id294" />
@@ -1791,7 +1911,10 @@ carbonCost := min(MAX_COST,carbonCost+CRE_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC),
 energyCost := min(MAX_COST,energyCost+CRE_EC*2),
 carbonCost := min(MAX_COST,carbonCost+CRE_CC*2),
-idsQueueSize=min(100,idsQueueSize+5)</label>
+idsQueueSize=min(100,idsQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id306">
 			<source ref="id295" />
@@ -1805,7 +1928,10 @@ idsQueueSize=min(100,idsQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">ids==false || idsQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*2),
 energyCost := min(MAX_COST,energyCost+CRE_EC*3),
-carbonCost := min(MAX_COST,carbonCost+CRE_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id308">
 			<source ref="id296" />
@@ -1816,7 +1942,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*3),
 energyCost := min(MAX_COST,energyCost+CRE_EC*4),
 carbonCost := min(MAX_COST,carbonCost+CRE_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id309">
 			<source ref="id296" />
@@ -1828,14 +1956,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id298" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*3),
 energyCost := min(MAX_COST,energyCost+CRE_EC*5),
-carbonCost := min(MAX_COST,carbonCost+CRE_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id311">
 			<source ref="id298" />
 			<target ref="id299" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+CRE_MC*4),
 energyCost := min(MAX_COST,energyCost+CRE_EC*5),
-carbonCost := min(MAX_COST,carbonCost+CRE_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+CRE_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id312">
 			<source ref="id299" />
@@ -1921,7 +2055,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id318" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC),
 energyCost := min(MAX_COST,energyCost+INS_EC*2),
-carbonCost := min(MAX_COST,carbonCost+INS_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+INS_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id329">
 			<source ref="id318" />
@@ -1929,7 +2066,10 @@ carbonCost := min(MAX_COST,carbonCost+INS_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC),
 energyCost := min(MAX_COST,energyCost+INS_EC*2),
 carbonCost := min(MAX_COST,carbonCost+INS_CC*2),
-dlpQueueSize=min(100,dlpQueueSize+5)</label>
+dlpQueueSize=min(100,dlpQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id330">
 			<source ref="id319" />
@@ -1943,7 +2083,10 @@ dlpQueueSize=min(100,dlpQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">dlp==false || dlpQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*2),
 energyCost := min(MAX_COST,energyCost+INS_EC*3),
-carbonCost := min(MAX_COST,carbonCost+INS_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+INS_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id332">
 			<source ref="id320" />
@@ -1954,7 +2097,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*3),
 energyCost := min(MAX_COST,energyCost+INS_EC*4),
 carbonCost := min(MAX_COST,carbonCost+INS_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id333">
 			<source ref="id320" />
@@ -1966,14 +2111,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id322" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*3),
 energyCost := min(MAX_COST,energyCost+INS_EC*5),
-carbonCost := min(MAX_COST,carbonCost+INS_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+INS_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id335">
 			<source ref="id322" />
 			<target ref="id323" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+INS_MC*4),
 energyCost := min(MAX_COST,energyCost+INS_EC*5),
-carbonCost := min(MAX_COST,carbonCost+INS_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+INS_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id336">
 			<source ref="id323" />
@@ -1983,7 +2134,9 @@ energyCost := min(MAX_COST,energyCost+INS_EC*6),
 carbonCost := min(MAX_COST,carbonCost+INS_CC*6),
 breach=true,
 sensorCompromised=true,
-downtime=downtime+2</label>
+downtime=downtime+2,
+safetyMargin=(processDeviation&gt;50 &amp;&amp; safetyMargin&gt;=10)?safetyMargin-10:safetyMargin,
+operationalStress=(controlLoopStability&lt;50)?min(100,operationalStress+10):operationalStress</label>
 		</transition>
 		<transition id="id337">
 			<source ref="id324" />
@@ -2061,7 +2214,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id342" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC),
 energyCost := min(MAX_COST,energyCost+SUP_EC*2),
-carbonCost := min(MAX_COST,carbonCost+SUP_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+SUP_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id353">
 			<source ref="id342" />
@@ -2069,7 +2225,10 @@ carbonCost := min(MAX_COST,carbonCost+SUP_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC),
 energyCost := min(MAX_COST,energyCost+SUP_EC*2),
 carbonCost := min(MAX_COST,carbonCost+SUP_CC*2),
-fwQueueSize=min(100,fwQueueSize+5)</label>
+fwQueueSize=min(100,fwQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id354">
 			<source ref="id343" />
@@ -2083,7 +2242,10 @@ fwQueueSize=min(100,fwQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">firewall==false || fwQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*2),
 energyCost := min(MAX_COST,energyCost+SUP_EC*3),
-carbonCost := min(MAX_COST,carbonCost+SUP_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id356">
 			<source ref="id344" />
@@ -2094,7 +2256,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*3),
 energyCost := min(MAX_COST,energyCost+SUP_EC*4),
 carbonCost := min(MAX_COST,carbonCost+SUP_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id357">
 			<source ref="id344" />
@@ -2106,14 +2270,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id346" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*3),
 energyCost := min(MAX_COST,energyCost+SUP_EC*5),
-carbonCost := min(MAX_COST,carbonCost+SUP_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id359">
 			<source ref="id346" />
 			<target ref="id347" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+SUP_MC*4),
 energyCost := min(MAX_COST,energyCost+SUP_EC*5),
-carbonCost := min(MAX_COST,carbonCost+SUP_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+SUP_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id360">
 			<source ref="id347" />
@@ -2123,7 +2293,9 @@ energyCost := min(MAX_COST,energyCost+SUP_EC*6),
 carbonCost := min(MAX_COST,carbonCost+SUP_CC*6),
 breach=true,
 downtime=downtime+2,
-severity=2</label>
+severity=2,
+safetyMargin=(processDeviation&gt;50 &amp;&amp; safetyMargin&gt;=10)?safetyMargin-10:safetyMargin,
+operationalStress=(controlLoopStability&lt;50)?min(100,operationalStress+10):operationalStress</label>
 		</transition>
 		<transition id="id361">
 			<source ref="id348" />
@@ -2201,7 +2373,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id366" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC),
 energyCost := min(MAX_COST,energyCost+FWA_EC*2),
-carbonCost := min(MAX_COST,carbonCost+FWA_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+FWA_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id377">
 			<source ref="id366" />
@@ -2209,7 +2384,10 @@ carbonCost := min(MAX_COST,carbonCost+FWA_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC),
 energyCost := min(MAX_COST,energyCost+FWA_EC*2),
 carbonCost := min(MAX_COST,carbonCost+FWA_CC*2),
-edrQueueSize=min(100,edrQueueSize+5)</label>
+edrQueueSize=min(100,edrQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id378">
 			<source ref="id367" />
@@ -2223,7 +2401,10 @@ edrQueueSize=min(100,edrQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">edr==false || edrQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*2),
 energyCost := min(MAX_COST,energyCost+FWA_EC*3),
-carbonCost := min(MAX_COST,carbonCost+FWA_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id380">
 			<source ref="id368" />
@@ -2234,7 +2415,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*3),
 energyCost := min(MAX_COST,energyCost+FWA_EC*4),
 carbonCost := min(MAX_COST,carbonCost+FWA_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id381">
 			<source ref="id368" />
@@ -2246,14 +2429,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id370" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*3),
 energyCost := min(MAX_COST,energyCost+FWA_EC*5),
-carbonCost := min(MAX_COST,carbonCost+FWA_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id383">
 			<source ref="id370" />
 			<target ref="id371" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+FWA_MC*4),
 energyCost := min(MAX_COST,energyCost+FWA_EC*5),
-carbonCost := min(MAX_COST,carbonCost+FWA_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+FWA_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id384">
 			<source ref="id371" />
@@ -2264,7 +2453,9 @@ carbonCost := min(MAX_COST,carbonCost+FWA_CC*6),
 breach=true,
 plcCompromised=true,
 downtime=downtime+3,
-severity=2</label>
+severity=2,
+safetyMargin=(processDeviation&gt;50 &amp;&amp; safetyMargin&gt;=10)?safetyMargin-10:safetyMargin,
+operationalStress=(controlLoopStability&lt;50)?min(100,operationalStress+10):operationalStress</label>
 		</transition>
 		<transition id="id385">
 			<source ref="id372" />
@@ -2342,7 +2533,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id390" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC),
 energyCost := min(MAX_COST,energyCost+LMV_EC*2),
-carbonCost := min(MAX_COST,carbonCost+LMV_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+LMV_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id401">
 			<source ref="id390" />
@@ -2350,7 +2544,10 @@ carbonCost := min(MAX_COST,carbonCost+LMV_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC),
 energyCost := min(MAX_COST,energyCost+LMV_EC*2),
 carbonCost := min(MAX_COST,carbonCost+LMV_CC*2),
-idsQueueSize=min(100,idsQueueSize+5)</label>
+idsQueueSize=min(100,idsQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id402">
 			<source ref="id391" />
@@ -2364,7 +2561,10 @@ idsQueueSize=min(100,idsQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">ids==false || idsQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*2),
 energyCost := min(MAX_COST,energyCost+LMV_EC*3),
-carbonCost := min(MAX_COST,carbonCost+LMV_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id404">
 			<source ref="id392" />
@@ -2375,7 +2575,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*3),
 energyCost := min(MAX_COST,energyCost+LMV_EC*4),
 carbonCost := min(MAX_COST,carbonCost+LMV_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id405">
 			<source ref="id392" />
@@ -2387,14 +2589,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id394" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*3),
 energyCost := min(MAX_COST,energyCost+LMV_EC*5),
-carbonCost := min(MAX_COST,carbonCost+LMV_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id407">
 			<source ref="id394" />
 			<target ref="id395" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+LMV_MC*4),
 energyCost := min(MAX_COST,energyCost+LMV_EC*5),
-carbonCost := min(MAX_COST,carbonCost+LMV_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+LMV_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id408">
 			<source ref="id395" />
@@ -2480,7 +2688,10 @@ riskScore=min(100,riskScore+1)</label>
 			<target ref="id414" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC),
 energyCost := min(MAX_COST,energyCost+PER_EC*2),
-carbonCost := min(MAX_COST,carbonCost+PER_CC)</label>
+carbonCost := min(MAX_COST,carbonCost+PER_CC),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id425">
 			<source ref="id414" />
@@ -2488,7 +2699,10 @@ carbonCost := min(MAX_COST,carbonCost+PER_CC)</label>
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC),
 energyCost := min(MAX_COST,energyCost+PER_EC*2),
 carbonCost := min(MAX_COST,carbonCost+PER_CC*2),
-edrQueueSize=min(100,edrQueueSize+5)</label>
+edrQueueSize=min(100,edrQueueSize+5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id426">
 			<source ref="id415" />
@@ -2502,7 +2716,10 @@ edrQueueSize=min(100,edrQueueSize+5)</label>
 			<label kind="guard" x="610" y="50">edr==false || edrQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*2),
 energyCost := min(MAX_COST,energyCost+PER_EC*3),
-carbonCost := min(MAX_COST,carbonCost+PER_CC*2)</label>
+carbonCost := min(MAX_COST,carbonCost+PER_CC*2),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id428">
 			<source ref="id416" />
@@ -2513,7 +2730,9 @@ threat_score=threat_score+1,
 maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*3),
 energyCost := min(MAX_COST,energyCost+PER_EC*4),
 carbonCost := min(MAX_COST,carbonCost+PER_CC*3),
-riskScore=min(100,riskScore+2)</label>
+riskScore=min(100,riskScore+2),
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-10:0,
+processDeviation=min(100,processDeviation+10)</label>
 		</transition>
 		<transition id="id429">
 			<source ref="id416" />
@@ -2525,14 +2744,20 @@ riskScore=min(100,riskScore+2)</label>
 			<target ref="id418" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*3),
 energyCost := min(MAX_COST,energyCost+PER_EC*5),
-carbonCost := min(MAX_COST,carbonCost+PER_CC*4)</label>
+carbonCost := min(MAX_COST,carbonCost+PER_CC*4),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id431">
 			<source ref="id418" />
 			<target ref="id419" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,maintenanceCost+PER_MC*4),
 energyCost := min(MAX_COST,energyCost+PER_EC*5),
-carbonCost := min(MAX_COST,carbonCost+PER_CC*5)</label>
+carbonCost := min(MAX_COST,carbonCost+PER_CC*5),
+sensorSpoofingIntent=(stealthPreference&gt;50)?min(100,sensorSpoofingIntent+10):sensorSpoofingIntent,
+telemetryIntegrity=(sensorSpoofingIntent&gt;40 &amp;&amp; telemetryIntegrity&gt;=5)?telemetryIntegrity-5:telemetryIntegrity,
+processDeviation=(telemetryTrust&lt;50)?min(100,processDeviation+5):processDeviation</label>
 		</transition>
 		<transition id="id432">
 			<source ref="id419" />
@@ -2682,7 +2907,9 @@ maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*3)</label>
 		</transition>
 	<transition id="id457"><source ref="id436" /><target ref="id436" /><label kind="guard" x="70" y="10">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
-telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id458"><source ref="id440" /><target ref="id445" /><label kind="guard" x="340" y="310">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">firewall=false,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
+actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id458"><source ref="id440" /><target ref="id445" /><label kind="guard" x="340" y="310">fwQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">firewall=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+FWD_MC*2),
 energyCost := min(MAX_COST,energyCost+FWD_EC*2),
 carbonCost := min(MAX_COST,carbonCost+FWD_CC*2)</label></transition><transition id="id459"><source ref="id436" /><target ref="id436" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=5)?fwQueueSize-5:0</label></transition><transition id="id460"><source ref="id439" /><target ref="id439" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=10)?fwQueueSize-10:0</label></transition></template>
@@ -2811,7 +3038,9 @@ maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*3)</label>
 		</transition>
 	<transition id="id478"><source ref="id457" /><target ref="id457" /><label kind="guard" x="70" y="10">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
-telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id479"><source ref="id461" /><target ref="id466" /><label kind="guard" x="340" y="310">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">ids=false,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
+actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id479"><source ref="id461" /><target ref="id466" /><label kind="guard" x="340" y="310">idsQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">ids=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+IDS_MC*2),
 energyCost := min(MAX_COST,energyCost+IDS_EC*2),
 carbonCost := min(MAX_COST,carbonCost+IDS_CC*2)</label></transition><transition id="id480"><source ref="id457" /><target ref="id457" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=5)?idsQueueSize-5:0</label></transition><transition id="id481"><source ref="id460" /><target ref="id460" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=10)?idsQueueSize-10:0</label></transition></template>
@@ -2940,7 +3169,9 @@ maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*3)</label>
 		</transition>
 	<transition id="id499"><source ref="id478" /><target ref="id478" /><label kind="guard" x="70" y="10">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
-telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id500"><source ref="id482" /><target ref="id487" /><label kind="guard" x="340" y="310">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">waf=false,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
+actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id500"><source ref="id482" /><target ref="id487" /><label kind="guard" x="340" y="310">wafQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">waf=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+WAF_MC*2),
 energyCost := min(MAX_COST,energyCost+WAF_EC*2),
 carbonCost := min(MAX_COST,carbonCost+WAF_CC*2)</label></transition><transition id="id501"><source ref="id478" /><target ref="id478" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=5)?wafQueueSize-5:0</label></transition><transition id="id502"><source ref="id481" /><target ref="id481" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=10)?wafQueueSize-10:0</label></transition></template>
@@ -3069,7 +3300,9 @@ maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*3)</label>
 		</transition>
 	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
-telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
+actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+EDR_MC*2),
 energyCost := min(MAX_COST,energyCost+EDR_EC*2),
 carbonCost := min(MAX_COST,carbonCost+EDR_CC*2)</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
@@ -3198,7 +3431,9 @@ maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2)</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*3)</label>
 		</transition>
 	<transition id="id541"><source ref="id520" /><target ref="id520" /><label kind="guard" x="70" y="10">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
-telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0</label></transition><transition id="id542"><source ref="id524" /><target ref="id529" /><label kind="guard" x="340" y="310">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">dlp=false,
+telemetryTrust=(telemetryTrust&gt;=10)?telemetryTrust-10:0,
+actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
+controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id542"><source ref="id524" /><target ref="id529" /><label kind="guard" x="340" y="310">dlpQueueSize &gt;= 80</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">dlp=false,
 maintenanceCost := min(MAX_COST,maintenanceCost+DLP_MC*2),
 energyCost := min(MAX_COST,energyCost+DLP_EC*2),
 carbonCost := min(MAX_COST,carbonCost+DLP_CC*2)</label></transition><transition id="id543"><source ref="id520" /><target ref="id520" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=5)?dlpQueueSize-5:0</label></transition><transition id="id544"><source ref="id523" /><target ref="id523" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=10)?dlpQueueSize-10:0</label></transition></template>
@@ -3292,7 +3527,9 @@ falseNegative=false</label>
 		<transition id="id560">
 			<source ref="id542" />
 			<target ref="id543" />
-			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
+			<label kind="assignment" x="250" y="80">alertConfidence=min(100,alertConfidence+(processDeviation/10)),
+telemetryTrust=(controlLoopStability&lt;50 &amp;&amp; telemetryTrust&gt;5)?telemetryTrust-5:telemetryTrust,
+maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC),
 energyCost := min(MAX_COST,energyCost+DR_EC),
 carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
 		</transition>
@@ -3307,7 +3544,7 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC)</label>
 		<transition id="id562">
 			<source ref="id544" />
 			<target ref="id545" />
-			<label kind="guard" x="610" y="50">alertConfidence&lt;40</label>
+			<label kind="guard" x="610" y="50">alertConfidence&lt;40 &amp;&amp; actuatorTrust&gt;=50</label>
 			<label kind="assignment" x="610" y="80">truePositive=(alertConfidence&gt;20)?true:false,
 falsePositive=(alertConfidence&lt;=20)?true:false,
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*2),
@@ -3317,7 +3554,7 @@ carbonCost := min(MAX_COST,carbonCost+DR_CC*2)</label>
 		<transition id="id563">
 			<source ref="id544" />
 			<target ref="id546" />
-			<label kind="guard" x="610" y="120">alertConfidence&gt;=40</label>
+			<label kind="guard" x="610" y="120">alertConfidence&gt;=40 || actuatorTrust&lt;50</label>
 			<label kind="assignment" x="610" y="150">truePositive=true,
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*3),
 energyCost := min(MAX_COST,energyCost+DR_EC*3),
@@ -3396,7 +3633,7 @@ downtime=downtime+1</label>
 maintenanceCost := min(MAX_COST,maintenanceCost+DR_MC*5),
 energyCost := min(MAX_COST,energyCost+DR_EC*6),
 carbonCost := min(MAX_COST,carbonCost+DR_CC*5),
-downtime=(downtime&gt;1)?downtime-1:0</label>
+downtime=(operationalStress&gt;50)?downtime+1:((downtime&gt;1)?downtime-1:0)</label>
 		</transition>
 		<transition id="id573">
 			<source ref="id554" />
@@ -3886,6 +4123,30 @@ system E, G1, G2, G3, G4, G5, G6, G7,
     </query>
     <query>
         <formula>Pr[&lt;=600] (&lt;&gt; (stealthPreference &gt; 50 &amp;&amp; downtime &lt; 5))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (telemetryIntegrity &lt; 50 &amp;&amp; sensorSpoofingIntent &gt; 40))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=600] (&lt;&gt; (processDeviation &gt; 50 &amp;&amp; telemetryTrust &lt; 50))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (controlLoopStability &lt; 50 &amp;&amp; operationalStress &gt; 30)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (actuatorTrust &lt; 50 &amp;&amp; fwQueueSize &gt;= 80))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>E&lt;&gt; (safetyMargin &lt; 50 &amp;&amp; downtime &gt; 5)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=600] (&lt;&gt; (processDeviation &gt; 50 &amp;&amp; alertConfidence &gt; 50))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
 </queries>

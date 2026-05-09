@@ -52,3 +52,11 @@ E<> (stealthPreference >= 80 && Defender_Response.DR_Sev_Low)
 Pr[<=400] (<> (fwQueueSize >= 80 && Network_Attack.NA_OT_Traversal))
 E<> (telemetryTrust < 40 && scadaCompromised == true && stealthPreference > 60)
 Pr[<=600] (<> (stealthPreference > 50 && downtime < 5))
+
+/* 11. Cyber-Physical Coupling & Operational Degradation Tests (Phase 6 Additions) */
+Pr[<=500] (<> (telemetryIntegrity < 50 && sensorSpoofingIntent > 40))
+Pr[<=600] (<> (processDeviation > 50 && telemetryTrust < 50))
+E<> (controlLoopStability < 50 && operationalStress > 30)
+Pr[<=500] (<> (actuatorTrust < 50 && fwQueueSize >= 80))
+E<> (safetyMargin < 50 && downtime > 5)
+Pr[<=600] (<> (processDeviation > 50 && alertConfidence > 50))
