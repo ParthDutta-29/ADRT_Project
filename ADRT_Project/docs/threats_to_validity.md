@@ -10,7 +10,7 @@ The framework is explicitly positioned as a **bounded stochastic cyber-physical 
 
 ## B. Experimental Limitations
 *   **Lack of Empirical Calibration:** Transition weightings and congestion dynamics have been mathematically normalized to guarantee safety, but they have not been precisely fitted against empirical packet traces from a live ICS testbed.
-*   **Absence of Real Deployment Telemetry:** While grounded conceptually toward a generalized ICS abstraction (e.g., Water Treatment), accurate operational deployment would demand site-specific adjustments (e.g., mapping `maintenanceCost` to actual labor schedules).
+*   **Absence of Real Deployment Telemetry:** While grounded conceptually toward a Oil Pipeline ICS abstraction, accurate operational deployment would demand site-specific adjustments (e.g., mapping `maintenanceCost` to actual labor schedules).
 *   **Synthetic Workload Limitations:** The parameter sweeps utilize synthetic bounding ranges. High-stress configurations represent worst-case theoretical bounds rather than historically observed cyber-physical incidents.
 
 ## C. Computational Limitations

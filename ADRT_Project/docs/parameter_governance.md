@@ -14,7 +14,7 @@ This document provides formal operational governance over key parameters used in
 | :--- | :--- | :--- | :--- | :--- |
 | `telemetryTrust` | `[0,100]` | Trustworthiness of physical sensor readings. | Degrades heavily under stealth/spoofing attacks. | Pomdp-lite scalar abstraction avoiding complex belief spaces. |
 | `operationalStress` | `[0,100]` | Cumulative process/hardware fatigue in ICS. | Asymptotic growth representing accelerating systemic wear. | Bypasses floating-point physical ODE integration. |
-| `processDeviation` | `[0,100]` | Drift from stable state (e.g. dosing, flow). | Rebounds non-linearly under safe mode execution. | Reduced-order alternative to industrial process emulation. |
+| `processDeviation` | `[0,100]` | Drift from stable state (e.g. pressure imbalance, abnormal flow). | Rebounds non-linearly under safe mode execution. | Reduced-order alternative to industrial process emulation. |
 | `controlLatency` | `[0,100]` | Delayed actuation in PLCs due to cyber lag. | Causes `processDeviation` and `operationalSafetyErosion`. | Preserves finite-time bounds while modeling network delays. |
 
 ## 3. Resilience & Recovery Metrics

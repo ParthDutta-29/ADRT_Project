@@ -20,29 +20,29 @@ int[0, MAX_COST] max(int[0, MAX_COST*2] a, int[0, MAX_COST*2] b) {
 
 
 /* ── Per-template cost constants (replaces parameters) ── */
-/* Environment / gates */
+/* Pipeline_Physical_Dynamics / gates */
 const int ENV_MC  = 5;   const int ENV_EC  = 2;   const int ENV_CC  = 1;
 const int GATE_MC = 5;   const int GATE_EC = 2;   const int GATE_CC = 1;
 /* Attack costs */
 const int NET_MC  = 20;  const int NET_EC  = 10;  const int NET_CC  = 5;
 const int WEB_MC  = 15;  const int WEB_EC  = 8;   const int WEB_CC  = 3;
 const int API_MC  = 15;  const int API_EC  = 8;   const int API_CC  = 3;
-const int MAL_MC  = 25;  const int MAL_EC  = 15;  const int MAL_CC  = 7;
-const int RAN_MC  = 30;  const int RAN_EC  = 20;  const int RAN_CC  = 10;
-const int PHI_MC  = 10;  const int PHI_EC  = 5;   const int PHI_CC  = 2;
-const int CRE_MC  = 12;  const int CRE_EC  = 6;   const int CRE_CC  = 3;
-const int INS_MC  = 8;   const int INS_EC  = 4;   const int INS_CC  = 2;
-const int SUP_MC  = 35;  const int SUP_EC  = 25;  const int SUP_CC  = 12;
-const int FWA_MC  = 40;  const int FWA_EC  = 30;  const int FWA_CC  = 15;
+const int PLC_MC  = 25;  const int PLC_EC  = 15;  const int PLC_CC  = 7;
+const int CRAN_MC  = 30;  const int CRAN_EC  = 20;  const int CRAN_CC  = 10;
+const int COMP_MC  = 10;  const int COMP_EC  = 5;   const int COMP_CC  = 2;
+const int RTU_MC  = 12;  const int RTU_EC  = 6;   const int RTU_CC  = 3;
+const int VALVE_MC  = 8;   const int VALVE_EC  = 4;   const int VALVE_CC  = 2;
+const int TDELAY_MC  = 35;  const int TDELAY_EC  = 25;  const int TDELAY_CC  = 12;
+const int FSENS_MC  = 40;  const int FSENS_EC  = 30;  const int FSENS_CC  = 15;
 const int LMV_MC  = 20;  const int LMV_EC  = 12;  const int LMV_CC  = 6;
 const int PER_MC  = 20;  const int PER_EC  = 12;  const int PER_CC  = 6;
 /* Defense costs */
 const int FWD_MC  = 10;  const int FWD_EC  = 5;   const int FWD_CC  = 2;
 const int IDS_MC  = 100; const int IDS_EC  = 50;  const int IDS_CC  = 20;
 const int WAF_MC  = 10;  const int WAF_EC  = 5;   const int WAF_CC  = 2;
-const int EDR_MC  = 100; const int EDR_EC  = 50;  const int EDR_CC  = 20;
+const int EPIR_MC  = 100; const int EPIR_EC  = 50;  const int EPIR_CC  = 20;
 const int DLP_MC  = 80;  const int DLP_EC  = 40;  const int DLP_CC  = 18;
-const int DR_MC   = 50;  const int DR_EC   = 25;  const int DR_CC   = 10;
+const int PIR_MC   = 50;  const int PIR_EC   = 25;  const int PIR_CC   = 10;
 
 /* ── Multi-objective cost accumulators ── */
 int[0,MAX_COST] maintenanceCost = 0;
@@ -160,47 +160,47 @@ broadcast chan escalate, contain, isolate, recover_sys;
 broadcast chan alert_raised, threat_classified, strategy_selected, hardening_done;
 	</declaration>
 <template>
-		<name>Environment</name>
+		<name>Pipeline_Physical_Dynamics</name>
 		<declaration>clock env_t;
 int wave=0;</declaration>
 		<location id="id0" x="40" y="80">
-			<name x="30" y="55">Env_Idle</name>
+			<name x="30" y="55">Pipe_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
 		</location>
 		<location id="id1" x="220" y="80">
-			<name x="210" y="55">Env_Init</name>
+			<name x="210" y="55">Pipe_Init</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id2" x="400" y="80">
-			<name x="390" y="55">Env_Valve_Control</name>
+			<name x="390" y="55">Pipe_Valve_Control</name>
 			<label kind="exponentialrate" x="390" y="98">2</label>
 		</location>
 		<location id="id3" x="580" y="80">
-			<name x="570" y="55">Env_Flow_Dynamics</name>
+			<name x="570" y="55">Pipe_Flow_Dynamics</name>
 			<label kind="exponentialrate" x="570" y="98">2</label>
 		</location>
 		<location id="id4" x="580" y="220">
-			<name x="570" y="195">Env_PID_Control</name>
+			<name x="570" y="195">Pipe_PID_Control</name>
 			<label kind="exponentialrate" x="570" y="238">2</label>
 		</location>
 		<location id="id5" x="400" y="220">
-			<name x="390" y="195">Env_Monitor</name>
+			<name x="390" y="195">Pipe_Monitor</name>
 			<label kind="exponentialrate" x="390" y="238">4</label>
 		</location>
 		<location id="id6" x="220" y="220">
-			<name x="210" y="195">Env_Assess</name>
+			<name x="210" y="195">Pipe_Assess</name>
 			<label kind="exponentialrate" x="210" y="238">3</label>
 		</location>
 		<location id="id7" x="40" y="220">
-			<name x="30" y="195">Env_Success</name>
+			<name x="30" y="195">Pipe_Success</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<location id="id8" x="40" y="360">
-			<name x="30" y="335">Env_Fail</name>
+			<name x="30" y="335">Pipe_Fail</name>
 			<label kind="exponentialrate" x="30" y="378">2</label>
 		</location>
 		<location id="id9" x="220" y="360">
-			<name x="210" y="335">Env_Reset</name>
+			<name x="210" y="335">Pipe_Reset</name>
 			<label kind="exponentialrate" x="210" y="378">4</label>
 		</location>
 		<init ref="id0" />
@@ -923,49 +923,49 @@ carbonCost := min(MAX_COST,carbonCost+GATE_CC)</label>
 		</transition>
 	</template>
 <template>
-		<name>Network_Attack</name>
+		<name>SCADA_Compromise</name>
 		<location id="id148" x="40" y="80">
-			<name x="30" y="55">NA_Idle</name>
+			<name x="30" y="55">SCADA_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
 		</location>
 		<location id="id149" x="220" y="80">
-			<name x="210" y="55">NA_Reconnaissance</name>
+			<name x="210" y="55">SCADA_Reconnaissance</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id150" x="400" y="80">
-			<name x="390" y="55">NA_Credential_Theft</name>
+			<name x="390" y="55">SCADA_Credential_Theft</name>
 			<label kind="exponentialrate" x="390" y="98">4</label>
 		</location>
 		<location id="id151" x="580" y="80">
-			<name x="570" y="55">NA_Evasion_Evasion_Check</name>
+			<name x="570" y="55">SCADA_Evasion_Evasion_Check</name>
 			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id152" x="760" y="80">
-			<name x="750" y="55">NA_OT_Traversal</name>
+			<name x="750" y="55">SCADA_OT_Traversal</name>
 			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id153" x="760" y="220">
-			<name x="750" y="195">NA_Execution</name>
+			<name x="750" y="195">SCADA_Execution</name>
 			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id154" x="580" y="220">
-			<name x="570" y="195">NA_Payload_Staging</name>
+			<name x="570" y="195">SCADA_Payload_Staging</name>
 			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id155" x="400" y="220">
-			<name x="390" y="195">NA_Command_And_Control</name>
+			<name x="390" y="195">SCADA_Command_And_Control</name>
 			<label kind="exponentialrate" x="390" y="238">2</label>
 		</location>
 		<location id="id156" x="220" y="220">
-			<name x="210" y="195">NA_PLC_Manipulation</name>
+			<name x="210" y="195">SCADA_PLC_Manipulation</name>
 			<label kind="exponentialrate" x="210" y="238">1</label>
 		</location>
 		<location id="id157" x="220" y="360">
-			<name x="210" y="335">NA_Mitigated</name>
+			<name x="210" y="335">SCADA_Mitigated</name>
 			<label kind="exponentialrate" x="210" y="378">3</label>
 		</location>
 		<location id="id158" x="40" y="220">
-			<name x="30" y="195">NA_Privilege_Escalation</name>
+			<name x="30" y="195">SCADA_Privilege_Escalation</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<init ref="id148" />
@@ -1105,49 +1105,49 @@ operationalStress=(controlLoopStability&lt;50)?min(100, operationalStress + (100
 		</transition>
 	</template>
 <template>
-		<name>Web_Attack</name>
+		<name>Sensor_Spoofing</name>
 		<location id="id172" x="40" y="80">
-			<name x="30" y="55">WA_Idle</name>
+			<name x="30" y="55">SENS_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
 		</location>
 		<location id="id173" x="220" y="80">
-			<name x="210" y="55">WA_Reconnaissance</name>
+			<name x="210" y="55">SENS_Reconnaissance</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id174" x="400" y="80">
-			<name x="390" y="55">WA_Credential_Theft</name>
+			<name x="390" y="55">SENS_Credential_Theft</name>
 			<label kind="exponentialrate" x="390" y="98">4</label>
 		</location>
 		<location id="id175" x="580" y="80">
-			<name x="570" y="55">WA_Evasion_Evasion_Check</name>
+			<name x="570" y="55">SENS_Evasion_Evasion_Check</name>
 			<label kind="exponentialrate" x="570" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id176" x="760" y="80">
-			<name x="750" y="55">WA_OT_Traversal</name>
+			<name x="750" y="55">SENS_OT_Traversal</name>
 			<label kind="exponentialrate" x="750" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id177" x="760" y="220">
-			<name x="750" y="195">WA_Execution</name>
+			<name x="750" y="195">SENS_Execution</name>
 			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id178" x="580" y="220">
-			<name x="570" y="195">WA_Payload_Staging</name>
+			<name x="570" y="195">SENS_Payload_Staging</name>
 			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id179" x="400" y="220">
-			<name x="390" y="195">WA_Command_And_Control</name>
+			<name x="390" y="195">SENS_Command_And_Control</name>
 			<label kind="exponentialrate" x="390" y="238">2</label>
 		</location>
 		<location id="id180" x="220" y="220">
-			<name x="210" y="195">WA_PLC_Manipulation</name>
+			<name x="210" y="195">SENS_PLC_Manipulation</name>
 			<label kind="exponentialrate" x="210" y="238">1</label>
 		</location>
 		<location id="id181" x="220" y="360">
-			<name x="210" y="335">WA_Mitigated</name>
+			<name x="210" y="335">SENS_Mitigated</name>
 			<label kind="exponentialrate" x="210" y="378">3</label>
 		</location>
 		<location id="id182" x="40" y="220">
-			<name x="30" y="195">WA_Privilege_Escalation</name>
+			<name x="30" y="195">SENS_Privilege_Escalation</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<init ref="id172" />
@@ -1283,49 +1283,49 @@ downtime=min(100, downtime+1)</label>
 		</transition>
 	</template>
 <template>
-		<name>API_Attack</name>
+		<name>Flow_Falsification</name>
 		<location id="id196" x="40" y="80">
-			<name x="30" y="55">AA_Idle</name>
+			<name x="30" y="55">FLOW_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
 		</location>
 		<location id="id197" x="220" y="80">
-			<name x="210" y="55">AA_Reconnaissance</name>
+			<name x="210" y="55">FLOW_Reconnaissance</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id198" x="400" y="80">
-			<name x="390" y="55">AA_Credential_Theft</name>
+			<name x="390" y="55">FLOW_Credential_Theft</name>
 			<label kind="exponentialrate" x="390" y="98">4</label>
 		</location>
 		<location id="id199" x="580" y="80">
-			<name x="570" y="55">AA_Evasion_Evasion_Check</name>
+			<name x="570" y="55">FLOW_Evasion_Evasion_Check</name>
 			<label kind="exponentialrate" x="570" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id200" x="760" y="80">
-			<name x="750" y="55">AA_OT_Traversal</name>
+			<name x="750" y="55">FLOW_OT_Traversal</name>
 			<label kind="exponentialrate" x="750" y="98">(wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id201" x="760" y="220">
-			<name x="750" y="195">AA_Execution</name>
+			<name x="750" y="195">FLOW_Execution</name>
 			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (wafQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id202" x="580" y="220">
-			<name x="570" y="195">AA_Payload_Staging</name>
+			<name x="570" y="195">FLOW_Payload_Staging</name>
 			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id203" x="400" y="220">
-			<name x="390" y="195">AA_Command_And_Control</name>
+			<name x="390" y="195">FLOW_Command_And_Control</name>
 			<label kind="exponentialrate" x="390" y="238">2</label>
 		</location>
 		<location id="id204" x="220" y="220">
-			<name x="210" y="195">AA_PLC_Manipulation</name>
+			<name x="210" y="195">FLOW_PLC_Manipulation</name>
 			<label kind="exponentialrate" x="210" y="238">1</label>
 		</location>
 		<location id="id205" x="220" y="360">
-			<name x="210" y="335">AA_Mitigated</name>
+			<name x="210" y="335">FLOW_Mitigated</name>
 			<label kind="exponentialrate" x="210" y="378">3</label>
 		</location>
 		<location id="id206" x="40" y="220">
-			<name x="30" y="195">AA_Privilege_Escalation</name>
+			<name x="30" y="195">FLOW_Privilege_Escalation</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<init ref="id196" />
@@ -1461,49 +1461,49 @@ downtime=min(100, downtime+1)</label>
 		</transition>
 	</template>
 <template>
-		<name>Malware_Attack</name>
+		<name>PLC_Logic_Manipulation</name>
 		<location id="id220" x="40" y="80">
-			<name x="30" y="55">MAL_Idle</name>
+			<name x="30" y="55">PLC_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
 		</location>
 		<location id="id221" x="220" y="80">
-			<name x="210" y="55">MAL_Reconnaissance</name>
+			<name x="210" y="55">PLC_Reconnaissance</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id222" x="400" y="80">
-			<name x="390" y="55">MAL_Credential_Theft</name>
+			<name x="390" y="55">PLC_Credential_Theft</name>
 			<label kind="exponentialrate" x="390" y="98">4</label>
 		</location>
 		<location id="id223" x="580" y="80">
-			<name x="570" y="55">MAL_Evasion_Evasion_Check</name>
+			<name x="570" y="55">PLC_Evasion_Evasion_Check</name>
 			<label kind="exponentialrate" x="570" y="98">(edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id224" x="760" y="80">
-			<name x="750" y="55">MAL_OT_Traversal</name>
+			<name x="750" y="55">PLC_OT_Traversal</name>
 			<label kind="exponentialrate" x="750" y="98">(edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id225" x="760" y="220">
-			<name x="750" y="195">MAL_Execution</name>
+			<name x="750" y="195">PLC_Execution</name>
 			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (edrQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id226" x="580" y="220">
-			<name x="570" y="195">MAL_Payload_Staging</name>
+			<name x="570" y="195">PLC_Payload_Staging</name>
 			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id227" x="400" y="220">
-			<name x="390" y="195">MAL_Command_And_Control</name>
+			<name x="390" y="195">PLC_Command_And_Control</name>
 			<label kind="exponentialrate" x="390" y="238">2</label>
 		</location>
 		<location id="id228" x="220" y="220">
-			<name x="210" y="195">MAL_PLC_Manipulation</name>
+			<name x="210" y="195">PLC_PLC_Manipulation</name>
 			<label kind="exponentialrate" x="210" y="238">1</label>
 		</location>
 		<location id="id229" x="220" y="360">
-			<name x="210" y="335">MAL_Mitigated</name>
+			<name x="210" y="335">PLC_Mitigated</name>
 			<label kind="exponentialrate" x="210" y="378">3</label>
 		</location>
 		<location id="id230" x="40" y="220">
-			<name x="30" y="195">MAL_Privilege_Escalation</name>
+			<name x="30" y="195">PLC_Privilege_Escalation</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<init ref="id220" />
@@ -1512,22 +1512,22 @@ downtime=min(100, downtime+1)</label>
 			<target ref="id221" />
 			<label kind="synchronisation" x="70" y="65">start_malware?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC),
+maintenanceCost+PLC_MC),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC),
+energyCost+PLC_EC),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC),
+carbonCost+PLC_CC),
 breachLikelihood=min(100, breachLikelihood + operationalStress/10)</label>
 		</transition>
 		<transition id="id232">
 			<source ref="id221" />
 			<target ref="id222" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC),
+maintenanceCost+PLC_MC),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC*2 + (operationalStress/10)),
+energyCost+PLC_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC),
+carbonCost+PLC_CC),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1536,11 +1536,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id222" />
 			<target ref="id223" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC),
+maintenanceCost+PLC_MC),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC*2 + (operationalStress/10)),
+energyCost+PLC_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC*2 + (operationalStress/10)),
+carbonCost+PLC_CC*2 + (operationalStress/10)),
 fwQueueSize=min(100, fwQueueSize + 1 + congestionPressure/20),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
@@ -1557,11 +1557,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<target ref="id224" />
 			<label kind="guard" x="610" y="50">firewall==false || fwQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC*2 + congestionPressure/10),
+maintenanceCost+PLC_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC*3 + (operationalStress/10)),
+energyCost+PLC_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC*2 + (operationalStress/10)),
+carbonCost+PLC_CC*2 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1572,11 +1572,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<label kind="synchronisation" x="700" y="135">success?</label>
 			<label kind="assignment" x="700" y="150">malware=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC*3 + congestionPressure/10),
+maintenanceCost+PLC_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC*4 + (operationalStress/10)),
+energyCost+PLC_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC*3 + (operationalStress/10)),
+carbonCost+PLC_CC*3 + (operationalStress/10)),
 controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
 cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10)</label>
@@ -1590,11 +1590,11 @@ cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/
 			<source ref="id225" />
 			<target ref="id226" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC*3 + congestionPressure/10),
+maintenanceCost+PLC_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC*5 + (operationalStress/10)),
+energyCost+PLC_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC*4 + (operationalStress/10)),
+carbonCost+PLC_CC*4 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1603,11 +1603,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id226" />
 			<target ref="id227" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC*4 + congestionPressure/10),
+maintenanceCost+PLC_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC*5 + (operationalStress/10)),
+energyCost+PLC_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC*5 + (operationalStress/10)),
+carbonCost+PLC_CC*5 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1616,11 +1616,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id227" />
 			<target ref="id228" />
 			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+MAL_MC*5 + congestionPressure/10),
+maintenanceCost+PLC_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+MAL_EC*6 + (operationalStress/10)),
+energyCost+PLC_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+MAL_CC*6 + (operationalStress/10)),
+carbonCost+PLC_CC*6 + (operationalStress/10)),
 plcCompromised=true,
 downtime=min(100, downtime+2)</label>
 		</transition>
@@ -1640,7 +1640,7 @@ downtime=min(100, downtime+2)</label>
 		</transition>
 	</template>
 <template>
-		<name>Ransomware_Attack</name>
+		<name>Control_Center_Ransomware</name>
 		<location id="id244" x="40" y="80">
 			<name x="30" y="55">RA_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
@@ -1691,22 +1691,22 @@ downtime=min(100, downtime+2)</label>
 			<target ref="id245" />
 			<label kind="synchronisation" x="70" y="65">start_ransom?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC),
+maintenanceCost+CRAN_MC),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC),
+energyCost+CRAN_EC),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC),
+carbonCost+CRAN_CC),
 breachLikelihood=min(100, breachLikelihood + operationalStress/10)</label>
 		</transition>
 		<transition id="id256">
 			<source ref="id245" />
 			<target ref="id246" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC),
+maintenanceCost+CRAN_MC),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC*2 + (operationalStress/10)),
+energyCost+CRAN_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC),
+carbonCost+CRAN_CC),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1715,11 +1715,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id246" />
 			<target ref="id247" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC),
+maintenanceCost+CRAN_MC),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC*2 + (operationalStress/10)),
+energyCost+CRAN_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC*2 + (operationalStress/10)),
+carbonCost+CRAN_CC*2 + (operationalStress/10)),
 edrQueueSize=min(100, edrQueueSize + 1 + congestionPressure/20),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
@@ -1736,11 +1736,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<target ref="id248" />
 			<label kind="guard" x="610" y="50">edr==false || edrQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC*2 + congestionPressure/10),
+maintenanceCost+CRAN_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC*3 + (operationalStress/10)),
+energyCost+CRAN_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC*2 + (operationalStress/10)),
+carbonCost+CRAN_CC*2 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1751,11 +1751,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<label kind="synchronisation" x="700" y="135">success?</label>
 			<label kind="assignment" x="700" y="150">ransom=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC*3 + congestionPressure/10),
+maintenanceCost+CRAN_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC*4 + (operationalStress/10)),
+energyCost+CRAN_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC*3 + (operationalStress/10)),
+carbonCost+CRAN_CC*3 + (operationalStress/10)),
 controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
 cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10)</label>
@@ -1769,11 +1769,11 @@ cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/
 			<source ref="id249" />
 			<target ref="id250" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC*3 + congestionPressure/10),
+maintenanceCost+CRAN_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC*5 + (operationalStress/10)),
+energyCost+CRAN_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC*4 + (operationalStress/10)),
+carbonCost+CRAN_CC*4 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1782,11 +1782,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id250" />
 			<target ref="id251" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC*4 + congestionPressure/10),
+maintenanceCost+CRAN_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC*5 + (operationalStress/10)),
+energyCost+CRAN_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC*5 + (operationalStress/10)),
+carbonCost+CRAN_CC*5 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1795,11 +1795,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id251" />
 			<target ref="id252" />
 			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+RAN_MC*5 + congestionPressure/10),
+maintenanceCost+CRAN_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+RAN_EC*6 + (operationalStress/10)),
+energyCost+CRAN_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+RAN_CC*6 + (operationalStress/10)),
+carbonCost+CRAN_CC*6 + (operationalStress/10)),
 breach=true,
 downtime=min(100, downtime+3),
 safetyMargin=(processDeviation&gt;50)?((safetyMargin&gt;=10)?safetyMargin-10:0):safetyMargin,
@@ -1821,7 +1821,7 @@ operationalStress=(controlLoopStability&lt;50)?min(100, operationalStress + (100
 		</transition>
 	</template>
 <template>
-		<name>Phishing_Attack</name>
+		<name>Compressor_Intrusion</name>
 		<location id="id268" x="40" y="80">
 			<name x="30" y="55">PH_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
@@ -1872,22 +1872,22 @@ operationalStress=(controlLoopStability&lt;50)?min(100, operationalStress + (100
 			<target ref="id269" />
 			<label kind="synchronisation" x="70" y="65">start_phish?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC),
+maintenanceCost+COMP_MC),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC),
+energyCost+COMP_EC),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC),
+carbonCost+COMP_CC),
 breachLikelihood=min(100, breachLikelihood + operationalStress/10)</label>
 		</transition>
 		<transition id="id280">
 			<source ref="id269" />
 			<target ref="id270" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC),
+maintenanceCost+COMP_MC),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC*2 + (operationalStress/10)),
+energyCost+COMP_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC),
+carbonCost+COMP_CC),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1896,11 +1896,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id270" />
 			<target ref="id271" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC),
+maintenanceCost+COMP_MC),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC*2 + (operationalStress/10)),
+energyCost+COMP_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC*2 + (operationalStress/10)),
+carbonCost+COMP_CC*2 + (operationalStress/10)),
 dlpQueueSize=min(100, dlpQueueSize + 1 + congestionPressure/20),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
@@ -1917,11 +1917,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<target ref="id272" />
 			<label kind="guard" x="610" y="50">dlp==false || dlpQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC*2 + congestionPressure/10),
+maintenanceCost+COMP_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC*3 + (operationalStress/10)),
+energyCost+COMP_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC*2 + (operationalStress/10)),
+carbonCost+COMP_CC*2 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1932,11 +1932,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<label kind="synchronisation" x="700" y="135">success?</label>
 			<label kind="assignment" x="700" y="150">phishing=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC*3 + congestionPressure/10),
+maintenanceCost+COMP_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC*4 + (operationalStress/10)),
+energyCost+COMP_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC*3 + (operationalStress/10)),
+carbonCost+COMP_CC*3 + (operationalStress/10)),
 controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
 cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10)</label>
@@ -1950,11 +1950,11 @@ cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/
 			<source ref="id273" />
 			<target ref="id274" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC*3 + congestionPressure/10),
+maintenanceCost+COMP_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC*5 + (operationalStress/10)),
+energyCost+COMP_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC*4 + (operationalStress/10)),
+carbonCost+COMP_CC*4 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1963,11 +1963,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id274" />
 			<target ref="id275" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC*4 + congestionPressure/10),
+maintenanceCost+COMP_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC*5 + (operationalStress/10)),
+energyCost+COMP_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC*5 + (operationalStress/10)),
+carbonCost+COMP_CC*5 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -1976,11 +1976,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id275" />
 			<target ref="id276" />
 			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+PHI_MC*5 + congestionPressure/10),
+maintenanceCost+COMP_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+PHI_EC*6 + (operationalStress/10)),
+energyCost+COMP_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+PHI_CC*6 + (operationalStress/10)),
+carbonCost+COMP_CC*6 + (operationalStress/10)),
 downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id289">
@@ -1999,7 +1999,7 @@ downtime=min(100, downtime+1)</label>
 		</transition>
 	</template>
 <template>
-		<name>Credential_Attack</name>
+		<name>Remote_RTU_Compromise</name>
 		<location id="id292" x="40" y="80">
 			<name x="30" y="55">CR_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
@@ -2050,22 +2050,22 @@ downtime=min(100, downtime+1)</label>
 			<target ref="id293" />
 			<label kind="synchronisation" x="70" y="65">start_cred?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC),
+maintenanceCost+RTU_MC),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC),
+energyCost+RTU_EC),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC),
+carbonCost+RTU_CC),
 breachLikelihood=min(100, breachLikelihood + operationalStress/10)</label>
 		</transition>
 		<transition id="id304">
 			<source ref="id293" />
 			<target ref="id294" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC),
+maintenanceCost+RTU_MC),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC*2 + (operationalStress/10)),
+energyCost+RTU_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC),
+carbonCost+RTU_CC),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2074,11 +2074,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id294" />
 			<target ref="id295" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC),
+maintenanceCost+RTU_MC),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC*2 + (operationalStress/10)),
+energyCost+RTU_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC*2 + (operationalStress/10)),
+carbonCost+RTU_CC*2 + (operationalStress/10)),
 idsQueueSize=min(100, idsQueueSize + 1 + congestionPressure/20),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
@@ -2095,11 +2095,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<target ref="id296" />
 			<label kind="guard" x="610" y="50">ids==false || idsQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC*2 + congestionPressure/10),
+maintenanceCost+RTU_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC*3 + (operationalStress/10)),
+energyCost+RTU_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC*2 + (operationalStress/10)),
+carbonCost+RTU_CC*2 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2110,11 +2110,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<label kind="synchronisation" x="700" y="135">success?</label>
 			<label kind="assignment" x="700" y="150">credential=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC*3 + congestionPressure/10),
+maintenanceCost+RTU_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC*4 + (operationalStress/10)),
+energyCost+RTU_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC*3 + (operationalStress/10)),
+carbonCost+RTU_CC*3 + (operationalStress/10)),
 controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
 cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10)</label>
@@ -2128,11 +2128,11 @@ cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/
 			<source ref="id297" />
 			<target ref="id298" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC*3 + congestionPressure/10),
+maintenanceCost+RTU_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC*5 + (operationalStress/10)),
+energyCost+RTU_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC*4 + (operationalStress/10)),
+carbonCost+RTU_CC*4 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2141,11 +2141,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id298" />
 			<target ref="id299" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC*4 + congestionPressure/10),
+maintenanceCost+RTU_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC*5 + (operationalStress/10)),
+energyCost+RTU_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC*5 + (operationalStress/10)),
+carbonCost+RTU_CC*5 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2154,11 +2154,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id299" />
 			<target ref="id300" />
 			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+CRE_MC*5 + congestionPressure/10),
+maintenanceCost+RTU_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+CRE_EC*6 + (operationalStress/10)),
+energyCost+RTU_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+CRE_CC*6 + (operationalStress/10)),
+carbonCost+RTU_CC*6 + (operationalStress/10)),
 downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id313">
@@ -2179,47 +2179,47 @@ downtime=min(100, downtime+1)</label>
 <template>
 		<name>Insider_Attack</name>
 		<location id="id316" x="40" y="80">
-			<name x="30" y="55">INS_Idle</name>
+			<name x="30" y="55">VALVE_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
 		</location>
 		<location id="id317" x="220" y="80">
-			<name x="210" y="55">INS_Reconnaissance</name>
+			<name x="210" y="55">VALVE_Reconnaissance</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id318" x="400" y="80">
-			<name x="390" y="55">INS_Credential_Theft</name>
+			<name x="390" y="55">VALVE_Credential_Theft</name>
 			<label kind="exponentialrate" x="390" y="98">4</label>
 		</location>
 		<location id="id319" x="580" y="80">
-			<name x="570" y="55">INS_Evasion_Evasion_Check</name>
+			<name x="570" y="55">VALVE_Evasion_Evasion_Check</name>
 			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id320" x="760" y="80">
-			<name x="750" y="55">INS_OT_Traversal</name>
+			<name x="750" y="55">VALVE_OT_Traversal</name>
 			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id321" x="760" y="220">
-			<name x="750" y="195">INS_Execution</name>
+			<name x="750" y="195">VALVE_Execution</name>
 			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id322" x="580" y="220">
-			<name x="570" y="195">INS_Payload_Staging</name>
+			<name x="570" y="195">VALVE_Payload_Staging</name>
 			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id323" x="400" y="220">
-			<name x="390" y="195">INS_Command_And_Control</name>
+			<name x="390" y="195">VALVE_Command_And_Control</name>
 			<label kind="exponentialrate" x="390" y="238">2</label>
 		</location>
 		<location id="id324" x="220" y="220">
-			<name x="210" y="195">INS_PLC_Manipulation</name>
+			<name x="210" y="195">VALVE_PLC_Manipulation</name>
 			<label kind="exponentialrate" x="210" y="238">1</label>
 		</location>
 		<location id="id325" x="220" y="360">
-			<name x="210" y="335">INS_Mitigated</name>
+			<name x="210" y="335">VALVE_Mitigated</name>
 			<label kind="exponentialrate" x="210" y="378">3</label>
 		</location>
 		<location id="id326" x="40" y="220">
-			<name x="30" y="195">INS_Privilege_Escalation</name>
+			<name x="30" y="195">VALVE_Privilege_Escalation</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<init ref="id316" />
@@ -2228,22 +2228,22 @@ downtime=min(100, downtime+1)</label>
 			<target ref="id317" />
 			<label kind="synchronisation" x="70" y="65">start_insider?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC),
+maintenanceCost+VALVE_MC),
 energyCost := min(MAX_COST,
-energyCost+INS_EC),
+energyCost+VALVE_EC),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC),
+carbonCost+VALVE_CC),
 breachLikelihood=min(100, breachLikelihood + operationalStress/10)</label>
 		</transition>
 		<transition id="id328">
 			<source ref="id317" />
 			<target ref="id318" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC),
+maintenanceCost+VALVE_MC),
 energyCost := min(MAX_COST,
-energyCost+INS_EC*2 + (operationalStress/10)),
+energyCost+VALVE_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC),
+carbonCost+VALVE_CC),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2252,11 +2252,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id318" />
 			<target ref="id319" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC),
+maintenanceCost+VALVE_MC),
 energyCost := min(MAX_COST,
-energyCost+INS_EC*2 + (operationalStress/10)),
+energyCost+VALVE_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC*2 + (operationalStress/10)),
+carbonCost+VALVE_CC*2 + (operationalStress/10)),
 dlpQueueSize=min(100, dlpQueueSize + 1 + congestionPressure/20),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
@@ -2273,11 +2273,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<target ref="id320" />
 			<label kind="guard" x="610" y="50">dlp==false || dlpQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC*2 + congestionPressure/10),
+maintenanceCost+VALVE_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+INS_EC*3 + (operationalStress/10)),
+energyCost+VALVE_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC*2 + (operationalStress/10)),
+carbonCost+VALVE_CC*2 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2288,11 +2288,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<label kind="synchronisation" x="700" y="135">success?</label>
 			<label kind="assignment" x="700" y="150">insider=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC*3 + congestionPressure/10),
+maintenanceCost+VALVE_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+INS_EC*4 + (operationalStress/10)),
+energyCost+VALVE_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC*3 + (operationalStress/10)),
+carbonCost+VALVE_CC*3 + (operationalStress/10)),
 controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
 cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10)</label>
@@ -2306,11 +2306,11 @@ cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/
 			<source ref="id321" />
 			<target ref="id322" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC*3 + congestionPressure/10),
+maintenanceCost+VALVE_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+INS_EC*5 + (operationalStress/10)),
+energyCost+VALVE_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC*4 + (operationalStress/10)),
+carbonCost+VALVE_CC*4 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2319,11 +2319,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id322" />
 			<target ref="id323" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC*4 + congestionPressure/10),
+maintenanceCost+VALVE_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+INS_EC*5 + (operationalStress/10)),
+energyCost+VALVE_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC*5 + (operationalStress/10)),
+carbonCost+VALVE_CC*5 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2332,11 +2332,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id323" />
 			<target ref="id324" />
 			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+INS_MC*5 + congestionPressure/10),
+maintenanceCost+VALVE_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+INS_EC*6 + (operationalStress/10)),
+energyCost+VALVE_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+INS_CC*6 + (operationalStress/10)),
+carbonCost+VALVE_CC*6 + (operationalStress/10)),
 breach=true,
 sensorCompromised=true,
 downtime=min(100, downtime+2),
@@ -2361,47 +2361,47 @@ operationalStress=(controlLoopStability&lt;50)?min(100, operationalStress + (100
 <template>
 		<name>Supply_Attack</name>
 		<location id="id340" x="40" y="80">
-			<name x="30" y="55">SUP_Idle</name>
+			<name x="30" y="55">TDELAY_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
 		</location>
 		<location id="id341" x="220" y="80">
-			<name x="210" y="55">SUP_Reconnaissance</name>
+			<name x="210" y="55">TDELAY_Reconnaissance</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id342" x="400" y="80">
-			<name x="390" y="55">SUP_Credential_Theft</name>
+			<name x="390" y="55">TDELAY_Credential_Theft</name>
 			<label kind="exponentialrate" x="390" y="98">4</label>
 		</location>
 		<location id="id343" x="580" y="80">
-			<name x="570" y="55">SUP_Evasion_Evasion_Check</name>
+			<name x="570" y="55">TDELAY_Evasion_Evasion_Check</name>
 			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id344" x="760" y="80">
-			<name x="750" y="55">SUP_OT_Traversal</name>
+			<name x="750" y="55">TDELAY_OT_Traversal</name>
 			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id345" x="760" y="220">
-			<name x="750" y="195">SUP_Execution</name>
+			<name x="750" y="195">TDELAY_Execution</name>
 			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id346" x="580" y="220">
-			<name x="570" y="195">SUP_Payload_Staging</name>
+			<name x="570" y="195">TDELAY_Payload_Staging</name>
 			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id347" x="400" y="220">
-			<name x="390" y="195">SUP_Command_And_Control</name>
+			<name x="390" y="195">TDELAY_Command_And_Control</name>
 			<label kind="exponentialrate" x="390" y="238">2</label>
 		</location>
 		<location id="id348" x="220" y="220">
-			<name x="210" y="195">SUP_PLC_Manipulation</name>
+			<name x="210" y="195">TDELAY_PLC_Manipulation</name>
 			<label kind="exponentialrate" x="210" y="238">1</label>
 		</location>
 		<location id="id349" x="220" y="360">
-			<name x="210" y="335">SUP_Mitigated</name>
+			<name x="210" y="335">TDELAY_Mitigated</name>
 			<label kind="exponentialrate" x="210" y="378">3</label>
 		</location>
 		<location id="id350" x="40" y="220">
-			<name x="30" y="195">SUP_Privilege_Escalation</name>
+			<name x="30" y="195">TDELAY_Privilege_Escalation</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<init ref="id340" />
@@ -2410,22 +2410,22 @@ operationalStress=(controlLoopStability&lt;50)?min(100, operationalStress + (100
 			<target ref="id341" />
 			<label kind="synchronisation" x="70" y="65">start_supply?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC),
+maintenanceCost+TDELAY_MC),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC),
+energyCost+TDELAY_EC),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC),
+carbonCost+TDELAY_CC),
 breachLikelihood=min(100, breachLikelihood + operationalStress/10)</label>
 		</transition>
 		<transition id="id352">
 			<source ref="id341" />
 			<target ref="id342" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC),
+maintenanceCost+TDELAY_MC),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC*2 + (operationalStress/10)),
+energyCost+TDELAY_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC),
+carbonCost+TDELAY_CC),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2434,11 +2434,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id342" />
 			<target ref="id343" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC),
+maintenanceCost+TDELAY_MC),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC*2 + (operationalStress/10)),
+energyCost+TDELAY_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC*2 + (operationalStress/10)),
+carbonCost+TDELAY_CC*2 + (operationalStress/10)),
 fwQueueSize=min(100, fwQueueSize + 1 + congestionPressure/20),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
@@ -2455,11 +2455,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<target ref="id344" />
 			<label kind="guard" x="610" y="50">firewall==false || fwQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC*2 + congestionPressure/10),
+maintenanceCost+TDELAY_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC*3 + (operationalStress/10)),
+energyCost+TDELAY_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC*2 + (operationalStress/10)),
+carbonCost+TDELAY_CC*2 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2470,11 +2470,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<label kind="synchronisation" x="700" y="135">success?</label>
 			<label kind="assignment" x="700" y="150">supply=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC*3 + congestionPressure/10),
+maintenanceCost+TDELAY_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC*4 + (operationalStress/10)),
+energyCost+TDELAY_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC*3 + (operationalStress/10)),
+carbonCost+TDELAY_CC*3 + (operationalStress/10)),
 controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
 cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10)</label>
@@ -2488,11 +2488,11 @@ cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/
 			<source ref="id345" />
 			<target ref="id346" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC*3 + congestionPressure/10),
+maintenanceCost+TDELAY_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC*5 + (operationalStress/10)),
+energyCost+TDELAY_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC*4 + (operationalStress/10)),
+carbonCost+TDELAY_CC*4 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2501,11 +2501,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id346" />
 			<target ref="id347" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC*4 + congestionPressure/10),
+maintenanceCost+TDELAY_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC*5 + (operationalStress/10)),
+energyCost+TDELAY_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC*5 + (operationalStress/10)),
+carbonCost+TDELAY_CC*5 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2514,11 +2514,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id347" />
 			<target ref="id348" />
 			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+SUP_MC*5 + congestionPressure/10),
+maintenanceCost+TDELAY_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+SUP_EC*6 + (operationalStress/10)),
+energyCost+TDELAY_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+SUP_CC*6 + (operationalStress/10)),
+carbonCost+TDELAY_CC*6 + (operationalStress/10)),
 breach=true,
 downtime=min(100, downtime+2),
 safetyMargin=(processDeviation&gt;50)?((safetyMargin&gt;=10)?safetyMargin-10:0):safetyMargin,
@@ -2540,49 +2540,49 @@ operationalStress=(controlLoopStability&lt;50)?min(100, operationalStress + (100
 		</transition>
 	</template>
 <template>
-		<name>Firmware_Attack</name>
+		<name>Supervisory_Stealth_Persistence</name>
 		<location id="id364" x="40" y="80">
-			<name x="30" y="55">FWA_Idle</name>
+			<name x="30" y="55">FSENS_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">2</label>
 		</location>
 		<location id="id365" x="220" y="80">
-			<name x="210" y="55">FWA_Reconnaissance</name>
+			<name x="210" y="55">FSENS_Reconnaissance</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id366" x="400" y="80">
-			<name x="390" y="55">FWA_Credential_Theft</name>
+			<name x="390" y="55">FSENS_Credential_Theft</name>
 			<label kind="exponentialrate" x="390" y="98">4</label>
 		</location>
 		<location id="id367" x="580" y="80">
-			<name x="570" y="55">FWA_Evasion_Evasion_Check</name>
+			<name x="570" y="55">FSENS_Evasion_Evasion_Check</name>
 			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id368" x="760" y="80">
-			<name x="750" y="55">FWA_OT_Traversal</name>
+			<name x="750" y="55">FSENS_OT_Traversal</name>
 			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id369" x="760" y="220">
-			<name x="750" y="195">FWA_Execution</name>
+			<name x="750" y="195">FSENS_Execution</name>
 			<label kind="exponentialrate" x="750" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : (fwQueueSize&gt;=80) ? 5 : 3</label>
 		</location>
 		<location id="id370" x="580" y="220">
-			<name x="570" y="195">FWA_Payload_Staging</name>
+			<name x="570" y="195">FSENS_Payload_Staging</name>
 			<label kind="exponentialrate" x="570" y="238">(alertConfidence&lt;=30 || stealthPreference&gt;70) ? 1 : 2</label>
 		</location>
 		<location id="id371" x="400" y="220">
-			<name x="390" y="195">FWA_Command_And_Control</name>
+			<name x="390" y="195">FSENS_Command_And_Control</name>
 			<label kind="exponentialrate" x="390" y="238">2</label>
 		</location>
 		<location id="id372" x="220" y="220">
-			<name x="210" y="195">FWA_PLC_Manipulation</name>
+			<name x="210" y="195">FSENS_PLC_Manipulation</name>
 			<label kind="exponentialrate" x="210" y="238">1</label>
 		</location>
 		<location id="id373" x="220" y="360">
-			<name x="210" y="335">FWA_Mitigated</name>
+			<name x="210" y="335">FSENS_Mitigated</name>
 			<label kind="exponentialrate" x="210" y="378">3</label>
 		</location>
 		<location id="id374" x="40" y="220">
-			<name x="30" y="195">FWA_Privilege_Escalation</name>
+			<name x="30" y="195">FSENS_Privilege_Escalation</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<init ref="id364" />
@@ -2591,22 +2591,22 @@ operationalStress=(controlLoopStability&lt;50)?min(100, operationalStress + (100
 			<target ref="id365" />
 			<label kind="synchronisation" x="70" y="65">start_firmware?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC),
+maintenanceCost+FSENS_MC),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC),
+energyCost+FSENS_EC),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC),
+carbonCost+FSENS_CC),
 breachLikelihood=min(100, breachLikelihood + operationalStress/10)</label>
 		</transition>
 		<transition id="id376">
 			<source ref="id365" />
 			<target ref="id366" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC),
+maintenanceCost+FSENS_MC),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC*2 + (operationalStress/10)),
+energyCost+FSENS_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC),
+carbonCost+FSENS_CC),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2615,11 +2615,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id366" />
 			<target ref="id367" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC),
+maintenanceCost+FSENS_MC),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC*2 + (operationalStress/10)),
+energyCost+FSENS_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC*2 + (operationalStress/10)),
+carbonCost+FSENS_CC*2 + (operationalStress/10)),
 edrQueueSize=min(100, edrQueueSize + 1 + congestionPressure/20),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
@@ -2636,11 +2636,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<target ref="id368" />
 			<label kind="guard" x="610" y="50">edr==false || edrQueueSize&gt;=80</label>
 			<label kind="assignment" x="610" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC*2 + congestionPressure/10),
+maintenanceCost+FSENS_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC*3 + (operationalStress/10)),
+energyCost+FSENS_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC*2 + (operationalStress/10)),
+carbonCost+FSENS_CC*2 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2651,11 +2651,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<label kind="synchronisation" x="700" y="135">success?</label>
 			<label kind="assignment" x="700" y="150">firmware=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC*3 + congestionPressure/10),
+maintenanceCost+FSENS_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC*4 + (operationalStress/10)),
+energyCost+FSENS_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC*3 + (operationalStress/10)),
+carbonCost+FSENS_CC*3 + (operationalStress/10)),
 controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
 cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10)</label>
@@ -2669,11 +2669,11 @@ cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/
 			<source ref="id369" />
 			<target ref="id370" />
 			<label kind="assignment" x="610" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC*3 + congestionPressure/10),
+maintenanceCost+FSENS_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC*5 + (operationalStress/10)),
+energyCost+FSENS_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC*4 + (operationalStress/10)),
+carbonCost+FSENS_CC*4 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2682,11 +2682,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id370" />
 			<target ref="id371" />
 			<label kind="assignment" x="430" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC*4 + congestionPressure/10),
+maintenanceCost+FSENS_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC*5 + (operationalStress/10)),
+energyCost+FSENS_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC*5 + (operationalStress/10)),
+carbonCost+FSENS_CC*5 + (operationalStress/10)),
 sensorSpoofingIntent=(stealthPreference&gt;50)?min(100, sensorSpoofingIntent + stealthPreference/10):sensorSpoofingIntent,
 telemetryIntegrity=(sensorSpoofingIntent&gt;40)?((telemetryIntegrity&gt;=(sensorSpoofingIntent/10))?telemetryIntegrity-(sensorSpoofingIntent/10):0):telemetryIntegrity,
 processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemetryTrust)/10):processDeviation</label>
@@ -2695,11 +2695,11 @@ processDeviation=(telemetryTrust&lt;50)?min(100, processDeviation + (100-telemet
 			<source ref="id371" />
 			<target ref="id372" />
 			<label kind="assignment" x="250" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+FWA_MC*5 + congestionPressure/10),
+maintenanceCost+FSENS_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+FWA_EC*6 + (operationalStress/10)),
+energyCost+FSENS_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+FWA_CC*6 + (operationalStress/10)),
+carbonCost+FSENS_CC*6 + (operationalStress/10)),
 breach=true,
 plcCompromised=true,
 downtime=min(100, downtime+3),
@@ -3078,7 +3078,7 @@ downtime=min(100, downtime+1)</label>
 		</transition>
 	</template>
 <template>
-		<name>Firewall_Defense</name>
+		<name>SCADA_Firewall</name>
 		<location id="id436" x="40" y="80">
 			<name x="30" y="55">FWD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -3233,7 +3233,7 @@ energyCost+FWD_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+FWD_CC*2 + (operationalStress/10))</label></transition><transition id="id459"><source ref="id436" /><target ref="id436" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=5)?fwQueueSize-5:0</label></transition><transition id="id460"><source ref="id439" /><target ref="id439" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=10)?fwQueueSize-10:0</label></transition></template>
 <template>
-		<name>IDS_Defense</name>
+		<name>Telemetry_Validator</name>
 		<location id="id457" x="40" y="80">
 			<name x="30" y="55">IDSD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -3388,7 +3388,7 @@ energyCost+IDS_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+IDS_CC*2 + (operationalStress/10))</label></transition><transition id="id480"><source ref="id457" /><target ref="id457" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=5)?idsQueueSize-5:0</label></transition><transition id="id481"><source ref="id460" /><target ref="id460" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=10)?idsQueueSize-10:0</label></transition></template>
 <template>
-		<name>WAF_Defense</name>
+		<name>Protocol_Analyzer</name>
 		<location id="id478" x="40" y="80">
 			<name x="30" y="55">WAFD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -3543,7 +3543,7 @@ energyCost+WAF_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+WAF_CC*2 + (operationalStress/10))</label></transition><transition id="id501"><source ref="id478" /><target ref="id478" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=5)?wafQueueSize-5:0</label></transition><transition id="id502"><source ref="id481" /><target ref="id481" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=10)?wafQueueSize-10:0</label></transition></template>
 <template>
-		<name>EDR_Defense</name>
+		<name>RTU_Endpoint_Defense</name>
 		<location id="id499" x="40" y="80">
 			<name x="30" y="55">EDRD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -3590,42 +3590,42 @@ carbonCost+WAF_CC*2 + (operationalStress/10))</label></transition><transition id
 			<target ref="id500" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC),
+carbonCost+EPIR_CC),
 edrQueueSize=min(100, edrQueueSize + 1 + congestionPressure/20)</label>
 		<label kind="guard" x="70" y="50">edrQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id510">
 			<source ref="id500" />
 			<target ref="id501" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id511">
 			<source ref="id501" />
 			<target ref="id502" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id512">
 			<source ref="id502" />
 			<target ref="id503" />
 			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id513">
 			<source ref="id503" />
@@ -3634,11 +3634,11 @@ carbonCost+EDR_CC)</label>
 			<label kind="assignment" x="430" y="220">edr=true,
 modelFidelity=min(100, modelFidelity + (100-modelFidelity)/10),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		<label kind="guard" x="430" y="190">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">1 + modelFidelity/20 + telemetryTrust/25</label></transition>
 		<transition id="id514">
 			<source ref="id503" />
@@ -3646,11 +3646,11 @@ carbonCost+EDR_CC)</label>
 			<label kind="synchronisation" x="340" y="275">fail!</label>
 			<label kind="assignment" x="340" y="290">edr=false,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*2 + congestionPressure/10),
+maintenanceCost+EPIR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC*2 + (operationalStress/10)),
+energyCost+EPIR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC*2 + (operationalStress/10))</label>
+carbonCost+EPIR_CC*2 + (operationalStress/10))</label>
 		<label kind="guard" x="340" y="260">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">1 + congestionPressure/20 + operationalStress/25</label></transition>
 		<transition id="id515">
 			<source ref="id504" />
@@ -3666,11 +3666,11 @@ carbonCost+EDR_CC*2 + (operationalStress/10))</label>
 			<source ref="id506" />
 			<target ref="id507" />
 			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id518">
 			<source ref="id507" />
@@ -3678,27 +3678,27 @@ carbonCost+EDR_CC)</label>
 			<label kind="assignment" x="-20" y="220">edr=true,
 modelFidelity=min(100, modelFidelity + (100-modelFidelity)/10),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*2 + congestionPressure/10)</label>
+maintenanceCost+EPIR_MC*2 + congestionPressure/10)</label>
 		</transition>
 		<transition id="id519">
 			<source ref="id508" />
 			<target ref="id506" />
 			<label kind="synchronisation" x="70" y="275">detect!</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*3 + congestionPressure/10)</label>
+maintenanceCost+EPIR_MC*3 + congestionPressure/10)</label>
 		</transition>
 	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=(operationalStress/10))?telemetryTrust-(operationalStress/10):0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
 controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*2 + congestionPressure/10),
+maintenanceCost+EPIR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC*2 + (operationalStress/10)),
+energyCost+EPIR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC*2 + (operationalStress/10))</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
+carbonCost+EPIR_CC*2 + (operationalStress/10))</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
 <template>
-		<name>DLP_Defense</name>
+		<name>Flow_Sanity_Checker</name>
 		<location id="id520" x="40" y="80">
 			<name x="30" y="55">DLPD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -3853,77 +3853,77 @@ energyCost+DLP_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+DLP_CC*2 + (operationalStress/10))</label></transition><transition id="id543"><source ref="id520" /><target ref="id520" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=5)?dlpQueueSize-5:0</label></transition><transition id="id544"><source ref="id523" /><target ref="id523" /><label kind="guard">dlpQueueSize &gt; 0</label><label kind="assignment">dlpQueueSize=(dlpQueueSize&gt;=10)?dlpQueueSize-10:0</label></transition></template>
 <template>
-		<name>Defender_Response</name>
+		<name>Pipeline_Incident_Response</name>
 		<location id="id541" x="40" y="80">
-			<name x="30" y="55">DR_Idle</name>
+			<name x="30" y="55">PIR_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
 		</location>
 		<location id="id542" x="220" y="80">
-			<name x="210" y="55">DR_Intake</name>
+			<name x="210" y="55">PIR_Intake</name>
 			<label kind="exponentialrate" x="210" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 5</label>
 		</location>
 		<location id="id543" x="400" y="80">
-			<name x="390" y="55">DR_Classify</name>
+			<name x="390" y="55">PIR_Classify</name>
 			<label kind="exponentialrate" x="390" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 4</label>
 		</location>
 		<location id="id544" x="580" y="80">
-			<name x="570" y="55">DR_Risk_Score</name>
+			<name x="570" y="55">PIR_Risk_Score</name>
 			<label kind="exponentialrate" x="570" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 4</label>
 		</location>
 		<location id="id545" x="760" y="80">
-			<name x="750" y="55">DR_Sev_Low</name>
+			<name x="750" y="55">PIR_Sev_Low</name>
 			<label kind="exponentialrate" x="750" y="98">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
 		</location>
 		<location id="id546" x="760" y="220">
-			<name x="750" y="195">DR_Sev_High</name>
+			<name x="750" y="195">PIR_Sev_High</name>
 			<label kind="exponentialrate" x="750" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
 		</location>
 		<location id="id547" x="580" y="220">
-			<name x="570" y="195">DR_Strat_Cheap</name>
+			<name x="570" y="195">PIR_Strat_Cheap</name>
 			<label kind="exponentialrate" x="570" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
 		</location>
 		<location id="id548" x="400" y="220">
-			<name x="390" y="195">DR_Strat_Aggr</name>
+			<name x="390" y="195">PIR_Strat_Aggr</name>
 			<label kind="exponentialrate" x="390" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
 		</location>
 		<location id="id549" x="220" y="220">
-			<name x="210" y="195">DR_Act_FW_WAF</name>
+			<name x="210" y="195">PIR_Act_FW_WAF</name>
 			<label kind="exponentialrate" x="210" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
 		</location>
 		<location id="id550" x="40" y="220">
-			<name x="30" y="195">DR_Act_IDS_EDR</name>
+			<name x="30" y="195">PIR_Act_IDS_EDR</name>
 			<label kind="exponentialrate" x="30" y="238">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 2</label>
 		</location>
 		<location id="id551" x="40" y="360">
-			<name x="30" y="335">DR_Act_DLP</name>
+			<name x="30" y="335">PIR_Act_DLP</name>
 			<label kind="exponentialrate" x="30" y="378">(fwQueueSize&gt;50 || idsQueueSize&gt;50) ? 1 : 3</label>
 		</location>
 		<location id="id552" x="220" y="360">
-			<name x="210" y="335">DR_Contain</name>
+			<name x="210" y="335">PIR_Contain</name>
 			<label kind="exponentialrate" x="210" y="378">2</label>
 		</location>
 		<location id="id553" x="400" y="360">
-			<name x="390" y="335">DR_Isolate</name>
+			<name x="390" y="335">PIR_Isolate</name>
 			<label kind="exponentialrate" x="390" y="378">2</label>
 		</location>
 		<location id="id554" x="580" y="360">
-			<name x="570" y="335">DR_Recover</name>
+			<name x="570" y="335">PIR_Recover</name>
 			<label kind="exponentialrate" x="570" y="378">2</label>
 		</location>
 		<location id="id555" x="760" y="360">
-			<name x="750" y="335">DR_Harden</name>
+			<name x="750" y="335">PIR_Harden</name>
 			<label kind="exponentialrate" x="750" y="378">1</label>
 		</location>
 		<location id="id556" x="760" y="500">
-			<name x="750" y="475">DR_Feedback</name>
+			<name x="750" y="475">PIR_Feedback</name>
 			<label kind="exponentialrate" x="750" y="518">2</label>
 		</location>
 		<location id="id557" x="580" y="500">
-			<name x="570" y="475">DR_Log</name>
+			<name x="570" y="475">PIR_Log</name>
 			<label kind="exponentialrate" x="570" y="518">2</label>
 		</location>
 		<location id="id558" x="400" y="500">
-			<name x="390" y="475">DR_Reset</name>
+			<name x="390" y="475">PIR_Reset</name>
 			<label kind="exponentialrate" x="390" y="518">3</label>
 		</location>
 		<init ref="id541" />
@@ -3934,11 +3934,11 @@ carbonCost+DLP_CC*2 + (operationalStress/10))</label></transition><transition id
 			<label kind="assignment" x="70" y="80">alertConfidence=min(100,
 alertConfidence+(telemetryTrust/10)),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC),
+maintenanceCost+PIR_MC),
 energyCost := min(MAX_COST,
-energyCost+DR_EC),
+energyCost+PIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC),
+carbonCost+PIR_CC),
 truePositive=false,
 falsePositive=false,
 falseNegative=false</label>
@@ -3950,11 +3950,11 @@ falseNegative=false</label>
 alertConfidence+(processDeviation/10)),
 telemetryTrust=(controlLoopStability&lt;50)?((telemetryTrust&gt;=5)?telemetryTrust-5:0):telemetryTrust,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC),
+maintenanceCost+PIR_MC),
 energyCost := min(MAX_COST,
-energyCost+DR_EC),
+energyCost+PIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC),
+carbonCost+PIR_CC),
 mitigationConfidence=(telemetryTrust+actuatorTrust)/2,
 resilienceDegradation=min(100, processDeviation + (100-mitigationConfidence)/2)</label>
 		</transition>
@@ -3962,11 +3962,11 @@ resilienceDegradation=min(100, processDeviation + (100-mitigationConfidence)/2)<
 			<source ref="id543" />
 			<target ref="id544" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC),
+maintenanceCost+PIR_MC),
 energyCost := min(MAX_COST,
-energyCost+DR_EC),
+energyCost+PIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC),
+carbonCost+PIR_CC),
 operationalSafetyErosion=(100-safetyMargin)</label>
 		</transition>
 		<transition id="id562">
@@ -3976,11 +3976,11 @@ operationalSafetyErosion=(100-safetyMargin)</label>
 			<label kind="assignment" x="610" y="80">truePositive=(alertConfidence&gt;20)?true:false,
 falsePositive=(alertConfidence&lt;=20)?true:false,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*2 + congestionPressure/10),
+maintenanceCost+PIR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*2 + (operationalStress/10)),
+energyCost+PIR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*2 + (operationalStress/10))</label>
+carbonCost+PIR_CC*2 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id563">
 			<source ref="id544" />
@@ -3988,32 +3988,32 @@ carbonCost+DR_CC*2 + (operationalStress/10))</label>
 			<label kind="guard" x="610" y="120">alertConfidence&gt;=40 || actuatorTrust&lt;50</label>
 			<label kind="assignment" x="610" y="150">truePositive=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*3 + congestionPressure/10),
+maintenanceCost+PIR_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*3 + (operationalStress/10)),
+energyCost+PIR_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*3 + (operationalStress/10)),
+carbonCost+PIR_CC*3 + (operationalStress/10)),
 downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id564">
 			<source ref="id545" />
 			<target ref="id547" />
 			<label kind="assignment" x="610" y="150">maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*2 + congestionPressure/10),
+maintenanceCost+PIR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*2 + (operationalStress/10)),
+energyCost+PIR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*2 + (operationalStress/10))</label>
+carbonCost+PIR_CC*2 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id565">
 			<source ref="id546" />
 			<target ref="id548" />
 			<label kind="assignment" x="520" y="220">maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5 + congestionPressure/10),
+maintenanceCost+PIR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5 + (operationalStress/10)),
+energyCost+PIR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5 + (operationalStress/10)),
+carbonCost+PIR_CC*5 + (operationalStress/10)),
 downtime=min(100, downtime+1)</label>
 		</transition>
 		<transition id="id566">
@@ -4022,11 +4022,11 @@ downtime=min(100, downtime+1)</label>
 			<label kind="assignment" x="340" y="220">firewall=true,
 waf=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*2 + congestionPressure/10),
+maintenanceCost+PIR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*2 + (operationalStress/10)),
+energyCost+PIR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*2 + (operationalStress/10))</label>
+carbonCost+PIR_CC*2 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id567">
 			<source ref="id548" />
@@ -4034,11 +4034,11 @@ carbonCost+DR_CC*2 + (operationalStress/10))</label>
 			<label kind="assignment" x="250" y="220">firewall=true,
 waf=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*3 + congestionPressure/10),
+maintenanceCost+PIR_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*3 + (operationalStress/10)),
+energyCost+PIR_EC*3 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*3 + (operationalStress/10))</label>
+carbonCost+PIR_CC*3 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id568">
 			<source ref="id549" />
@@ -4046,32 +4046,32 @@ carbonCost+DR_CC*3 + (operationalStress/10))</label>
 			<label kind="assignment" x="70" y="220">ids=true,
 edr=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5 + congestionPressure/10),
+maintenanceCost+PIR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5 + (operationalStress/10)),
+energyCost+PIR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5 + (operationalStress/10))</label>
+carbonCost+PIR_CC*5 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id569">
 			<source ref="id550" />
 			<target ref="id551" />
 			<label kind="assignment" x="-20" y="290">dlp=true,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5 + congestionPressure/10),
+maintenanceCost+PIR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5 + (operationalStress/10)),
+energyCost+PIR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5 + (operationalStress/10))</label>
+carbonCost+PIR_CC*5 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id570">
 			<source ref="id551" />
 			<target ref="id552" />
 			<label kind="assignment" x="70" y="360">maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*3 + congestionPressure/10),
+maintenanceCost+PIR_MC*3 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*4 + (operationalStress/10)),
+energyCost+PIR_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*3 + (operationalStress/10))</label>
+carbonCost+PIR_CC*3 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id571">
 			<source ref="id552" />
@@ -4082,11 +4082,11 @@ failSafeEngaged=(operationalSafetyErosion&gt;70 &amp;&amp; processDeviation&gt;5
 safeModeOperation=(failSafeEngaged)?100:((telemetryTrust&lt;50)?50:0),
 downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:downtime),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*4 + congestionPressure/10),
+maintenanceCost+PIR_MC*4 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*5 + (operationalStress/10)),
+energyCost+PIR_EC*5 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*4 + (operationalStress/10))</label>
+carbonCost+PIR_CC*4 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id572">
 			<source ref="id553" />
@@ -4094,11 +4094,11 @@ carbonCost+DR_CC*4 + (operationalStress/10))</label>
 			<label kind="assignment" x="430" y="360">breach=(stealthPreference&gt;70 &amp;&amp; mitigationConfidence&lt;50)?true:false,
 downtime=(failSafeEngaged)?downtime+2:((operationalStress&gt;50)?downtime+1:((downtime&gt;0)?downtime-1:0)),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*5 + congestionPressure/10),
+maintenanceCost+PIR_MC*5 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*6 + (operationalStress/10)),
+energyCost+PIR_EC*6 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*5 + (operationalStress/10))</label>
+carbonCost+PIR_CC*5 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id573">
 			<source ref="id554" />
@@ -4111,11 +4111,11 @@ mitigationConfidence=min(100, mitigationConfidence + (recoveryCapacity/10)),
 safetyMargin=(safeModeOperation&gt;0)?safetyMargin:min(100, safetyMargin + (100-safetyMargin)/10),
 downtime=(downtime&gt;0)?downtime-1:0,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*6 + congestionPressure/10),
+maintenanceCost+PIR_MC*6 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*7 + (operationalStress/10)),
+energyCost+PIR_EC*7 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*6 + (operationalStress/10))</label>
+carbonCost+PIR_CC*6 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id574">
 			<source ref="id555" />
@@ -4130,11 +4130,11 @@ controlLoopStability=(failSafeEngaged)?controlLoopStability:min(100, controlLoop
 actuatorTrust=min(100, actuatorTrust + (100-actuatorTrust)/10),
 backupIntegrity=min(100, backupIntegrity + (100-backupIntegrity)/10),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC*8 + congestionPressure/10),
+maintenanceCost+PIR_MC*8 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+DR_EC*8 + (operationalStress/10)),
+energyCost+PIR_EC*8 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC*7 + (operationalStress/10))</label>
+carbonCost+PIR_CC*7 + (operationalStress/10))</label>
 		</transition>
 		<transition id="id575">
 			<source ref="id556" />
@@ -4153,11 +4153,11 @@ cpsInstabilityProbability=(safeModeOperation&gt;0)?cpsInstabilityProbability:0</
 			<label kind="assignment" x="430" y="500">failSafeEngaged=false,
 safeModeOperation=0,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+DR_MC),
+maintenanceCost+PIR_MC),
 energyCost := min(MAX_COST,
-energyCost+DR_EC),
+energyCost+PIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+DR_CC)</label>
+carbonCost+PIR_CC)</label>
 		</transition>
 		<transition id="id577">
 			<source ref="id558" />
@@ -4372,7 +4372,7 @@ downtime=min(100, downtime+1)</label>
 	</template>
   <system>
 
-E    = Environment();
+E    = Pipeline_Physical_Dynamics();
 G1   = OR_L12();
 G2   = OR_L2();
 G3   = AND_L12();
@@ -4380,24 +4380,24 @@ G4   = AND_L2();
 G5   = NOT_FW2();
 G6   = NOT_IDS();
 G7   = Voting_Gate();
-N    = Network_Attack();
-WA   = Web_Attack();
-AA   = API_Attack();
-MA   = Malware_Attack();
-RA   = Ransomware_Attack();
-PH   = Phishing_Attack();
-CR   = Credential_Attack();
+N    = SCADA_Compromise();
+WA   = Sensor_Spoofing();
+AA   = Flow_Falsification();
+MA   = PLC_Logic_Manipulation();
+RA   = Control_Center_Ransomware();
+PH   = Compressor_Intrusion();
+CR   = Remote_RTU_Compromise();
 INS  = Insider_Attack();
 SUP  = Supply_Attack();
-FWA  = Firmware_Attack();
+FWA  = Supervisory_Stealth_Persistence();
 LM   = Lateral_Movement();
 PM   = Persistence_Module();
-F    = Firewall_Defense();
-IDSD = IDS_Defense();
-WAFD = WAF_Defense();
-EDRD = EDR_Defense();
-DLPD = DLP_Defense();
-DR   = Defender_Response();
+F    = SCADA_Firewall();
+IDSD = Telemetry_Validator();
+WAFD = Protocol_Analyzer();
+EDRD = RTU_Endpoint_Defense();
+DLPD = Flow_Sanity_Checker();
+DR   = Pipeline_Incident_Response();
 BM   = Breach_Monitor();
 AC   = Attack_Coordinator();
 system E, G1, G2, G3, G4, G5, G6, G7,
@@ -4412,11 +4412,11 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; N.NA_Payload_Staging</formula>
+        <formula>E&lt;&gt; N.SCADA_Payload_Staging</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; MA.MAL_PLC_Manipulation</formula>
+        <formula>E&lt;&gt; MA.PLC_PLC_Manipulation</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
@@ -4424,7 +4424,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; DR.DR_Recover</formula>
+        <formula>E&lt;&gt; DR.PIR_Recover</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
@@ -4448,11 +4448,11 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=100] (&lt;&gt; N.NA_Execution)</formula>
+        <formula>Pr[&lt;=100] (&lt;&gt; N.SCADA_Execution)</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=100] (&lt;&gt; AA.AA_OT_Traversal)</formula>
+        <formula>Pr[&lt;=100] (&lt;&gt; AA.FLOW_OT_Traversal)</formula>
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
@@ -4484,7 +4484,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from modular_queries.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (F.FWD_Block &amp;&amp; IDSD.IDSD_Block &amp;&amp; DR.DR_Recover)</formula>
+        <formula>E&lt;&gt; (F.FWD_Block &amp;&amp; IDSD.IDSD_Block &amp;&amp; DR.PIR_Recover)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4508,7 +4508,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=400] (&lt;&gt; (N.NA_Payload_Staging &amp;&amp; MA.MAL_Command_And_Control))</formula>
+        <formula>Pr[&lt;=400] (&lt;&gt; (N.SCADA_Payload_Staging &amp;&amp; MA.PLC_Command_And_Control))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4544,7 +4544,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=500] (&lt;&gt; (DR.DR_Intake &amp;&amp; fwQueueSize &gt; 50))</formula>
+        <formula>Pr[&lt;=500] (&lt;&gt; (DR.PIR_Intake &amp;&amp; fwQueueSize &gt; 50))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4552,7 +4552,7 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=400] (&lt;&gt; (falseNegative == true &amp;&amp; N.NA_Execution))</formula>
+        <formula>Pr[&lt;=400] (&lt;&gt; (falseNegative == true &amp;&amp; N.SCADA_Execution))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4580,19 +4580,19 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; DR.DR_Sev_Low)</formula>
+        <formula>E&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; DR.PIR_Sev_Low)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=500] (&lt;&gt; (stealthPreference &gt; 70 &amp;&amp; N.NA_Execution))</formula>
+        <formula>Pr[&lt;=500] (&lt;&gt; (stealthPreference &gt; 70 &amp;&amp; N.SCADA_Execution))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (stealthPreference &gt;= 80 &amp;&amp; DR.DR_Sev_Low)</formula>
+        <formula>E&lt;&gt; (stealthPreference &gt;= 80 &amp;&amp; DR.PIR_Sev_Low)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=400] (&lt;&gt; (fwQueueSize &gt;= 80 &amp;&amp; N.NA_OT_Traversal))</formula>
+        <formula>Pr[&lt;=400] (&lt;&gt; (fwQueueSize &gt;= 80 &amp;&amp; N.SCADA_OT_Traversal))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4656,11 +4656,11 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=600] (&lt;&gt; (safeModeOperation &gt; 0 &amp;&amp; DR.DR_Recover))</formula>
+        <formula>Pr[&lt;=600] (&lt;&gt; (safeModeOperation &gt; 0 &amp;&amp; DR.PIR_Recover))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (breach == true &amp;&amp; DR.DR_Reset)</formula>
+        <formula>E&lt;&gt; (breach == true &amp;&amp; DR.PIR_Reset)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4668,11 +4668,11 @@ system E, G1, G2, G3, G4, G5, G6, G7,
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>E&lt;&gt; (recoveryCapacity &lt; 50 &amp;&amp; DR.DR_Harden)</formula>
+        <formula>E&lt;&gt; (recoveryCapacity &lt; 50 &amp;&amp; DR.PIR_Harden)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
-        <formula>Pr[&lt;=500] (&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; DR.DR_Recover))</formula>
+        <formula>Pr[&lt;=500] (&lt;&gt; (telemetryTrust &lt; 50 &amp;&amp; DR.PIR_Recover))</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
     <query>
@@ -4749,6 +4749,30 @@ system E, G1, G2, G3, G4, G5, G6, G7,
     </query>
     <query>
         <formula>A[] (vg_count &gt;= 0 &amp;&amp; vg_count &lt;= 100)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (maintenanceCost &gt; 10000 &amp;&amp; congestionPressure &gt; 50))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=500] (&lt;&gt; (energyCost &gt; 10000 &amp;&amp; safeModeOperation &gt; 0))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=600] (&lt;&gt; (carbonCost &gt; 10000 &amp;&amp; resilienceDegradation &gt; 50))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>Pr[&lt;=400] (&lt;&gt; (operationalStress &gt; 80 &amp;&amp; controlLatency &gt; 50))</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>A[] (energyCost &gt;= 0)</formula>
+        <comment>Imported from scalability_tests.q</comment>
+    </query>
+    <query>
+        <formula>A[] (carbonCost &gt;= 0)</formula>
         <comment>Imported from scalability_tests.q</comment>
     </query>
 </queries>

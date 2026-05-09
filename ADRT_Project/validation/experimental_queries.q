@@ -75,7 +75,7 @@ Pr[<=600] (<> (telemetryTrust < 40 && stealthPreference > 60))
 simulate 100 [<=500] { recoveryCapacity }
 
 /* Probability of recovery failure due to prolonged operational stress */
-Pr[<=600] (<> (DR.DR_Failed && operationalStress > 70))
+Pr[<=600] (<> (DR.PIR_Failed && operationalStress > 70))
 
 
 /* ====================================================
@@ -118,4 +118,21 @@ A[] (operationalStress >= 0 && operationalStress <= 100)
 A[] not deadlock
 
 /* Assure system eventually can attempt recovery */
-E<> DR.DR_Intake
+E<> DR.PIR_Intake
+
+/* ====================================================
+ * PHASE 11: OIL PIPELINE ICS EXPERIMENTATION
+ * ==================================================== */
+
+/* Probability of unsafe pipeline pressure escalation due to valve lag */
+Pr[<=500] (<> (processDeviation > 80 && safeModeOperation == 0))
+
+/* Stealth persistence survival under degraded flow telemetry */
+Pr[<=600] (<> (stealthPreference > 70 && telemetryTrust < 40))
+
+/* Congestion-induced operational degradation mapping */
+simulate 100 [<=500] { congestionPressure, operationalStress }
+
+/* Environmental risk escalation (carbon emissions due to degraded pump efficiency) */
+simulate 100 [<=600] { carbonCost }
+

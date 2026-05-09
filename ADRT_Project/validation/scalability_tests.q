@@ -4,7 +4,7 @@
  */
 
 /* 1. Deep Reachability Queries (Testing for state space explosions) */
-E<> (F.FWD_Block && IDSD.IDSD_Block && DR.DR_Recover)
+E<> (F.FWD_Block && IDSD.IDSD_Block && DR.PIR_Recover)
 E<> (scadaCompromised == true && plcCompromised == true && breach == true)
 
 /* 2. Bounded-Time Probability Queries (SMC Tractability evaluation) */
@@ -16,7 +16,7 @@ Pr[<=300] (<> (fwQueueSize > 80 && wafQueueSize > 80 && edrQueueSize > 80))
 E<> fwQueueSize == 100
 
 /* 4. Concurrent Attack Propagation Checks */
-Pr[<=400] (<> (N.NA_Payload_Staging && MA.MAL_Command_And_Control))
+Pr[<=400] (<> (N.SCADA_Payload_Staging && MA.PLC_Command_And_Control))
 Pr[<=400] (<> (lateral == true && persistence == true && breach == true))
 
 /* 5. Topology Stress Tests */
@@ -33,9 +33,9 @@ Pr[<=600] (<> (fwQueueSize == 0 && idsQueueSize == 0 && wafQueueSize == 0))
 E<> (F.FWD_Failed && fwQueueSize >= 80)
 
 /* 8. Timing Dynamics & Latency Tests (Phase 3 Additions) */
-Pr[<=500] (<> (DR.DR_Intake && fwQueueSize > 50))
+Pr[<=500] (<> (DR.PIR_Intake && fwQueueSize > 50))
 Pr[<=500] (<> (F.FWD_Rule && fwQueueSize > 50))
-Pr[<=400] (<> (falseNegative == true && N.NA_Execution))
+Pr[<=400] (<> (falseNegative == true && N.SCADA_Execution))
 E<> (fwQueueSize > 50 && downtime > 5)
 
 /* 9. POMDP-Lite Observability & Belief-State Tests (Phase 4 Additions) */
@@ -44,12 +44,12 @@ Pr[<=500] (<> (telemetryTrust < 50))
 E<> (telemetryTrust < 20 && breach == true)
 E<> (alertConfidence < 40 && scadaCompromised == true)
 Pr[<=600] (<> (plcSuspicion > 50))
-E<> (telemetryTrust < 50 && DR.DR_Sev_Low)
+E<> (telemetryTrust < 50 && DR.PIR_Sev_Low)
 
 /* 10. Adversarial Policy & Strategic Adaptation Tests (Phase 5 Additions) */
-Pr[<=500] (<> (stealthPreference > 70 && N.NA_Execution))
-E<> (stealthPreference >= 80 && DR.DR_Sev_Low)
-Pr[<=400] (<> (fwQueueSize >= 80 && N.NA_OT_Traversal))
+Pr[<=500] (<> (stealthPreference > 70 && N.SCADA_Execution))
+E<> (stealthPreference >= 80 && DR.PIR_Sev_Low)
+Pr[<=400] (<> (fwQueueSize >= 80 && N.SCADA_OT_Traversal))
 E<> (telemetryTrust < 40 && scadaCompromised == true && stealthPreference > 60)
 Pr[<=600] (<> (stealthPreference > 50 && downtime < 5))
 
@@ -71,11 +71,11 @@ E<> (operationalSafetyErosion > 50 && downtime > 5)
 
 /* 13. Phase 8: Recovery Semantics & Resilience Orchestration */
 Pr[<=500] (<> (failSafeEngaged == true))
-Pr[<=600] (<> (safeModeOperation > 0 && DR.DR_Recover))
-E<> (breach == true && DR.DR_Reset)
+Pr[<=600] (<> (safeModeOperation > 0 && DR.PIR_Recover))
+E<> (breach == true && DR.PIR_Reset)
 Pr[<=400] (<> (breach == true && mitigationConfidence < 50))
-E<> (recoveryCapacity < 50 && DR.DR_Harden)
-Pr[<=500] (<> (telemetryTrust < 50 && DR.DR_Recover))
+E<> (recoveryCapacity < 50 && DR.PIR_Harden)
+Pr[<=500] (<> (telemetryTrust < 50 && DR.PIR_Recover))
 Pr[<=600] (<> (restorationConfidence < 50 && downtime > 10))
 E<> (safeModeOperation > 0 && resilienceDegradation > 50)
 

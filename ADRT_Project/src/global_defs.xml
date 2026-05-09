@@ -18,29 +18,29 @@ int[0, MAX_COST] max(int[0, MAX_COST*2] a, int[0, MAX_COST*2] b) {
 
 
 /* ── Per-template cost constants (replaces parameters) ── */
-/* Environment / gates */
+/* Pipeline_Physical_Dynamics / gates */
 const int ENV_MC  = 5;   const int ENV_EC  = 2;   const int ENV_CC  = 1;
 const int GATE_MC = 5;   const int GATE_EC = 2;   const int GATE_CC = 1;
 /* Attack costs */
 const int NET_MC  = 20;  const int NET_EC  = 10;  const int NET_CC  = 5;
 const int WEB_MC  = 15;  const int WEB_EC  = 8;   const int WEB_CC  = 3;
 const int API_MC  = 15;  const int API_EC  = 8;   const int API_CC  = 3;
-const int MAL_MC  = 25;  const int MAL_EC  = 15;  const int MAL_CC  = 7;
-const int RAN_MC  = 30;  const int RAN_EC  = 20;  const int RAN_CC  = 10;
-const int PHI_MC  = 10;  const int PHI_EC  = 5;   const int PHI_CC  = 2;
-const int CRE_MC  = 12;  const int CRE_EC  = 6;   const int CRE_CC  = 3;
-const int INS_MC  = 8;   const int INS_EC  = 4;   const int INS_CC  = 2;
-const int SUP_MC  = 35;  const int SUP_EC  = 25;  const int SUP_CC  = 12;
-const int FWA_MC  = 40;  const int FWA_EC  = 30;  const int FWA_CC  = 15;
+const int PLC_MC  = 25;  const int PLC_EC  = 15;  const int PLC_CC  = 7;
+const int CRAN_MC  = 30;  const int CRAN_EC  = 20;  const int CRAN_CC  = 10;
+const int COMP_MC  = 10;  const int COMP_EC  = 5;   const int COMP_CC  = 2;
+const int RTU_MC  = 12;  const int RTU_EC  = 6;   const int RTU_CC  = 3;
+const int VALVE_MC  = 8;   const int VALVE_EC  = 4;   const int VALVE_CC  = 2;
+const int TDELAY_MC  = 35;  const int TDELAY_EC  = 25;  const int TDELAY_CC  = 12;
+const int FSENS_MC  = 40;  const int FSENS_EC  = 30;  const int FSENS_CC  = 15;
 const int LMV_MC  = 20;  const int LMV_EC  = 12;  const int LMV_CC  = 6;
 const int PER_MC  = 20;  const int PER_EC  = 12;  const int PER_CC  = 6;
 /* Defense costs */
 const int FWD_MC  = 10;  const int FWD_EC  = 5;   const int FWD_CC  = 2;
 const int IDS_MC  = 100; const int IDS_EC  = 50;  const int IDS_CC  = 20;
 const int WAF_MC  = 10;  const int WAF_EC  = 5;   const int WAF_CC  = 2;
-const int EDR_MC  = 100; const int EDR_EC  = 50;  const int EDR_CC  = 20;
+const int EPIR_MC  = 100; const int EPIR_EC  = 50;  const int EPIR_CC  = 20;
 const int DLP_MC  = 80;  const int DLP_EC  = 40;  const int DLP_CC  = 18;
-const int DR_MC   = 50;  const int DR_EC   = 25;  const int DR_CC   = 10;
+const int PIR_MC   = 50;  const int PIR_EC   = 25;  const int PIR_CC   = 10;
 
 /* ── Multi-objective cost accumulators ── */
 int[0,MAX_COST] maintenanceCost = 0;

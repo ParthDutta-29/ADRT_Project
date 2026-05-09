@@ -1,47 +1,47 @@
 <?xml version='1.0' encoding='utf-8'?>
 <nta>
 <template>
-		<name>Environment</name>
+		<name>Pipeline_Physical_Dynamics</name>
 		<declaration>clock env_t;
 int wave=0;</declaration>
 		<location id="id0" x="40" y="80">
-			<name x="30" y="55">Env_Idle</name>
+			<name x="30" y="55">Pipe_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
 		</location>
 		<location id="id1" x="220" y="80">
-			<name x="210" y="55">Env_Init</name>
+			<name x="210" y="55">Pipe_Init</name>
 			<label kind="exponentialrate" x="210" y="98">3</label>
 		</location>
 		<location id="id2" x="400" y="80">
-			<name x="390" y="55">Env_Valve_Control</name>
+			<name x="390" y="55">Pipe_Valve_Control</name>
 			<label kind="exponentialrate" x="390" y="98">2</label>
 		</location>
 		<location id="id3" x="580" y="80">
-			<name x="570" y="55">Env_Flow_Dynamics</name>
+			<name x="570" y="55">Pipe_Flow_Dynamics</name>
 			<label kind="exponentialrate" x="570" y="98">2</label>
 		</location>
 		<location id="id4" x="580" y="220">
-			<name x="570" y="195">Env_PID_Control</name>
+			<name x="570" y="195">Pipe_PID_Control</name>
 			<label kind="exponentialrate" x="570" y="238">2</label>
 		</location>
 		<location id="id5" x="400" y="220">
-			<name x="390" y="195">Env_Monitor</name>
+			<name x="390" y="195">Pipe_Monitor</name>
 			<label kind="exponentialrate" x="390" y="238">4</label>
 		</location>
 		<location id="id6" x="220" y="220">
-			<name x="210" y="195">Env_Assess</name>
+			<name x="210" y="195">Pipe_Assess</name>
 			<label kind="exponentialrate" x="210" y="238">3</label>
 		</location>
 		<location id="id7" x="40" y="220">
-			<name x="30" y="195">Env_Success</name>
+			<name x="30" y="195">Pipe_Success</name>
 			<label kind="exponentialrate" x="30" y="238">2</label>
 		</location>
 		<location id="id8" x="40" y="360">
-			<name x="30" y="335">Env_Fail</name>
+			<name x="30" y="335">Pipe_Fail</name>
 			<label kind="exponentialrate" x="30" y="378">2</label>
 		</location>
 		<location id="id9" x="220" y="360">
-			<name x="210" y="335">Env_Reset</name>
+			<name x="210" y="335">Pipe_Reset</name>
 			<label kind="exponentialrate" x="210" y="378">4</label>
 		</location>
 		<init ref="id0" />

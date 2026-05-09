@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <nta>
 <template>
-		<name>Firewall_Defense</name>
+		<name>SCADA_Firewall</name>
 		<location id="id436" x="40" y="80">
 			<name x="30" y="55">FWD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -157,7 +157,7 @@ carbonCost := min(MAX_COST,
 carbonCost+FWD_CC*2 + (operationalStress/10))</label></transition><transition id="id459"><source ref="id436" /><target ref="id436" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=5)?fwQueueSize-5:0</label></transition><transition id="id460"><source ref="id439" /><target ref="id439" /><label kind="guard">fwQueueSize &gt; 0</label><label kind="assignment">fwQueueSize=(fwQueueSize&gt;=10)?fwQueueSize-10:0</label></transition></template>
 	
 <template>
-		<name>IDS_Defense</name>
+		<name>Telemetry_Validator</name>
 		<location id="id457" x="40" y="80">
 			<name x="30" y="55">IDSD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -313,7 +313,7 @@ carbonCost := min(MAX_COST,
 carbonCost+IDS_CC*2 + (operationalStress/10))</label></transition><transition id="id480"><source ref="id457" /><target ref="id457" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=5)?idsQueueSize-5:0</label></transition><transition id="id481"><source ref="id460" /><target ref="id460" /><label kind="guard">idsQueueSize &gt; 0</label><label kind="assignment">idsQueueSize=(idsQueueSize&gt;=10)?idsQueueSize-10:0</label></transition></template>
 	
 <template>
-		<name>WAF_Defense</name>
+		<name>Protocol_Analyzer</name>
 		<location id="id478" x="40" y="80">
 			<name x="30" y="55">WAFD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -469,7 +469,7 @@ carbonCost := min(MAX_COST,
 carbonCost+WAF_CC*2 + (operationalStress/10))</label></transition><transition id="id501"><source ref="id478" /><target ref="id478" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=5)?wafQueueSize-5:0</label></transition><transition id="id502"><source ref="id481" /><target ref="id481" /><label kind="guard">wafQueueSize &gt; 0</label><label kind="assignment">wafQueueSize=(wafQueueSize&gt;=10)?wafQueueSize-10:0</label></transition></template>
 	
 <template>
-		<name>EDR_Defense</name>
+		<name>RTU_Endpoint_Defense</name>
 		<location id="id499" x="40" y="80">
 			<name x="30" y="55">EDRD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
@@ -516,42 +516,42 @@ carbonCost+WAF_CC*2 + (operationalStress/10))</label></transition><transition id
 			<target ref="id500" />
 			<label kind="synchronisation" x="70" y="65">detect?</label>
 			<label kind="assignment" x="70" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC),
+carbonCost+EPIR_CC),
 edrQueueSize=min(100, edrQueueSize + 1 + congestionPressure/20)</label>
 		<label kind="guard" x="70" y="50">edrQueueSize &lt; mitigationCapacity</label></transition>
 		<transition id="id510">
 			<source ref="id500" />
 			<target ref="id501" />
 			<label kind="assignment" x="250" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id511">
 			<source ref="id501" />
 			<target ref="id502" />
 			<label kind="assignment" x="430" y="80">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id512">
 			<source ref="id502" />
 			<target ref="id503" />
 			<label kind="assignment" x="520" y="150">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id513">
 			<source ref="id503" />
@@ -560,11 +560,11 @@ carbonCost+EDR_CC)</label>
 			<label kind="assignment" x="430" y="220">edr=true,
 modelFidelity=min(100, modelFidelity + (100-modelFidelity)/10),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		<label kind="guard" x="430" y="190">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="430" y="220">1 + modelFidelity/20 + telemetryTrust/25</label></transition>
 		<transition id="id514">
 			<source ref="id503" />
@@ -572,11 +572,11 @@ carbonCost+EDR_CC)</label>
 			<label kind="synchronisation" x="340" y="275">fail!</label>
 			<label kind="assignment" x="340" y="290">edr=false,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*2 + congestionPressure/10),
+maintenanceCost+EPIR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC*2 + (operationalStress/10)),
+energyCost+EPIR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC*2 + (operationalStress/10))</label>
+carbonCost+EPIR_CC*2 + (operationalStress/10))</label>
 		<label kind="guard" x="340" y="260">edrQueueSize &lt; mitigationCapacity</label><label kind="probability" x="340" y="290">1 + congestionPressure/20 + operationalStress/25</label></transition>
 		<transition id="id515">
 			<source ref="id504" />
@@ -592,11 +592,11 @@ carbonCost+EDR_CC*2 + (operationalStress/10))</label>
 			<source ref="id506" />
 			<target ref="id507" />
 			<label kind="assignment" x="-20" y="290">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC),
+maintenanceCost+EPIR_MC),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC),
+energyCost+EPIR_EC),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC)</label>
+carbonCost+EPIR_CC)</label>
 		</transition>
 		<transition id="id518">
 			<source ref="id507" />
@@ -604,28 +604,28 @@ carbonCost+EDR_CC)</label>
 			<label kind="assignment" x="-20" y="220">edr=true,
 modelFidelity=min(100, modelFidelity + (100-modelFidelity)/10),
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*2 + congestionPressure/10)</label>
+maintenanceCost+EPIR_MC*2 + congestionPressure/10)</label>
 		</transition>
 		<transition id="id519">
 			<source ref="id508" />
 			<target ref="id506" />
 			<label kind="synchronisation" x="70" y="275">detect!</label>
 			<label kind="assignment" x="70" y="290">maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*3 + congestionPressure/10)</label>
+maintenanceCost+EPIR_MC*3 + congestionPressure/10)</label>
 		</transition>
 	<transition id="id520"><source ref="id499" /><target ref="id499" /><label kind="guard" x="70" y="10">edrQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="70" y="25">detect?</label><label kind="assignment" x="70" y="40">falseNegative=true,
 telemetryTrust=(telemetryTrust&gt;=(operationalStress/10))?telemetryTrust-(operationalStress/10):0,
 actuatorTrust=(actuatorTrust&gt;=5)?actuatorTrust-5:0,
 controlLoopStability=(controlLoopStability&gt;=5)?controlLoopStability-5:0</label></transition><transition id="id521"><source ref="id503" /><target ref="id508" /><label kind="guard" x="340" y="310">edrQueueSize &gt;= mitigationCapacity</label><label kind="synchronisation" x="340" y="325">fail!</label><label kind="assignment" x="340" y="340">edr=false,
 maintenanceCost := min(MAX_COST,
-maintenanceCost+EDR_MC*2 + congestionPressure/10),
+maintenanceCost+EPIR_MC*2 + congestionPressure/10),
 energyCost := min(MAX_COST,
-energyCost+EDR_EC*2 + (operationalStress/10)),
+energyCost+EPIR_EC*2 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
-carbonCost+EDR_CC*2 + (operationalStress/10))</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
+carbonCost+EPIR_CC*2 + (operationalStress/10))</label></transition><transition id="id522"><source ref="id499" /><target ref="id499" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=5)?edrQueueSize-5:0</label></transition><transition id="id523"><source ref="id502" /><target ref="id502" /><label kind="guard">edrQueueSize &gt; 0</label><label kind="assignment">edrQueueSize=(edrQueueSize&gt;=10)?edrQueueSize-10:0</label></transition></template>
 	
 <template>
-		<name>DLP_Defense</name>
+		<name>Flow_Sanity_Checker</name>
 		<location id="id520" x="40" y="80">
 			<name x="30" y="55">DLPD_Idle</name>
 			<label kind="exponentialrate" x="30" y="98">1</label>
