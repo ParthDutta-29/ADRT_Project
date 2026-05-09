@@ -1,22 +1,24 @@
-# Threats to Validity & Research Limitations
+# Threats to Validity & Experimental Research Limitations
 
 While the ADRT framework provides a highly rigorous, formally verified environment for evaluating stochastic cyber-physical resilience, its structural and architectural constraints present fundamental limitations. 
 
 The framework is explicitly positioned as a **bounded stochastic cyber-physical resilience abstraction framework for tractable SMC experimentation**, NOT a perfectly calibrated industrial digital twin. The limitations below are acknowledged to guide future deployment applications and empirical calibration.
 
-## A. Modeling Limitations
-*   **Reduced-Order Semantics:** Industrial phenomena (like exact PLC cycle latency, fluid dynamics, and thermodynamic saturation) are modeled through bounded finite-state integer variables `int[0,100]` rather than through exact physical continuous-time differential equations (ODEs).
-*   **Bounded Stochastic Abstraction:** Probabilistic transitions rely on relative weighted scaling. This simplifies state-space branching and maintains parser-safety but trades off the infinite precision of true Bayesian belief networking or probability-density continuous functions.
-*   **Simplified Cyber-Physical Interaction:** The physical layer is represented conceptually. Instability behaves asymptotically via variables like `processDeviation`, bypassing exact domain physics to ensure computational tractability.
+## A. Stochastic Validity Limitations
+*   **Bounded Branch-Weight Abstractions:** Probabilistic transitions rely on bounded relative weighted scaling rather than exact floating-point densities. This simplifies state-space branching and maintains parser-safety but trades off the infinite precision of true Bayesian belief networking.
+*   **Simplified Uncertainty Semantics:** Uncertainty is propagated through bounded integer scaling (e.g., trust values dropping) rather than computing precise probability density functions (PDFs) over unbounded noise distributions.
 
-## B. Empirical Limitations
-*   **Lack of Telemetry Calibration:** Weightings (e.g., `1 + telemetryTrust/25`) have been mathematically normalized to guarantee safety, but they are not derived from empirical packet traces from a live ICS network (like Modbus or DNP3 traffic datasets).
-*   **Absence of Deployment-Specific Measurements:** While grounded conceptually toward a generalized ICS abstraction (e.g., Water Treatment), accurate operational deployment would demand site-specific adjustments mapping `maintenanceCost` to actual labor schedules and `carbonCost` to specific utility footprints.
+## B. Experimental Limitations
+*   **Lack of Empirical Calibration:** Transition weightings and congestion dynamics have been mathematically normalized to guarantee safety, but they have not been precisely fitted against empirical packet traces from a live ICS testbed.
+*   **Absence of Real Deployment Telemetry:** While grounded conceptually toward a generalized ICS abstraction (e.g., Water Treatment), accurate operational deployment would demand site-specific adjustments (e.g., mapping `maintenanceCost` to actual labor schedules).
+*   **Synthetic Workload Limitations:** The parameter sweeps utilize synthetic bounding ranges. High-stress configurations represent worst-case theoretical bounds rather than historically observed cyber-physical incidents.
 
 ## C. Computational Limitations
-*   **Finite-State Restrictions:** The framework operates solely within statically allocated UPPAAL variables. True infinite-state dynamics or dynamic process instantiations are impossible in this architecture.
-*   **Bounded Integer Precision:** The use of `int[0,100]` for parameter abstraction introduces inherent quantization errors. Smooth process decay is approximated using discrete stochastic jumps, which can cause minor step-artifacts during trajectory plots.
+*   **Bounded-State Restrictions:** The framework operates solely within statically allocated UPPAAL variables. True infinite-state dynamics or dynamic process instantiations are impossible in this architecture.
+*   **Finite Integer Abstractions:** The use of `int[0,100]` for parameter abstraction introduces inherent quantization errors. Smooth process decay is approximated using discrete stochastic jumps, which can cause minor step-artifacts during trajectory plots.
+*   **Reduced-Order CPS Semantics:** Industrial phenomena (like exact PLC cycle latency, fluid dynamics, and thermodynamic saturation) are modeled conceptually through bounding logic rather than through exact physical continuous-time differential equations (ODEs).
 
 ## D. Generalization Limitations
-*   **Topology Sensitivity:** The existing queue constraints and attack layer paths heavily dictate the observed behavior. While parameter sweeps are possible, migrating to an entirely different architectural topology (e.g., heavily meshed SCADA networks vs. linear pipeline architecture) would require rebuilding the modular structure from scratch.
-*   **Operational-Context Dependence:** Resilience degradation profiles generated by this framework apply closely to steady-state continuous processes. They may not map directly onto high-volatility discrete manufacturing lines without substantial modification to the `safeModeOperation` logic.
+*   **ICS Deployment Variability:** Resilience degradation profiles generated by this framework apply closely to steady-state continuous processes. They may not map directly onto high-volatility discrete manufacturing lines.
+*   **Topology-Specific Sensitivity:** The existing queue constraints and attack layer paths heavily dictate the observed behavior. Migrating to an entirely different architectural topology (e.g., heavily meshed SCADA networks vs. linear pipeline architecture) would require structural reconfiguration.
+*   **Operational Assumption Dependence:** The core assumption that mitigation saturation linearly degrades resilience sets the bounds. Changing the underlying assumptions around physical fail-safe isolation would fundamentally shift the experimental survivability envelopes.
