@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.6//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd">
 <nta>
   <declaration>
 /* ── Global clock ── */
@@ -1056,9 +1057,9 @@ energyCost := min(MAX_COST,
 energyCost+NET_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+NET_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id165">
 			<source ref="id152" />
@@ -1238,9 +1239,9 @@ energyCost := min(MAX_COST,
 energyCost+WEB_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+WEB_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id189">
 			<source ref="id176" />
@@ -1416,9 +1417,9 @@ energyCost := min(MAX_COST,
 energyCost+API_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+API_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id213">
 			<source ref="id200" />
@@ -1594,9 +1595,9 @@ energyCost := min(MAX_COST,
 energyCost+PLC_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+PLC_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id237">
 			<source ref="id224" />
@@ -1773,9 +1774,9 @@ energyCost := min(MAX_COST,
 energyCost+CRAN_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+CRAN_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id261">
 			<source ref="id248" />
@@ -1954,9 +1955,9 @@ energyCost := min(MAX_COST,
 energyCost+COMP_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+COMP_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id285">
 			<source ref="id272" />
@@ -2132,9 +2133,9 @@ energyCost := min(MAX_COST,
 energyCost+RTU_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+RTU_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id309">
 			<source ref="id296" />
@@ -2310,9 +2311,9 @@ energyCost := min(MAX_COST,
 energyCost+VALVE_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+VALVE_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id333">
 			<source ref="id320" />
@@ -2492,9 +2493,9 @@ energyCost := min(MAX_COST,
 energyCost+TDELAY_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+TDELAY_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id357">
 			<source ref="id344" />
@@ -2673,9 +2674,9 @@ energyCost := min(MAX_COST,
 energyCost+FSENS_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+FSENS_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id381">
 			<source ref="id368" />
@@ -2855,9 +2856,9 @@ energyCost := min(MAX_COST,
 energyCost+LMV_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+LMV_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id405">
 			<source ref="id392" />
@@ -3033,9 +3034,9 @@ energyCost := min(MAX_COST,
 energyCost+PER_EC*4 + (operationalStress/10)),
 carbonCost := min(MAX_COST,
 carbonCost+PER_CC*3 + (operationalStress/10)),
-controlLoopStability=(controlLoopStability&gt;=processDeviation/10)?controlLoopStability-processDeviation/10:0,
+controlLoopStability=(controlLoopStability&gt;=10)?controlLoopStability-(processDeviation/10):0,
 processDeviation=min(100, processDeviation + operationalStress/10),
-cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=(compressorHealth_A&gt;=10)?compressorHealth_A-10:0</label>
+cpsInstabilityProbability=min(100, cpsInstabilityProbability + processDeviation/10), compressorHealth_A=max(0, compressorHealth_A-10)</label>
 		</transition>
 		<transition id="id429">
 			<source ref="id416" />

@@ -1,29 +1,29 @@
 {
     "experiment_metadata": {
-        "title": "Phase 10: Parameter Sensitivity & Congestion Sweep",
-        "description": "Evaluates bounded stochastic cyber-physical resilience dynamics under varying mitigation capacity and stealth preference.",
+        "title": "Phase 12: Distributed Pipeline & Comparative Evaluation Sweep",
+        "description": "Evaluates bounded stochastic cyber-physical resilience dynamics under distributed topology and comparative defense regimes.",
         "model_file": "../build/main_system.xml",
         "query_file": "../validation/experimental_queries.q",
         "repetitions": 100
     },
     "parameter_sweeps": [
         {
-            "experiment_id": "EXP-01-CAPACITY-SWEEP",
-            "parameter": "mitigationCapacity",
+            "experiment_id": "EXP-01-DISTRIBUTED-STRESS",
+            "parameter": "segmentStress_A",
             "range": [20, 50, 80],
-            "metrics_to_collect": ["resilienceDegradation", "fwQueueSize", "maintenanceCost"]
+            "metrics_to_collect": ["segmentStress_B", "localizedTelemetryTrust_A", "compressorHealth_A"]
         },
         {
-            "experiment_id": "EXP-02-STEALTH-SWEEP",
-            "parameter": "stealthPreference",
-            "range": [30, 60, 90],
-            "metrics_to_collect": ["telemetryTrust", "alertConfidence", "safeModeOperation"]
+            "experiment_id": "EXP-02-CONGESTION-AWARE-BASELINE",
+            "parameter": "congestionAwareDefense",
+            "range": [0, 1],
+            "metrics_to_collect": ["resilienceDegradation", "downtime", "safeModeOperation"]
         },
         {
-            "experiment_id": "EXP-03-STRESS-SWEEP",
-            "parameter": "operationalStress",
-            "range": [10, 50, 90],
-            "metrics_to_collect": ["controlLatency", "processDeviation", "energyCost"]
+            "experiment_id": "EXP-03-TELEMETRY-TRUST-DECAY",
+            "parameter": "telemetryAwareDefense",
+            "range": [0, 1],
+            "metrics_to_collect": ["delayedTelemetry", "processDeviation", "controlLatency"]
         }
     ]
 }

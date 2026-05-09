@@ -28,3 +28,10 @@ This document provides formal operational governance over key parameters used in
 | :--- | :--- | :--- | :--- | :--- |
 | `energyCost` | `[0,MAX]` | KWh approximation during mitigation/recovery. | Non-linear escalation driven by `operationalStress`. | Replaces high-fidelity power-flow models. |
 | `carbonCost` | `[0,MAX]` | Carbon equivalent overhead tracking. | Tracks ecological impact of prolonged fail-safe operations. | Enables high-level environmental tradeoff analysis. |
+
+## 5. Distributed Pipeline Topology Variables
+| Parameter | Bounds | Operational Interpretation | Saturation / Resilience Rationale | Tractability Justification |
+| :--- | :--- | :--- | :--- | :--- |
+| segmentStress_A/B | [0,100] | Localized pipeline strain and process risk. | Downstream propagation bounds limit infinite cascade loops. | Enables multi-zone simulation without fluid dynamics solvers. |
+| localizedTelemetryTrust_A | [0,100] | Segment-specific monitoring reliability. | Bounded decay isolates uncertainty geographically. | Simplifies massive distributed state spaces into discrete bounds. |
+| segmentShutdown_A | [0,1] | Emergency segment isolation state. | Binary bounding restricts operational availability. | Represents topological decoupling tractably. |

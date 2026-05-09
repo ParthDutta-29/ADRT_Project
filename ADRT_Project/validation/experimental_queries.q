@@ -136,3 +136,21 @@ simulate 100 [<=500] { congestionPressure, operationalStress }
 /* Environmental risk escalation (carbon emissions due to degraded pump efficiency) */
 simulate 100 [<=600] { carbonCost }
 
+
+/* ====================================================
+ * PHASE 12: DISTRIBUTED TOPOLOGY & COMPARATIVE EVALUATION
+ * ==================================================== */
+
+/* Distributed Pipeline Resilience: Downstream Instability Propagation */
+Pr[<=500] (<> (segmentStress_B > 50 && segmentStress_A > 70))
+
+/* Localized Recovery: Probability of isolating Segment A successfully */
+Pr[<=400] (<> (segmentShutdown_A == 1 && compressorHealth_A < 50))
+
+/* Comparative Baseline: Congestion-Aware vs Non-Aware (Simulate expected impact) */
+simulate 100 [<=500] { resilienceDegradation } : 1 : (congestionAwareDefense == 1)
+simulate 100 [<=500] { resilienceDegradation } : 1 : (congestionAwareDefense == 0)
+
+/* Distributed Telemetry Trust Evaluation */
+simulate 100 [<=600] { localizedTelemetryTrust_A, localizedTelemetryTrust_B }
+

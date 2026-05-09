@@ -1,0 +1,537 @@
+
+================================================
+PHASE 12.1 — DYNAMIC ARITHMETIC STABILITY REPAIR
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id164
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id164
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id188
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id188
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id212
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id212
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id236
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id236
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id260
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id260
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id284
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id284
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id308
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id308
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id332
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id332
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id356
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id356
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id380
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id380
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id404
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id404
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id428
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : src\attack_layer.xml
+TRANSITION : id428
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id164
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id164
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id188
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id188
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id212
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id212
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id236
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id236
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id260
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id260
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id284
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id284
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id308
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id308
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id332
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id332
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id356
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id356
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id380
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id380
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id404
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id404
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id428
+
+OLD:
+compressorHealth_A=max(0, compressorHealth_A-10)
+
+NEW:
+compressorHealth_A=(compressorHealth_A>=10)?compressorHealth_A-10:0
+================================================
+
+================================================
+FILE       : build\main_system.xml
+TRANSITION : id428
+
+OLD:
+(controlLoopStability>=10)?controlLoopStability-(processDeviation/10):0
+
+NEW:
+(controlLoopStability>=processDeviation/10)?controlLoopStability-processDeviation/10:0
+================================================
+
+
+================================================
+TOTAL REPAIRS: 48
+================================================

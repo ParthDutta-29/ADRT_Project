@@ -62,6 +62,24 @@ int[0,100] restorationConfidence     = 100;
 int[0,100] safeModeOperation         = 0;
 bool       failSafeEngaged           = false;
 
+/* ── Phase 12: Distributed Pipeline Topology Variables ── */
+int[0,100] segmentStress_A = 0;
+int[0,100] segmentStress_B = 0;
+int[0,100] segmentStress_C = 0;
+int[0,100] localizedTelemetryTrust_A = 100;
+int[0,100] localizedTelemetryTrust_B = 100;
+int[0,100] compressorHealth_A = 100;
+int[0,100] compressorHealth_B = 100;
+
+/* ── Phase 12: Segmented Isolation States ── */
+int[0,1] segmentShutdown_A = 0;
+int[0,1] segmentShutdown_B = 0;
+
+/* ── Phase 12: Comparative Evaluation Flags ── */
+int[0,1] congestionAwareDefense = 1;
+int[0,1] distributedRecoveryMode = 1;
+int[0,1] telemetryAwareDefense = 1;
+
 /* ── Defense load / fatigue ── */
 int[0,100] fwQueueSize  = 0;
 int[0,100] idsQueueSize = 0;
